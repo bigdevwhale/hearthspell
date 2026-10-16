@@ -33,20 +33,20 @@
 
     <!-- Spell form -->
     <string name="spell_new">New spell</string>
-    <string name="spell_edit">Spell</string>
+    <string name="form_edit">Spell</string>
     <string name="spell_name">Name</string>
     <string name="spell_name_hint">Water the cactus</string>
     <string name="spell_floor">Floor</string>
-    <string name="spell_interval">How often</string>
+    <string name="form_interval">How often</string>
     <plurals name="spell_days_short">
         <item quantity="one">%dd</item>
         <item quantity="other">%dd</item>
     </plurals>
-    <string name="spell_effort">Effort</string>
-    <string name="spell_effort_1">Cantrip: a few minutes</string>
-    <string name="spell_effort_2">Spell: a proper chore</string>
-    <string name="spell_effort_3">Great spell: an hour or more</string>
-    <string name="spell_helper">Helper</string>
+    <string name="form_effort">Effort</string>
+    <string name="form_effort_1">Cantrip: a few minutes</string>
+    <string name="form_effort_2">Spell: a proper chore</string>
+    <string name="form_effort_3">Great spell: an hour or more</string>
+    <string name="form_helper">Helper</string>
     <string name="spell_helper_note">The helper wakes after five casts of its spells and grows with every one.</string>
     <string name="spell_more">More</string>
     <string name="spell_pause">Pause this spell</string>

@@ -33,22 +33,22 @@
     <string name="setup_remind_imps">Пакостники безобидны. Они только хихикают, пока их не прогонят.</string>
 
     <string name="spell_new">Новое заклинание</string>
-    <string name="spell_edit">Заклинание</string>
+    <string name="form_edit">Заклинание</string>
     <string name="spell_name">Название</string>
     <string name="spell_name_hint">Полить кактус</string>
     <string name="spell_floor">Этаж</string>
-    <string name="spell_interval">Как часто</string>
+    <string name="form_interval">Как часто</string>
     <plurals name="spell_days_short">
         <item quantity="one">%d д</item>
         <item quantity="few">%d д</item>
         <item quantity="many">%d д</item>
         <item quantity="other">%d д</item>
     </plurals>
-    <string name="spell_effort">Сложность</string>
-    <string name="spell_effort_1">Заговор: пара минут</string>
-    <string name="spell_effort_2">Заклинание: обычное дело</string>
-    <string name="spell_effort_3">Великое заклинание: час и больше</string>
-    <string name="spell_helper">Помощник</string>
+    <string name="form_effort">Сложность</string>
+    <string name="form_effort_1">Заговор: пара минут</string>
+    <string name="form_effort_2">Заклинание: обычное дело</string>
+    <string name="form_effort_3">Великое заклинание: час и больше</string>
+    <string name="form_helper">Помощник</string>
     <string name="spell_helper_note">Помощник просыпается после пяти произнесений своих заклинаний и растёт с каждым.</string>
     <string name="spell_more">Ещё</string>
     <string name="spell_pause">Поставить на паузу</string>

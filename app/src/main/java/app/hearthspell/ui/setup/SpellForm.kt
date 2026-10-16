@@ -117,7 +117,7 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
     }
 
     Column(Modifier.fillMaxSize().background(U.c.bg).imePadding()) {
-        TopBar(stringResource(if (existing == null) R.string.spell_new else R.string.spell_edit), go::back)
+        TopBar(stringResource(if (existing == null) R.string.spell_new else R.string.form_edit), go::back)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp)) {
             SectionTitle(stringResource(R.string.spell_name))
             PixelField(
@@ -131,16 +131,16 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
                 world.floors.forEach { f -> Chip(floorName(f), f.id == floor, { floor = f.id }) }
             }
 
-            SectionTitle(stringResource(R.string.spell_interval))
+            SectionTitle(stringResource(R.string.form_interval))
             Stepper(days, { days = it }, everyLabel(days), Modifier.fillMaxWidth())
             Gap(10.dp)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 quickDays.forEach { d -> Chip(gp(R.plurals.spell_days_short, d, d), d == days, { days = d }) }
             }
 
-            SectionTitle(stringResource(R.string.spell_effort))
+            SectionTitle(stringResource(R.string.form_effort))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(1 to R.string.spell_effort_1, 2 to R.string.spell_effort_2, 3 to R.string.spell_effort_3).forEach { (e, label) ->
+                listOf(1 to R.string.form_effort_1, 2 to R.string.form_effort_2, 3 to R.string.form_effort_3).forEach { (e, label) ->
                     Panel(
                         Modifier.fillMaxWidth(),
                         fill = if (e == effort) U.c.surface2 else U.c.surface,
@@ -157,7 +157,7 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
                 }
             }
 
-            SectionTitle(stringResource(R.string.spell_helper))
+            SectionTitle(stringResource(R.string.form_helper))
             HelperGrid(world, HelperKind.of(helper)) { helper = it.name }
             Gap(6.dp)
             Text(stringResource(R.string.spell_helper_note), style = UType.Muted)
