@@ -78,7 +78,7 @@ object DemoSeed {
         // Decor bought along the way; plenty of mana is left over.
         val placed = listOf(
             DecorKind.CAT to FloorKind.LIVING, DecorKind.BOOKS to FloorKind.LIVING, DecorKind.CAULDRON to FloorKind.KITCHEN,
-            DecorKind.HERBS to FloorKind.KITCHEN, DecorKind.TELESCOPE to FloorKind.BEDROOM, DecorKind.FERN to FloorKind.BALCONY,
+            DecorKind.HERBS to FloorKind.KITCHEN, DecorKind.CRYSTAL to FloorKind.BEDROOM, DecorKind.FERN to FloorKind.BALCONY,
             DecorKind.LANTERN to FloorKind.HALL,
         )
         val slots = mutableMapOf<Long, Int>()
