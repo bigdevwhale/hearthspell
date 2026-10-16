@@ -252,7 +252,7 @@ private fun glowColor(g: Glow): Color = when (g) {
 
 @Composable
 private fun status(s: Spell, w: World): String = when {
-    s.paused -> gs(R.string.spell_paused)
+    s.paused -> gs(R.string.tower_spell_paused)
     w.overdueDays(s) > 0 -> gp(R.plurals.spell_late, w.overdueDays(s), w.overdueDays(s))
     w.glow(s) == Glow.IMPS -> gs(R.string.spell_overdue)
     w.daysLeft(s) == 0 -> gs(R.string.spell_due_today)

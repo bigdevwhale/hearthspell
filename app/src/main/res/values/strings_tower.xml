@@ -39,7 +39,7 @@
         <item quantity="other">%d days late</item>
     </plurals>
     <string name="spell_overdue">Overdue</string>
-    <string name="spell_paused">Paused</string>
+    <string name="tower_spell_paused">Paused</string>
     <string name="spell_request">Master\'s request</string>
     <string name="spell_cast_a11y">Cast %1$s</string>
 
