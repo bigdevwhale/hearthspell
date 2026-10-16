@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tower_circle">Circle %d</string>
+    <string name="tower_apprentice">Apprentice %1$s</string>
+    <string name="tower_apprentice_plain">The apprentice</string>
+    <string name="tower_requests">The master asks</string>
+    <string name="tower_requests_none">No requests this week. Add a few spells and the master will write.</string>
+    <string name="tower_requests_done">All three done. The master will be proud.</string>
+    <string name="tower_double">×2</string>
+    <string name="tower_low_energy">Low on energy</string>
+    <string name="tower_add_floor">Add a floor</string>
+    <string name="tower_empty_title">The tower is empty</string>
+    <string name="tower_empty_text">Every floor is a room of your home. Add the first one and give it a few spells.</string>
+    <string name="tower_today">Cast today: %d</string>
+    <plurals name="tower_imps">
+        <item quantity="one">%d imp</item>
+        <item quantity="other">%d imps</item>
+    </plurals>
+    <string name="tower_no_imps">No imps</string>
+
+    <string name="floor_spells">Spells</string>
+    <string name="floor_add_spell">New spell</string>
+    <string name="floor_empty">No spells on this floor yet. What needs doing in this room?</string>
+    <string name="floor_spotless">Spotless</string>
+    <plurals name="floor_imps_here">
+        <item quantity="one">An imp has moved in</item>
+        <item quantity="other">%d imps have moved in</item>
+    </plurals>
+    <string name="floor_dusty">A little dusty</string>
+    <string name="floor_hint">Tap a spell when the chore is done. Hold it to open its page.</string>
+
+    <string name="spell_due_today">Due today</string>
+    <plurals name="spell_due_in">
+        <item quantity="one">Due in %d day</item>
+        <item quantity="other">Due in %d days</item>
+    </plurals>
+    <plurals name="spell_late">
+        <item quantity="one">%d day late</item>
+        <item quantity="other">%d days late</item>
+    </plurals>
+    <string name="spell_overdue">Overdue</string>
+    <string name="spell_paused">Paused</string>
+    <string name="spell_request">Master\'s request</string>
+    <string name="spell_cast_a11y">Cast %1$s</string>
+
+    <string name="cast_done">Spell cast</string>
+    <string name="cast_mana">+%d</string>
+
+    <string name="helper_woke_title">A helper woke up!</string>
+    <string name="helper_woke_text">%1$s now lives in your tower. %2$s</string>
+    <string name="helper_woke_ok">Welcome!</string>
+
+    <string name="cantrips_title">Cantrips</string>
+    <string name="cantrips_sub">Even a small spell drives the imps out. Pick one, just one.</string>
+    <string name="cantrips_empty">No small spells yet. Mark a spell as small (a cantrip) in its settings and it will wait for you here.</string>
+</resources>
