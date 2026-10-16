@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -122,7 +123,7 @@ fun PixelButton(
     val alpha = if (enabled) 1f else 0.45f
     Box(
         modifier
-            .offset(y = if (pressed) PX else 0.dp)
+            .offset { IntOffset(0, if (pressed) PX.roundToPx() else 0) }
             .pixelBox(fill.copy(alpha = alpha), c.outline, Color.White.copy(alpha = 0.35f * alpha), lip, pressed = pressed)
             .clickable(interactionSource = interaction, indication = null, enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),

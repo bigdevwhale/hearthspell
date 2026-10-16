@@ -1,5 +1,6 @@
 package app.hearthspell.ui.decor
 
+import app.hearthspell.data.DECOR_SLOTS
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,7 @@ import app.hearthspell.ui.theme.UType
 import kotlinx.coroutines.delay
 
 /** How many things fit on one floor of the tower. */
-private const val SLOTS = 4
+private const val SLOTS = DECOR_SLOTS
 
 private fun World.freeSlot(floorId: Long): Int? {
     val used = decorOn(floorId).map { it.slot }.toSet()

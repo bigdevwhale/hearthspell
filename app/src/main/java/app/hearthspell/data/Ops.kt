@@ -103,11 +103,16 @@ suspend fun HearthDao.moveFloor(id: Long, by: Int) {
     all.forEachIndexed { k, f -> if (f.sort != k) upsertFloor(f.copy(sort = k)) }
 }
 
+/** Pieces of decor a floor holds. */
+const val DECOR_SLOTS = 4
+
 /** Buys a piece of decor if there's mana for it, placing it on [floorId] (0 = the chest). Returns false if too dear. */
 suspend fun HearthDao.buyDecor(kind: DecorKind, floorId: Long, world: World, now: Long = System.currentTimeMillis()): Boolean {
     if (!world.canAfford(kind)) return false
-    val slot = if (floorId == 0L) 0 else (world.decorOn(floorId).maxOfOrNull { it.slot } ?: -1) + 1
-    upsertDecor(Decor(kind = kind.name, floorId = floorId, slot = slot, cost = kind.cost, boughtAt = now))
+    // A full floor sends the purchase to the chest instead.
+    val on = if (floorId != 0L && world.decorOn(floorId).size < DECOR_SLOTS) floorId else 0L
+    val slot = if (on == 0L) 0 else ((0 until DECOR_SLOTS).firstOrNull { s -> world.decorOn(on).none { it.slot == s } } ?: 0)
+    upsertDecor(Decor(kind = kind.name, floorId = on, slot = slot, cost = kind.cost, boughtAt = now))
     return true
 }
 
