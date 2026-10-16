@@ -2,6 +2,13 @@
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.1.0] - 2026-10-17
+
+### Hints
+- A tour of the tower from the master right after onboarding: floors and spells, fading, imps, casting and undo, his weekly requests, "Low on energy" and letters.
+- Every screen explains itself the first time it opens, in the voice of the master or a helper: the Broom on a floor, the Candle in the grimoire, the Satchel at the market, the Cat in the decor shop and so on.
+- A "?" in each screen's header brings its hint back, "Skip all" closes them for good, and the settings can show them all again.
+
 ## [1.0.0] - 2026-10-16
 
 The first release.
