@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="letters_title">Письма</string>
+    <string name="letters_sub">От мастера Амброзия, где бы он ни был</string>
+    <string name="letters_sealed">Запечатано</string>
+    <string name="letters_on_way">Письмо в пути</string>
+    <plurals name="letters_arrives">
+        <item quantity="one">Придёт через %d день</item>
+        <item quantity="few">Придёт через %d дня</item>
+        <item quantity="many">Придёт через %d дней</item>
+        <item quantity="other">Придёт через %d дня</item>
+    </plurals>
+    <string name="letter_number">Письмо %1$d</string>
+    <string name="letter_greeting">Дорог{ой|ая} %s,</string>
+    <string name="letter_greeting_anon">Дорог{ой мой ученик|ая моя ученица},</string>
+    <string name="letter_sign">Твой, с дороги,</string>
+    <string name="letter_master">Амброзий</string>
+    <string name="letter_requests">Просьбы на эту неделю</string>
+    <string name="letter_requests_sub">До воскресенья каждая стоит двойную ману.</string>
+    <string name="letter_requests_none">Просьб пока нет: в башне ещё нет заклинаний.</string>
+    <string name="letter_not_yet">Это письмо ещё не пришло.</string>
+
+    <string name="decor_title">Лавка убранства</string>
+    <string name="decor_owned">Есть: %d</string>
+    <string name="decor_need">Ещё %d маны</string>
+    <string name="decor_where">Куда поставить?</string>
+    <string name="decor_full">мест нет</string>
+    <string name="decor_chest">Сундук</string>
+    <string name="decor_chest_sub">Куплено, но ещё не расставлено</string>
+    <string name="decor_chest_empty">В сундуке пусто.</string>
+    <string name="decor_to_chest">В сундук</string>
+    <string name="decor_bought">Куплено: %s</string>
+    <string name="decor_placed">Расставлено</string>
+</resources>

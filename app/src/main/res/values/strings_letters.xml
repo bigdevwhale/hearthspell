@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="letters_title">Letters</string>
+    <string name="letters_sub">From Master Ambrose, wherever he is</string>
+    <string name="letters_sealed">Sealed</string>
+    <string name="letters_on_way">A letter on its way</string>
+    <plurals name="letters_arrives">
+        <item quantity="one">Arrives in %d day</item>
+        <item quantity="other">Arrives in %d days</item>
+    </plurals>
+    <string name="letter_number">Letter %1$d</string>
+    <string name="letter_greeting">Dear %s,</string>
+    <string name="letter_greeting_anon">My dear apprentice,</string>
+    <string name="letter_sign">Yours, from the road,</string>
+    <string name="letter_master">Ambrose</string>
+    <string name="letter_requests">This week\'s requests</string>
+    <string name="letter_requests_sub">Each is worth double mana until Sunday.</string>
+    <string name="letter_requests_none">No requests yet: the tower has no spells.</string>
+    <string name="letter_not_yet">This letter hasn\'t arrived yet.</string>
+
+    <string name="decor_title">Decor shop</string>
+    <string name="decor_owned">Owned: %d</string>
+    <string name="decor_need">%d more mana</string>
+    <string name="decor_where">Where shall it go?</string>
+    <string name="decor_full">full</string>
+    <string name="decor_chest">The chest</string>
+    <string name="decor_chest_sub">Bought, not yet placed</string>
+    <string name="decor_chest_empty">Nothing in the chest.</string>
+    <string name="decor_to_chest">Into the chest</string>
+    <string name="decor_bought">Bought: %s</string>
+    <string name="decor_placed">Placed</string>
+</resources>

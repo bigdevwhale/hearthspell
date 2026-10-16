@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="grimoire_title">Grimoire</string>
+    <string name="grimoire_circle">Circle %1$d</string>
+    <plurals name="grimoire_circle_next">
+        <item quantity="one">%1$d more cast to circle %2$d</item>
+        <item quantity="other">%1$d more casts to circle %2$d</item>
+    </plurals>
+    <string name="grimoire_circle_max">The highest circle. The master would bow.</string>
+    <plurals name="grimoire_total">
+        <item quantity="one">%d spell cast</item>
+        <item quantity="other">%d spells cast</item>
+    </plurals>
+    <string name="grimoire_helpers">Helpers</string>
+    <string name="grimoire_helpers_awake">%1$d of %2$d awake</string>
+    <string name="grimoire_spells">Spells</string>
+    <string name="grimoire_decor">Decor shop</string>
+    <string name="grimoire_decor_sub">Spend mana on furniture for the tower</string>
+    <string name="grimoire_empty">No spells yet. Add them on the floors of the tower.</string>
+    <plurals name="grimoire_casts">
+        <item quantity="one">%d cast</item>
+        <item quantity="other">%d casts</item>
+    </plurals>
+    <string name="grimoire_rank_next">%1$d to %2$s</string>
+    <string name="grimoire_rank_max">Highest rank</string>
+
+    <string name="spell_chant">Incantation</string>
+    <string name="spell_own">Your own spell. The old books don\'t have it yet, so you\'re writing a new page.</string>
+    <string name="spell_every_day">Every day</string>
+    <plurals name="spell_every">
+        <item quantity="one">Every %d day</item>
+        <item quantity="other">Every %d days</item>
+    </plurals>
+    <string name="spell_effort_1">Cantrip</string>
+    <string name="spell_effort_2">Spell</string>
+    <string name="spell_effort_3">Great spell</string>
+    <string name="spell_interval">Interval</string>
+    <string name="spell_effort">Power</string>
+    <string name="spell_mana">Mana</string>
+    <string name="spell_mana_double">×2, a request</string>
+    <string name="spell_last">Last cast</string>
+    <string name="spell_never">Not yet</string>
+    <string name="spell_today">Today</string>
+    <string name="spell_yesterday">Yesterday</string>
+    <plurals name="spell_days_ago">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <string name="spell_calendar">Last 12 weeks</string>
+    <string name="spell_month">This month: %d</string>
+    <string name="spell_edit">Edit</string>
+    <string name="spell_helper">Helper</string>
+    <string name="spell_paused">Paused</string>
+    <string name="spell_missing">This spell has vanished from the book.</string>
+
+    <string name="helper_level">Level %1$d</string>
+    <string name="helper_asleep">Asleep</string>
+    <plurals name="helper_to_wake">
+        <item quantity="one">%d more cast to wake it</item>
+        <item quantity="other">%d more casts to wake it</item>
+    </plurals>
+    <plurals name="helper_to_level">
+        <item quantity="one">%1$d more cast to level %2$d</item>
+        <item quantity="other">%1$d more casts to level %2$d</item>
+    </plurals>
+    <string name="helper_max">Highest level</string>
+    <string name="helper_spells">Spells that wake it</string>
+    <string name="helper_none">None of your spells wake this helper yet. Choose it for a spell in the spell editor.</string>
+    <string name="helper_home">Lives in: %s</string>
+    <string name="helper_homeless">Hasn\'t picked a floor yet</string>
+</resources>
