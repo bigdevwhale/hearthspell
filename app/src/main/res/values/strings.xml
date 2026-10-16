@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Hearthspell</string>
+
+    <string name="tab_tower">Tower</string>
+    <string name="tab_grimoire">Grimoire</string>
+    <string name="tab_market">Market</string>
+    <string name="tab_letters">Letters</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="done">Done</string>
+    <string name="undo">Undo</string>
+    <string name="next">Next</string>
+
+    <string name="channel_tower">The tower</string>
+    <string name="channel_tower_desc">Imps on a floor and letters from the master, once a day.</string>
+    <string name="notif_imps_title">Imps in the %1$s</string>
+    <string name="notif_imps_text">%1$s whispers: %2$s has waited long enough.</string>
+    <string name="notif_someone">Someone in the tower</string>
+    <plurals name="notif_more_imps">
+        <item quantity="one">And %d more imp elsewhere.</item>
+        <item quantity="other">And %d more imps elsewhere.</item>
+    </plurals>
+    <string name="notif_letter_title">A letter from the master</string>
+    <string name="notif_letter_text">An owl left it on the windowsill. The seal is still warm.</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_tower">Башня</string>
+    <string name="tab_grimoire">Гримуар</string>
+    <string name="tab_market">Рынок</string>
+    <string name="tab_letters">Письма</string>
+
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+    <string name="done">Готово</string>
+    <string name="undo">Отменить</string>
+    <string name="next">Дальше</string>
+
+    <string name="channel_tower">Башня</string>
+    <string name="channel_tower_desc">Пакостники на этажах и письма мастера, раз в день.</string>
+    <string name="notif_imps_title">Пакостники: %1$s</string>
+    <string name="notif_imps_text">%1$s шепчет: %2$s ждёт уже слишком долго.</string>
+    <string name="notif_someone">Кто-то в башне</string>
+    <plurals name="notif_more_imps">
+        <item quantity="one">И ещё %d пакостник на других этажах.</item>
+        <item quantity="few">И ещё %d пакостника на других этажах.</item>
+        <item quantity="many">И ещё %d пакостников на других этажах.</item>
+        <item quantity="other">И ещё %d пакостника на других этажах.</item>
+    </plurals>
+    <string name="notif_letter_title">Письмо от мастера</string>
+    <string name="notif_letter_text">Сова оставила его на подоконнике. Печать ещё тёплая.</string>
+</resources>
