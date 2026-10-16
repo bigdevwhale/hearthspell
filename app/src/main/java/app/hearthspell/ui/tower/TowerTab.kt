@@ -58,6 +58,9 @@ import app.hearthspell.ui.spellName
 import app.hearthspell.ui.theme.Nes
 import app.hearthspell.ui.theme.PressStart
 import app.hearthspell.ui.theme.U
+import app.hearthspell.ui.tips.HelpTile
+import app.hearthspell.ui.tips.Tip
+import app.hearthspell.ui.tips.TipHost
 import app.hearthspell.ui.theme.UType
 import kotlin.math.floor
 
@@ -76,6 +79,8 @@ fun TowerTab(data: WData, go: Go) {
     val w = data.world
     val tick = rememberTicker()
     val sky = Sky(day = !U.c.dark)
+    // The tour of the tower, right after onboarding.
+    TipHost(Tip.TOWER)
     Box(Modifier.fillMaxSize()) {
     LazyColumn(Modifier.fillMaxSize().background(sky.low), contentPadding = PaddingValues(bottom = 8.dp)) {
         item { Box(Modifier.fillMaxWidth().background(sky.top)) { TowerHeader(data, go) } }
@@ -132,6 +137,8 @@ private fun TowerHeader(data: WData, go: Go) {
                 Text("${w.totalImps}", style = UType.Number.copy(fontSize = 10.sp, color = if (w.totalImps > 0) U.c.imp else U.c.faint))
             }
         }
+        HelpTile(Tip.TOWER)
+        Spacer(Modifier.width(8.dp))
         IconTile(Glyphs.gear, go::settings, size = 42.dp)
     }
 }

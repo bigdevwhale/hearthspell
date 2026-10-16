@@ -1,6 +1,7 @@
 package app.hearthspell.ui.decor
 
 import app.hearthspell.data.DECOR_SLOTS
+import app.hearthspell.ui.tips.Tip
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -83,7 +84,7 @@ fun DecorScreen(floorId: Long, data: WData, go: Go) {
     }
 
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.decor_title), go::back) { ManaTag(w.mana, Modifier.padding(end = 4.dp)) }
+        TopBar(stringResource(R.string.decor_title), go::back, Tip.DECOR) { ManaTag(w.mana, Modifier.padding(end = 4.dp)) }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).navigationBarsPadding()) {
             bought?.let {
                 Panel(Modifier.fillMaxWidth(), fill = U.c.surface2) {

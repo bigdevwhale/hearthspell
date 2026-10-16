@@ -89,6 +89,7 @@ import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.Nes
 import app.hearthspell.ui.theme.U
 import app.hearthspell.ui.theme.UType
+import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -157,7 +158,7 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
     Box(Modifier.fillMaxSize().background(U.c.bg)) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 96.dp)) {
             item {
-                TopBar(floorName(floor), go::back) {
+                TopBar(floorName(floor), go::back, Tip.FLOOR) {
                     IconTile(Glyphs.chest, { go.decor(id) }, size = 42.dp)
                     Spacer(Modifier.width(8.dp))
                     IconTile(Glyphs.pencil, { go.floorForm(id) }, size = 42.dp)
@@ -215,7 +216,7 @@ fun CantripsScreen(data: WData, go: Go) {
     val (caster, cast) = rememberCaster(data)
     Box(Modifier.fillMaxSize().background(U.c.bg)) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 96.dp)) {
-            item { TopBar(gs(R.string.cantrips_title), go::back) }
+            item { TopBar(gs(R.string.cantrips_title), go::back, Tip.CANTRIPS) }
             item {
                 Box {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {

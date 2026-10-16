@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tip_master">The master</string>
+    <string name="tip_skip_all">Skip all</string>
+    <string name="tip_back">Back</string>
+    <string name="tip_got_it">Got it</string>
+    <string name="settings_tips_again">Show the hints again</string>
+
+    <string name="tip_tower_1_t">Your tower</string>
+    <string name="tip_tower_1">Every floor is a room of your real home, and every chore is a spell. The tower looks the way your home is kept.</string>
+    <string name="tip_tower_2_t">Spells fade</string>
+    <string name="tip_tower_2">Each spell has its own rhythm: dishes daily, linen every two weeks. As the days pass it fades and the floor gathers dust. Nothing burns and there are no streaks to lose.</string>
+    <string name="tip_tower_3_t">Imps</string>
+    <string name="tip_tower_3">When a spell is past due, a little imp moves onto its floor. They\'re harmless, they only giggle. Doing the chore chases them off.</string>
+    <string name="tip_tower_4_t">Casting</string>
+    <string name="tip_tower_4">Tap a floor, then the tick next to a spell once you\'ve done the chore for real. You get mana, and your helpers wake as you master spells. Tapped by mistake? Undo is right there.</string>
+    <string name="tip_tower_5_t">My requests</string>
+    <string name="tip_tower_5">Each week I ask for three spells: they pay double mana. On a tired day, \"Low on energy\" shows only small spells. And I\'ll write to you every week.</string>
+
+    <string name="tip_floor_1_t">This floor</string>
+    <string name="tip_floor_1">Its spells, most urgent first. The bar shows how fresh each one is: green is bright, orange is fading, purple means imps.</string>
+    <string name="tip_floor_2_t">Tap and hold</string>
+    <string name="tip_floor_2">The big tick casts a spell, the pencil edits it. Hold a spell to open its page in the grimoire. Up top you can furnish the floor or change it.</string>
+
+    <string name="tip_cantrips_t">Small spells</string>
+    <string name="tip_cantrips">Only the quick chores, a few minutes each, most urgent first. Even a small spell drives the imps out.</string>
+
+    <string name="tip_grimoire_1_t">Circles</string>
+    <string name="tip_grimoire_1">Every spell you cast takes you closer to the next circle of apprenticeship. Mana is what you spend in the decor shop.</string>
+    <string name="tip_grimoire_2_t">Helpers</string>
+    <string name="tip_grimoire_2">Each helper looks after a few spells. Cast them five times and it wakes up and moves into the tower; at 20, 50 and 100 casts it grows a level.</string>
+
+    <string name="tip_spell_t">A grimoire page</string>
+    <string name="tip_spell">A spell grows from Novice to Apprentice, Adept, Master and Archmage as you cast it. The calendar shows the last twelve weeks.</string>
+
+    <string name="tip_helper_t">A helper</string>
+    <string name="tip_helper">Its level, the spells that feed it and the floor it calls home. Keep casting those spells and it grows.</string>
+
+    <string name="tip_market_1_t">Reagents</string>
+    <string name="tip_market_1">Your shopping list. Type what you need: the stall is guessed for you, and you can tap it to change.</string>
+    <string name="tip_market_2_t">Running low</string>
+    <string name="tip_market_2">I remember how often you buy things and suggest them when they\'re probably running out. When you head out, open the market trip.</string>
+
+    <string name="tip_trip_t">At the market</string>
+    <string name="tip_trip">Tick things as they go in the basket. When you\'re done, the trip counts as the market spell, if your tower has one.</string>
+
+    <string name="tip_letters_t">Letters</string>
+    <string name="tip_letters">I write once a week from my travels. The newest letter carries this week\'s three requests.</string>
+
+    <string name="tip_decor_t">The shop</string>
+    <string name="tip_decor">Spend mana on things for the tower. A floor holds four; the rest wait in the chest until you place them.</string>
+
+    <string name="tip_form_t">A spell</string>
+    <string name="tip_form">Set how often the chore needs doing and how big it is: small spells give 5 mana, usual ones 10, great ones 20. Pick the helper it feeds.</string>
+
+    <string name="tip_floors_t">Floors</string>
+    <string name="tip_floors">Order the floors the way you like, top to bottom, or add a new room.</string>
+</resources>

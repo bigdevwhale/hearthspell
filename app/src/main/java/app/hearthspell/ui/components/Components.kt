@@ -53,6 +53,9 @@ import app.hearthspell.ui.art.Glyph
 import app.hearthspell.ui.art.Glyphs
 import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.theme.U
+import app.hearthspell.ui.tips.HelpTile
+import app.hearthspell.ui.tips.Tip
+import app.hearthspell.ui.tips.TipHost
 import app.hearthspell.ui.theme.UType
 import kotlinx.coroutines.delay
 
@@ -155,7 +158,8 @@ fun IconTile(g: Glyph, onClick: () -> Unit, modifier: Modifier = Modifier, tint:
 
 /** A screen header with a back button. */
 @Composable
-fun TopBar(title: String, onBack: (() -> Unit)?, actions: @Composable RowScope.() -> Unit = {}) {
+fun TopBar(title: String, onBack: (() -> Unit)?, tip: Tip? = null, actions: @Composable RowScope.() -> Unit = {}) {
+    if (tip != null) TipHost(tip)
     Row(
         Modifier.fillMaxWidth().statusBarsPadding().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -165,6 +169,10 @@ fun TopBar(title: String, onBack: (() -> Unit)?, actions: @Composable RowScope.(
             Spacer(Modifier.width(14.dp))
         }
         Text(title, style = UType.Title, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+        if (tip != null) {
+            HelpTile(tip)
+            Spacer(Modifier.width(8.dp))
+        }
         actions()
     }
 }

@@ -53,6 +53,7 @@ import app.hearthspell.ui.spellName
 import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.U
 import app.hearthspell.ui.theme.UType
+import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.delay
 
 /** The master's letters: one on the first day, then one a week. */
@@ -76,7 +77,7 @@ fun LettersTab(data: WData, go: Go) {
     val w = data.world
     val arrived = w.lettersArrived(Letters.COUNT)
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.letters_title), null)
+        TopBar(stringResource(R.string.letters_title), null, Tip.LETTERS)
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MasterSprite(56.dp)

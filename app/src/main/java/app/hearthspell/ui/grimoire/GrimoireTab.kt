@@ -72,6 +72,7 @@ import app.hearthspell.ui.spellName
 import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.U
 import app.hearthspell.ui.theme.UType
+import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
@@ -82,7 +83,7 @@ import java.time.LocalDate
 fun GrimoireTab(data: WData, go: Go) {
     val w = data.world
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.grimoire_title), null) { ManaTag(w.mana, Modifier.padding(end = 4.dp)) }
+        TopBar(stringResource(R.string.grimoire_title), null, Tip.GRIMOIRE) { ManaTag(w.mana, Modifier.padding(end = 4.dp)) }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
             CirclePanel(w)
             Gap(10.dp)
@@ -239,7 +240,7 @@ fun SpellScreen(id: Long, data: WData, go: Go) {
     val w = data.world
     val s = w.spell(id)
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.grimoire_title), go::back)
+        TopBar(stringResource(R.string.grimoire_title), go::back, Tip.SPELL)
         if (s == null) {
             Text(stringResource(R.string.spell_missing), style = UType.Sub, modifier = Modifier.padding(16.dp))
             return@Column
@@ -385,7 +386,7 @@ fun HelperScreen(kind: String, data: WData, go: Go) {
     val k = HelperKind.of(kind)
     val h = w.helper(k)
     Column(Modifier.fillMaxSize()) {
-        TopBar(t(k.title), go::back)
+        TopBar(t(k.title), go::back, Tip.HELPER)
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).navigationBarsPadding()) {
             Panel(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {

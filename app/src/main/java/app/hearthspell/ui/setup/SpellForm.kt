@@ -70,6 +70,7 @@ import app.hearthspell.ui.roomName
 import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.U
 import app.hearthspell.ui.theme.UType
+import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -117,7 +118,7 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
     }
 
     Column(Modifier.fillMaxSize().background(U.c.bg).imePadding()) {
-        TopBar(stringResource(if (existing == null) R.string.spell_new else R.string.form_edit), go::back)
+        TopBar(stringResource(if (existing == null) R.string.spell_new else R.string.form_edit), go::back, Tip.SPELL_FORM)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp)) {
             SectionTitle(stringResource(R.string.spell_name))
             PixelField(
@@ -322,7 +323,7 @@ fun FloorsScreen(data: WData, go: Go) {
     val world = data.world
     val container = LocalContext.current.container
     Column(Modifier.fillMaxSize().background(U.c.bg)) {
-        TopBar(stringResource(R.string.floors_title), go::back)
+        TopBar(stringResource(R.string.floors_title), go::back, Tip.FLOORS)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp)) {
             Text(stringResource(R.string.floors_sub), style = UType.Sub)
             Gap(12.dp)

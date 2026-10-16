@@ -68,6 +68,7 @@ import app.hearthspell.ui.gs
 import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.U
 import app.hearthspell.ui.theme.UType
+import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -96,7 +97,7 @@ fun MarketTab(data: WData, go: Go) {
 
     val list = w.shoppingList
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.market_title), null)
+        TopBar(stringResource(R.string.market_title), null, Tip.MARKET)
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
             Text(stringResource(R.string.market_sub), style = UType.Sub)
             Gap(12.dp)
@@ -259,7 +260,7 @@ fun TripScreen(data: WData, go: Go) {
     val inBasket = list.count { it.inBasket }
 
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.trip_title), go::back)
+        TopBar(stringResource(R.string.trip_title), go::back, Tip.TRIP)
         val done = result
         if (done != null) {
             Column(

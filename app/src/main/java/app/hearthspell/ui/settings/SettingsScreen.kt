@@ -163,6 +163,14 @@ fun SettingsScreen(data: WData, go: Go) {
                 ToggleRow(stringResource(R.string.settings_haptics), s.haptics, { on -> update { it.copy(haptics = on) } })
                 ToggleRow(stringResource(R.string.settings_sound), s.sound, { on -> update { it.copy(sound = on) } })
             }
+            Gap(10.dp)
+            PixelButton(
+                stringResource(R.string.settings_tips_again),
+                { update { st -> st.copy(seen = st.seen.filterNot { it.startsWith("tip:") }.toSet()) }; go.home() },
+                Modifier.fillMaxWidth(),
+                kind = ButtonKind.SECONDARY,
+                icon = Glyphs.question,
+            )
 
             SectionTitle(stringResource(R.string.settings_backup))
             Text(stringResource(R.string.settings_backup_sub), style = UType.Muted)
