@@ -132,6 +132,13 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
         )
     }
 
+    // Onboarding finished elsewhere (the demo seed, a restored backup) while the welcome screen was up.
+    LaunchedEffect(settings.onboarded) {
+        if (settings.onboarded && nav.currentDestination?.route == "welcome") {
+            nav.navigate("main") { popUpTo("welcome") { inclusive = true } }
+        }
+    }
+
     val requested by openRoute.collectAsStateWithLifecycle()
     LaunchedEffect(requested, settings.onboarded, floors != null) {
         val route = requested ?: return@LaunchedEffect

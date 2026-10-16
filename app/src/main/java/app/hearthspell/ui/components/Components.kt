@@ -200,16 +200,17 @@ fun PixelBar(fraction: Float, modifier: Modifier = Modifier, color: Color = U.c.
     val lit = (fraction.coerceIn(0f, 1f) * segments).let { if (it > 0f && it < 1f) 1 else it.toInt() }
     Box(
         modifier.height(height).drawBehind {
-            val p = PX.toPx()
+            // A thinner frame than panels, so the lit blocks stay chunky even in a short bar.
+            val p = 2.dp.toPx()
             drawRect(c.outline, Offset(0f, 0f), size)
             val inner = Size(size.width - 2 * p, size.height - 2 * p)
             drawRect(c.surface2, Offset(p, p), inner)
-            val gap = p * 0.67f
+            val gap = 1.dp.toPx()
             val segW = (inner.width - gap * (segments + 1)) / segments
             for (i in 0 until lit) {
                 val x = p + gap + i * (segW + gap)
                 drawRect(color, Offset(x, p + gap), Size(segW, inner.height - 2 * gap))
-                drawRect(Color.White.copy(alpha = 0.35f), Offset(x, p + gap), Size(segW, gap))
+                drawRect(Color.White.copy(alpha = 0.35f), Offset(x, p + gap), Size(segW, 1.dp.toPx()))
             }
         }
     )

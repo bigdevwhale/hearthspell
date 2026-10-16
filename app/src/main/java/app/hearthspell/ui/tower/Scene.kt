@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalDensity
@@ -107,6 +108,35 @@ private fun Grid.skyBands(x0: Int, y0: Int, w: Int, h: Int, sky: Sky) {
     }
 }
 
+/**
+ * The sky from [Sky.top] down to [Sky.low] over [rows], in ten flat steps with a dithered row at each seam,
+ * so it reads as a gradient but stays pixel art.
+ */
+internal fun Grid.skyGradient(rows: Int, sky: Sky) {
+    val steps = 10
+    fun shade(i: Int): Color {
+        val t = i / (steps - 1f)
+        return if (t < 0.5f) lerp(sky.top, sky.mid, t * 2) else lerp(sky.mid, sky.low, (t - 0.5f) * 2)
+    }
+    val band = rows / steps.toFloat()
+    // Reach past the scene's grid to the screen edges.
+    val margin = kotlin.math.ceil(ox / px).toInt() + 1
+    for (i in 0 until steps) {
+        val y = (i * band).toInt()
+        val next = ((i + 1) * band).toInt()
+        rect(-margin, y, GW + margin * 2, next - y, shade(i))
+        if (i > 0) for (x in -margin until GW + margin step 2) dot(x + (i % 2), y, shade(i - 1))
+    }
+}
+
+/** A filled pixel circle, for soft stepped glows. */
+internal fun Grid.disc(cx: Int, cy: Int, r: Int, c: Color, alpha: Float) {
+    for (dy in -r..r) {
+        val half = kotlin.math.sqrt((r * r - dy * dy).toFloat()).toInt()
+        rect(cx - half, cy + dy, half * 2 + 1, 1, c, alpha)
+    }
+}
+
 /** Twinkling stars scattered over a box. */
 private fun Grid.stars(x0: Int, y0: Int, w: Int, h: Int, n: Int, seed: Long, tick: Long, sky: Sky) {
     if (sky.day || w <= 0 || h <= 0) return
@@ -155,9 +185,12 @@ internal class FloorLook(
 )
 
 /** Where a helper stands right now: x in scene pixels and whether it faces left. */
-internal fun helperX(i: Int, w: Int, tick: Long, id: Long, walk: IntRange): Pair<Int, Boolean> {
-    val lo = walk.first
-    val hi = walk.last - w
+internal fun helperX(i: Int, w: Int, tick: Long, id: Long, walk: IntRange, count: Int = 1): Pair<Int, Boolean> {
+    // Several helpers share the floor in lanes, so they don't walk through each other.
+    val lane = (walk.last - walk.first) / count.coerceAtLeast(1)
+    val own = lane >= w + 6
+    val lo = if (own) walk.first + lane * i else walk.first
+    val hi = (if (own) lo + lane else walk.last) - w
     val span = (hi - lo).coerceAtLeast(1)
     // Each helper paces at its own speed and phase, resting a little at each end.
     val rest = 16
@@ -276,7 +309,7 @@ internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, s
     look.helpers.forEachIndexed { i, kind ->
         val frame = ((tick / 3 + i * 2) % 4).toInt()
         val s = Art.helper(kind, frame)
-        val (x, flip) = helperX(i, s.w, tick, look.id, m.walk)
+        val (x, flip) = helperX(i, s.w, tick, look.id, m.walk, look.helpers.size)
         g.footShadow(TX + x + s.w / 2, SCENE_FLOOR + 1, s.w - 6)
         g.sprite(s, TX + x, SCENE_FLOOR + 2 - s.h, flip)
     }
@@ -295,10 +328,8 @@ internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, s
 /** The sky, the moon (or sun and clouds), the roof with its chimney smoke and glowing spire. */
 internal fun DrawScope.drawRoof(roof: ImageBitmap, tick: Long, sky: Sky) {
     val g = grid()
-    val third = g.px * (ROOF_ROWS / 3)
-    drawRect(sky.top, Offset.Zero, Size(size.width, third))
-    drawRect(sky.mid, Offset(0f, third), Size(size.width, third))
-    drawRect(sky.low, Offset(0f, third * 2), Size(size.width, size.height - third * 2))
+    drawRect(sky.top, Offset.Zero, size)
+    g.skyGradient(ROOF_ROWS, sky)
     g.stars(0, 0, GW, ROOF_ROWS - 10, 46, 7, tick, sky)
     if (sky.day) {
         val sun = Color(0xFFFFE070)
@@ -331,7 +362,9 @@ internal fun DrawScope.drawRoof(roof: ImageBitmap, tick: Long, sky: Sky) {
     // The spire's lantern.
     val (lx, ly) = ROOF_LANTERN
     g.flame(rx + lx + 1, oy + ly + 1, 1f, (tick % 3).toInt())
-    g.rect(rx + lx - 5, oy + ly - 10, 12, 12, FIRE_GLOW, alpha = 0.08f + 0.03f * (tick % 3))
+    val flicker = 0.03f * (tick % 3)
+    g.disc(rx + lx + 1, oy + ly - 3, 7, FIRE_GLOW, 0.05f + flicker)
+    g.disc(rx + lx + 1, oy + ly - 3, 4, FIRE_GLOW, 0.07f + flicker)
 }
 
 /** The ground floor: the front door between flickering torches, grass, and fireflies at night. */

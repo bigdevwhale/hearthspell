@@ -78,10 +78,10 @@ fun TowerTab(data: WData, go: Go) {
     val sky = Sky(day = !U.c.dark)
     Box(Modifier.fillMaxSize()) {
     LazyColumn(Modifier.fillMaxSize().background(sky.low), contentPadding = PaddingValues(bottom = 8.dp)) {
-        item { TowerHeader(data, go) }
-        item { Requests(data, go) }
+        item { Box(Modifier.fillMaxWidth().background(sky.top)) { TowerHeader(data, go) } }
+        item { Box(Modifier.fillMaxWidth().background(sky.top)) { Requests(data, go) } }
         item {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().background(sky.top).padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 PixelButton(gs(R.string.tower_low_energy), go::cantrips, Modifier.weight(1f), kind = ButtonKind.SECONDARY, icon = Glyphs.moon)
                 Spacer(Modifier.width(10.dp))
                 Text(gs(R.string.tower_today, w.castsToday.size), style = UType.Muted.copy(color = if (sky.day) Nes.night else U.c.muted))
@@ -89,7 +89,7 @@ fun TowerTab(data: WData, go: Go) {
         }
         item {
             val roof = ImageBitmap.imageResource(R.drawable.hs_roof)
-            SceneCanvas(ROOF_ROWS, Modifier.padding(top = 6.dp)) { drawRoof(roof, tick.value, sky) }
+            SceneCanvas(ROOF_ROWS, Modifier.background(sky.top).padding(top = 6.dp)) { drawRoof(roof, tick.value, sky) }
         }
         if (w.floors.isEmpty()) {
             item { EmptyTower(go) }
@@ -102,7 +102,7 @@ fun TowerTab(data: WData, go: Go) {
         }
     }
     // Keeps the scrolled tower from showing through the status bar icons.
-    Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(sky.low.copy(alpha = 0.94f)))
+    Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(sky.top.copy(alpha = 0.94f)))
     }
 }
 
