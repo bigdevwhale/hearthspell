@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tower_circle">Круг %d</string>
+    <string name="tower_apprentice">{Ученик|Ученица} %1$s</string>
+    <string name="tower_apprentice_plain">{Ученик|Ученица}</string>
+    <string name="tower_requests">Мастер просит</string>
+    <string name="tower_requests_none">На этой неделе просьб нет. Добавь пару заклинаний, и мастер напишет.</string>
+    <string name="tower_requests_done">Все три сделаны. Мастер будет тобой доволен.</string>
+    <string name="tower_double">×2</string>
+    <string name="tower_low_energy">Мало сил</string>
+    <string name="tower_add_floor">Пристроить этаж</string>
+    <string name="tower_empty_title">Башня пуста</string>
+    <string name="tower_empty_text">Каждый этаж — комната твоего дома. Пристрой первый и дай ему пару заклинаний.</string>
+    <string name="tower_today">Сегодня: %d</string>
+    <plurals name="tower_imps">
+        <item quantity="one">%d пакостник</item>
+        <item quantity="few">%d пакостника</item>
+        <item quantity="many">%d пакостников</item>
+        <item quantity="other">%d пакостника</item>
+    </plurals>
+    <string name="tower_no_imps">Пакостников нет</string>
+
+    <string name="floor_spells">Заклинания</string>
+    <string name="floor_add_spell">Новое заклинание</string>
+    <string name="floor_empty">На этом этаже пока нет заклинаний. Что нужно делать в этой комнате?</string>
+    <string name="floor_spotless">Сияет чистотой</string>
+    <plurals name="floor_imps_here">
+        <item quantity="one">Завёлся %d пакостник</item>
+        <item quantity="few">Завелось %d пакостника</item>
+        <item quantity="many">Завелось %d пакостников</item>
+        <item quantity="other">Завелось %d пакостника</item>
+    </plurals>
+    <string name="floor_dusty">Немного пыльно</string>
+    <string name="floor_hint">Нажми на заклинание, когда дело сделано. Удерживай, чтобы открыть его страницу.</string>
+
+    <string name="spell_due_today">Пора сегодня</string>
+    <plurals name="spell_due_in">
+        <item quantity="one">Через %d день</item>
+        <item quantity="few">Через %d дня</item>
+        <item quantity="many">Через %d дней</item>
+        <item quantity="other">Через %d дня</item>
+    </plurals>
+    <plurals name="spell_late">
+        <item quantity="one">Просрочено на %d день</item>
+        <item quantity="few">Просрочено на %d дня</item>
+        <item quantity="many">Просрочено на %d дней</item>
+        <item quantity="other">Просрочено на %d дня</item>
+    </plurals>
+    <string name="spell_overdue">Пора</string>
+    <string name="spell_paused">На паузе</string>
+    <string name="spell_request">Просьба мастера</string>
+    <string name="spell_cast_a11y">Произнести: %1$s</string>
+
+    <string name="cast_done">Заклинание произнесено</string>
+    <string name="cast_mana">+%d</string>
+
+    <string name="helper_woke_title">Проснулся помощник!</string>
+    <string name="helper_woke_text">%1$s теперь живёт в твоей башне. %2$s</string>
+    <string name="helper_woke_ok">Добро пожаловать!</string>
+
+    <string name="cantrips_title">Малые чары</string>
+    <string name="cantrips_sub">Даже малое заклинание выгоняет пакостников. Выбери одно, всего одно.</string>
+    <string name="cantrips_empty">Малых заклинаний пока нет. Отметь заклинание как малое в его настройках, и оно будет ждать тебя здесь.</string>
+</resources>
