@@ -167,7 +167,11 @@ private fun Requests(data: WData, go: Go) {
                         style = UType.Body.copy(color = if (done) U.c.faint else U.c.ink),
                         modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
-                    Text(floorName(w.floor(s.floorId)), style = UType.Small, maxLines = 1)
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        floorName(w.floor(s.floorId)), style = UType.Small, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = 110.dp),
+                    )
                 }
             }
             if (reqs.all { w.requestDone(it.id) }) {
