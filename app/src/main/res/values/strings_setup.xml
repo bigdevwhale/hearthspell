@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Onboarding -->
+    <string name="setup_every_day">every day</string>
+    <plurals name="setup_every_days">
+        <item quantity="one">every %d day</item>
+        <item quantity="other">every %d days</item>
+    </plurals>
+    <string name="setup_back">Back</string>
+    <string name="setup_take_keys">Take the keys</string>
+    <string name="setup_open_tower">Open the tower</string>
+    <string name="setup_farewell_title">A NOTE ON THE DOOR</string>
+    <string name="setup_farewell_text">I\'m off travelling, and I don\'t know for how long. The tower is yours now. Keep the fire lit, the floors swept and the cauldron clean. And whatever you do, don\'t let the imps take the kitchen.</string>
+    <string name="setup_farewell_sign">Your old master</string>
+    <string name="setup_farewell_hint">The tower is your home: every floor is a room, every chore is a spell. Cast them, and the tower stays bright.</string>
+    <string name="setup_name_title">Your name</string>
+    <string name="setup_name_sub">So the master knows whom to write to.</string>
+    <string name="setup_name_hint">Apprentice</string>
+    <string name="setup_gender">How to address you</string>
+    <string name="setup_gender_male">Apprentice (he)</string>
+    <string name="setup_gender_female">Apprentice (she)</string>
+    <string name="setup_rooms_title">Your rooms</string>
+    <string name="setup_rooms_sub">Each room of your home becomes a floor of the tower. Pick the ones you have.</string>
+    <string name="setup_spells_title">Your spells</string>
+    <string name="setup_spells_sub">The chores you do in each room. A spell fades over its interval; cast it to make it shine again.</string>
+    <string name="setup_spells_later">Intervals, names and helpers can be changed any time, and you can add your own spells.</string>
+    <string name="setup_remind_title">A daily whisper</string>
+    <string name="setup_remind_sub">Once a day the helpers tell you where the imps have moved in. Never more often.</string>
+    <string name="setup_remind_toggle">Daily reminder</string>
+    <string name="setup_remind_time">Time</string>
+    <string name="setup_remind_note">Nothing is ever lost here: no streaks to break, no punishments. A dusty floor just waits for you.</string>
+    <string name="setup_remind_imps">Imps are harmless. They only giggle until you shoo them away.</string>
+
+    <!-- Spell form -->
+    <string name="spell_new">New spell</string>
+    <string name="spell_edit">Spell</string>
+    <string name="spell_name">Name</string>
+    <string name="spell_name_hint">Water the cactus</string>
+    <string name="spell_floor">Floor</string>
+    <string name="spell_interval">How often</string>
+    <plurals name="spell_days_short">
+        <item quantity="one">%dd</item>
+        <item quantity="other">%dd</item>
+    </plurals>
+    <string name="spell_effort">Effort</string>
+    <string name="spell_effort_1">Cantrip: a few minutes</string>
+    <string name="spell_effort_2">Spell: a proper chore</string>
+    <string name="spell_effort_3">Great spell: an hour or more</string>
+    <string name="spell_helper">Helper</string>
+    <string name="spell_helper_note">The helper wakes after five casts of its spells and grows with every one.</string>
+    <string name="spell_more">More</string>
+    <string name="spell_pause">Pause this spell</string>
+    <string name="spell_pause_sub">It won\'t fade while paused: holidays, a broken washing machine.</string>
+    <string name="spell_delete">Delete spell</string>
+    <string name="spell_delete_title">Delete this spell?</string>
+    <string name="spell_delete_text">Its casts and the mana they brought go with it.</string>
+    <string name="spell_from_grimoire">From the grimoire</string>
+    <string name="spell_from_grimoire_note">One tap adds a ready spell to this floor.</string>
+
+    <!-- Floors -->
+    <string name="floor_new">New floor</string>
+    <string name="floor_edit">Floor</string>
+    <string name="floor_kind">Which room</string>
+    <string name="floor_name">Name</string>
+    <string name="floor_name_note">Leave it empty to keep the tower name.</string>
+    <string name="floor_new_note">The floor starts empty: add spells to it from the grimoire or your own.</string>
+    <string name="floor_delete">Delete floor</string>
+    <string name="floor_delete_title">Delete this floor?</string>
+    <plurals name="floor_delete_text">
+        <item quantity="one">Its %d spell and all its casts go with it. Decor returns to the chest.</item>
+        <item quantity="other">Its %d spells and all their casts go with it. Decor returns to the chest.</item>
+    </plurals>
+    <string name="floors_title">Floors</string>
+    <string name="floors_sub">Top to bottom, as they stand in the tower.</string>
+    <plurals name="floors_spells">
+        <item quantity="one">%d spell</item>
+        <item quantity="other">%d spells</item>
+    </plurals>
+    <string name="floors_add">Add a floor</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_apprentice">Apprentice</string>
+    <string name="settings_tower">Tower</string>
+    <string name="settings_floors">Floors of the tower</string>
+    <string name="settings_floors_sub">Order, names, new rooms</string>
+    <string name="settings_reminder">Reminder</string>
+    <string name="settings_reminder_sub">Once a day, only when imps have moved in or a letter came.</string>
+    <string name="settings_look">Look and sound</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_night">Night</string>
+    <string name="settings_theme_parchment">Parchment</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_haptics">Vibration</string>
+    <string name="settings_sound">Sounds</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_sub">Everything lives only on this phone. Save a file to move the tower or keep it safe.</string>
+    <string name="settings_export">Save</string>
+    <string name="settings_import">Restore</string>
+    <string name="settings_export_ok">Backup saved</string>
+    <string name="settings_export_fail">Couldn\'t save the backup</string>
+    <string name="settings_import_title">Restore from a file?</string>
+    <string name="settings_import_text">The tower on this phone will be replaced by the one in the file.</string>
+    <string name="settings_import_ok">The tower is restored</string>
+    <string name="settings_import_fail">That isn\'t a Hearthspell backup</string>
+    <string name="settings_about">Version %1$s · offline, no accounts, no ads</string>
+</resources>

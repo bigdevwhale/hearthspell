@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setup_every_day">каждый день</string>
+    <plurals name="setup_every_days">
+        <item quantity="one">раз в %d день</item>
+        <item quantity="few">раз в %d дня</item>
+        <item quantity="many">раз в %d дней</item>
+        <item quantity="other">раз в %d дня</item>
+    </plurals>
+    <string name="setup_back">Назад</string>
+    <string name="setup_take_keys">Взять ключи</string>
+    <string name="setup_open_tower">Открыть башню</string>
+    <string name="setup_farewell_title">ЗАПИСКА НА ДВЕРИ</string>
+    <string name="setup_farewell_text">Я отправляюсь странствовать и не знаю, надолго ли. Теперь башня твоя. Поддерживай огонь, подметай полы, держи котёл в чистоте. И что бы ни случилось, не отдавай кухню пакостникам.</string>
+    <string name="setup_farewell_sign">Твой старый мастер</string>
+    <string name="setup_farewell_hint">Башня — это твой дом: каждый этаж — комната, каждое дело — заклинание. Произноси их, и башня будет сиять.</string>
+    <string name="setup_name_title">Твоё имя</string>
+    <string name="setup_name_sub">Чтобы мастер знал, кому писать.</string>
+    <string name="setup_name_hint">Подмастерье</string>
+    <string name="setup_gender">Как к тебе обращаться</string>
+    <string name="setup_gender_male">Ученик</string>
+    <string name="setup_gender_female">Ученица</string>
+    <string name="setup_rooms_title">Твои комнаты</string>
+    <string name="setup_rooms_sub">Каждая комната дома становится этажом башни. Отметь те, что у тебя есть.</string>
+    <string name="setup_spells_title">Твои заклинания</string>
+    <string name="setup_spells_sub">Дела, которые ты делаешь в каждой комнате. Заклинание тускнеет за свой срок; произнеси его, и оно снова засияет.</string>
+    <string name="setup_spells_later">Сроки, названия и помощников можно поменять когда угодно, а ещё добавить свои заклинания.</string>
+    <string name="setup_remind_title">Шёпот раз в день</string>
+    <string name="setup_remind_sub">Раз в день помощники подскажут, где завелись пакостники. Не чаще.</string>
+    <string name="setup_remind_toggle">Ежедневное напоминание</string>
+    <string name="setup_remind_time">Время</string>
+    <string name="setup_remind_note">Здесь ничего не сгорает: ни серий, ни наказаний. Пыльный этаж просто ждёт тебя.</string>
+    <string name="setup_remind_imps">Пакостники безобидны. Они только хихикают, пока их не прогонят.</string>
+
+    <string name="spell_new">Новое заклинание</string>
+    <string name="spell_edit">Заклинание</string>
+    <string name="spell_name">Название</string>
+    <string name="spell_name_hint">Полить кактус</string>
+    <string name="spell_floor">Этаж</string>
+    <string name="spell_interval">Как часто</string>
+    <plurals name="spell_days_short">
+        <item quantity="one">%d д</item>
+        <item quantity="few">%d д</item>
+        <item quantity="many">%d д</item>
+        <item quantity="other">%d д</item>
+    </plurals>
+    <string name="spell_effort">Сложность</string>
+    <string name="spell_effort_1">Заговор: пара минут</string>
+    <string name="spell_effort_2">Заклинание: обычное дело</string>
+    <string name="spell_effort_3">Великое заклинание: час и больше</string>
+    <string name="spell_helper">Помощник</string>
+    <string name="spell_helper_note">Помощник просыпается после пяти произнесений своих заклинаний и растёт с каждым.</string>
+    <string name="spell_more">Ещё</string>
+    <string name="spell_pause">Поставить на паузу</string>
+    <string name="spell_pause_sub">Пока на паузе, оно не тускнеет: отпуск, сломанная стиралка.</string>
+    <string name="spell_delete">Удалить заклинание</string>
+    <string name="spell_delete_title">Удалить заклинание?</string>
+    <string name="spell_delete_text">Вместе с ним уйдут все произнесения и мана за них.</string>
+    <string name="spell_from_grimoire">Из гримуара</string>
+    <string name="spell_from_grimoire_note">Одно касание добавит готовое заклинание на этаж.</string>
+
+    <string name="floor_new">Новый этаж</string>
+    <string name="floor_edit">Этаж</string>
+    <string name="floor_kind">Какая комната</string>
+    <string name="floor_name">Название</string>
+    <string name="floor_name_note">Оставь пустым, чтобы осталось название башни.</string>
+    <string name="floor_new_note">Этаж начнётся пустым: добавь на него заклинания из гримуара или свои.</string>
+    <string name="floor_delete">Удалить этаж</string>
+    <string name="floor_delete_title">Удалить этаж?</string>
+    <plurals name="floor_delete_text">
+        <item quantity="one">Уйдёт %d заклинание со всеми произнесениями. Декор вернётся в сундук.</item>
+        <item quantity="few">Уйдут %d заклинания со всеми произнесениями. Декор вернётся в сундук.</item>
+        <item quantity="many">Уйдут %d заклинаний со всеми произнесениями. Декор вернётся в сундук.</item>
+        <item quantity="other">Уйдут %d заклинания со всеми произнесениями. Декор вернётся в сундук.</item>
+    </plurals>
+    <string name="floors_title">Этажи</string>
+    <string name="floors_sub">Сверху вниз, как они стоят в башне.</string>
+    <plurals name="floors_spells">
+        <item quantity="one">%d заклинание</item>
+        <item quantity="few">%d заклинания</item>
+        <item quantity="many">%d заклинаний</item>
+        <item quantity="other">%d заклинания</item>
+    </plurals>
+    <string name="floors_add">Добавить этаж</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="settings_apprentice">{Ученик|Ученица}</string>
+    <string name="settings_tower">Башня</string>
+    <string name="settings_floors">Этажи башни</string>
+    <string name="settings_floors_sub">Порядок, названия, новые комнаты</string>
+    <string name="settings_reminder">Напоминание</string>
+    <string name="settings_reminder_sub">Раз в день и только если завелись пакостники или пришло письмо.</string>
+    <string name="settings_look">Вид и звук</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_night">Ночь</string>
+    <string name="settings_theme_parchment">Пергамент</string>
+    <string name="settings_theme_system">Как в системе</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_system">Как в системе</string>
+    <string name="settings_haptics">Вибрация</string>
+    <string name="settings_sound">Звуки</string>
+    <string name="settings_backup">Резервная копия</string>
+    <string name="settings_backup_sub">Всё хранится только на этом телефоне. Сохрани файл, чтобы перенести башню или уберечь её.</string>
+    <string name="settings_export">Сохранить</string>
+    <string name="settings_import">Восстановить</string>
+    <string name="settings_export_ok">Копия сохранена</string>
+    <string name="settings_export_fail">Не удалось сохранить копию</string>
+    <string name="settings_import_title">Восстановить из файла?</string>
+    <string name="settings_import_text">Башня на этом телефоне заменится той, что в файле.</string>
+    <string name="settings_import_ok">Башня восстановлена</string>
+    <string name="settings_import_fail">Это не копия Hearthspell</string>
+    <string name="settings_about">Версия %1$s · без интернета, аккаунтов и рекламы</string>
+</resources>
