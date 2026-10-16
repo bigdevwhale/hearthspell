@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="market_title">Market</string>
+    <string name="market_sub">Reagents for the tower</string>
+    <string name="market_add_hint">Add a reagent…</string>
+    <string name="market_choose_aisle">Which stall?</string>
+    <string name="market_list">On the list</string>
+    <plurals name="market_count">
+        <item quantity="one">%d reagent</item>
+        <item quantity="other">%d reagents</item>
+    </plurals>
+    <string name="market_low">Running low?</string>
+    <plurals name="market_low_sub">
+        <item quantity="one">Usually every %d day</item>
+        <item quantity="other">Usually every %d days</item>
+    </plurals>
+    <string name="market_usual">Usually bought</string>
+    <string name="market_go">Go to market</string>
+    <string name="market_empty_title">The satchel is empty</string>
+    <string name="market_empty_text">Write a reagent down as soon as the jar runs out, not in front of the shelf.</string>
+    <string name="market_forget">Forget it</string>
+
+    <string name="trip_title">At the market</string>
+    <string name="trip_progress">In the basket: %1$d of %2$d</string>
+    <string name="trip_done">Done shopping</string>
+    <string name="trip_empty">Nothing on the list. Add reagents first.</string>
+    <string name="trip_mana">+%d mana for the market spell</string>
+    <string name="trip_bought">Bought: %d</string>
+    <string name="trip_none_bought">Nothing went into the basket, so nothing was bought.</string>
+    <string name="trip_back">Back to the tower</string>
+    <string name="trip_hint">Tap a reagent as it goes into the basket.</string>
+    <string name="trip_welcome">Home again with a full satchel!</string>
+</resources>

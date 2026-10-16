@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="market_title">Рынок</string>
+    <string name="market_sub">Реагенты для башни</string>
+    <string name="market_add_hint">Добавить реагент…</string>
+    <string name="market_choose_aisle">Какой прилавок?</string>
+    <string name="market_list">В списке</string>
+    <plurals name="market_count">
+        <item quantity="one">%d реагент</item>
+        <item quantity="few">%d реагента</item>
+        <item quantity="many">%d реагентов</item>
+        <item quantity="other">%d реагента</item>
+    </plurals>
+    <string name="market_low">Кажется, заканчивается</string>
+    <plurals name="market_low_sub">
+        <item quantity="one">Обычно раз в %d день</item>
+        <item quantity="few">Обычно раз в %d дня</item>
+        <item quantity="many">Обычно раз в %d дней</item>
+        <item quantity="other">Обычно раз в %d дня</item>
+    </plurals>
+    <string name="market_usual">Обычно берёшь</string>
+    <string name="market_go">На рынок!</string>
+    <string name="market_empty_title">Котомка пуста</string>
+    <string name="market_empty_text">Записывай реагент, как только банка опустеет, а не у полки в магазине.</string>
+    <string name="market_forget">Забыть</string>
+
+    <string name="trip_title">На рынке</string>
+    <string name="trip_progress">В корзине: %1$d из %2$d</string>
+    <string name="trip_done">Покупки сделаны</string>
+    <string name="trip_empty">Список пуст. Сначала добавь реагенты.</string>
+    <string name="trip_mana">+%d маны за поход на рынок</string>
+    <string name="trip_bought">Куплено: %d</string>
+    <string name="trip_none_bought">В корзину ничего не положено, значит, ничего не куплено.</string>
+    <string name="trip_back">Обратно в башню</string>
+    <string name="trip_hint">Нажимай на реагент, когда кладёшь его в корзину.</string>
+    <string name="trip_welcome">Снова дома, и котомка полна!</string>
+</resources>

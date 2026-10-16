@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="grimoire_title">Гримуар</string>
+    <string name="grimoire_circle">Круг %1$d</string>
+    <plurals name="grimoire_circle_next">
+        <item quantity="one">До %2$d-го круга: ещё %1$d заклинание</item>
+        <item quantity="few">До %2$d-го круга: ещё %1$d заклинания</item>
+        <item quantity="many">До %2$d-го круга: ещё %1$d заклинаний</item>
+        <item quantity="other">До %2$d-го круга: ещё %1$d заклинания</item>
+    </plurals>
+    <string name="grimoire_circle_max">Высший круг. Мастер бы поклонился.</string>
+    <plurals name="grimoire_total">
+        <item quantity="one">%d заклинание произнесено</item>
+        <item quantity="few">%d заклинания произнесено</item>
+        <item quantity="many">%d заклинаний произнесено</item>
+        <item quantity="other">%d заклинания произнесено</item>
+    </plurals>
+    <string name="grimoire_helpers">Помощники</string>
+    <string name="grimoire_helpers_awake">Проснулось: %1$d из %2$d</string>
+    <string name="grimoire_spells">Заклинания</string>
+    <string name="grimoire_decor">Лавка убранства</string>
+    <string name="grimoire_decor_sub">Потратить ману на убранство башни</string>
+    <string name="grimoire_empty">Заклинаний пока нет. Добавь их на этажах башни.</string>
+    <plurals name="grimoire_casts">
+        <item quantity="one">%d раз</item>
+        <item quantity="few">%d раза</item>
+        <item quantity="many">%d раз</item>
+        <item quantity="other">%d раза</item>
+    </plurals>
+    <string name="grimoire_rank_next">%1$d до ранга «%2$s»</string>
+    <string name="grimoire_rank_max">Высший ранг</string>
+
+    <string name="spell_chant">Заклинание</string>
+    <string name="spell_own">Твоё собственное заклинание. В старых книгах его нет, так что ты пишешь новую страницу.</string>
+    <string name="spell_every_day">Каждый день</string>
+    <plurals name="spell_every">
+        <item quantity="one">Раз в %d день</item>
+        <item quantity="few">Раз в %d дня</item>
+        <item quantity="many">Раз в %d дней</item>
+        <item quantity="other">Раз в %d дня</item>
+    </plurals>
+    <string name="spell_effort_1">Заговор</string>
+    <string name="spell_effort_2">Заклинание</string>
+    <string name="spell_effort_3">Великое</string>
+    <string name="spell_interval">Как часто</string>
+    <string name="spell_effort">Сила</string>
+    <string name="spell_mana">Мана</string>
+    <string name="spell_mana_double">×2, просьба мастера</string>
+    <string name="spell_last">Последний раз</string>
+    <string name="spell_never">Ещё не было</string>
+    <string name="spell_today">Сегодня</string>
+    <string name="spell_yesterday">Вчера</string>
+    <plurals name="spell_days_ago">
+        <item quantity="one">%d день назад</item>
+        <item quantity="few">%d дня назад</item>
+        <item quantity="many">%d дней назад</item>
+        <item quantity="other">%d дня назад</item>
+    </plurals>
+    <string name="spell_calendar">Последние 12 недель</string>
+    <string name="spell_month">В этом месяце: %d</string>
+    <string name="spell_edit">Изменить</string>
+    <string name="spell_helper">Помощник</string>
+    <string name="spell_paused">На паузе</string>
+    <string name="spell_missing">Это заклинание исчезло из книги.</string>
+
+    <string name="helper_level">Уровень %1$d</string>
+    <string name="helper_asleep">Спит</string>
+    <plurals name="helper_to_wake">
+        <item quantity="one">Ещё %d заклинание до пробуждения</item>
+        <item quantity="few">Ещё %d заклинания до пробуждения</item>
+        <item quantity="many">Ещё %d заклинаний до пробуждения</item>
+        <item quantity="other">Ещё %d заклинания до пробуждения</item>
+    </plurals>
+    <plurals name="helper_to_level">
+        <item quantity="one">Ещё %1$d заклинание до %2$d-го уровня</item>
+        <item quantity="few">Ещё %1$d заклинания до %2$d-го уровня</item>
+        <item quantity="many">Ещё %1$d заклинаний до %2$d-го уровня</item>
+        <item quantity="other">Ещё %1$d заклинания до %2$d-го уровня</item>
+    </plurals>
+    <string name="helper_max">Высший уровень</string>
+    <string name="helper_spells">Заклинания, которые его будят</string>
+    <string name="helper_none">Пока ни одно твоё заклинание не будит этого помощника. Выбери его для заклинания в редакторе.</string>
+    <string name="helper_home">Живёт: %s</string>
+    <string name="helper_homeless">Ещё не выбрал себе этаж</string>
+</resources>
