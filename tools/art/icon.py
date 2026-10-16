@@ -102,6 +102,28 @@ def to_vector(cv, unit=2.0, off=0.0):
     return s + '</vector>\n'
 
 
+def to_svg(cv, unit=2):
+    """The same pixels as an SVG with crisp edges, clipped to a rounded square (docs/logo.svg)."""
+    W = cv.w * unit
+    rows = []
+    for y in range(cv.h):
+        x = 0
+        while x < cv.w:
+            c = cv.px[y][x]
+            if c is None or c[3] == 0:
+                x += 1
+                continue
+            x2 = x
+            while x2 < cv.w and cv.px[y][x2] == c:
+                x2 += 1
+            op = '' if c[3] == 255 else f' fill-opacity="{c[3] / 255:.3f}"'
+            rows.append(f'<rect x="{x * unit}" y="{y * unit}" width="{(x2 - x) * unit}" height="{unit}" fill="#{c[0]:02X}{c[1]:02X}{c[2]:02X}"{op}/>')
+            x = x2
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {W}" width="{W}" height="{W}" shape-rendering="crispEdges">'
+            f'<defs><clipPath id="r"><rect width="{W}" height="{W}" rx="{W * 0.22:g}"/></clipPath></defs>'
+            f'<g clip-path="url(#r)">' + ''.join(rows) + '</g></svg>\n')
+
+
 if __name__ == '__main__':
     root = sys.argv[1]
     fg, bg = foreground(), background()
@@ -111,3 +133,5 @@ if __name__ == '__main__':
     both = bg.copy()
     both.blit(fg, 0, 0)
     to_png(both, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon_preview.png'), scale=6)
+    os.makedirs(os.path.join(root, 'docs'), exist_ok=True)
+    open(os.path.join(root, 'docs/logo.svg'), 'w', newline=chr(10)).write(to_svg(both))

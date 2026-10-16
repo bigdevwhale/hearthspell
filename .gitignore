@@ -12,3 +12,4 @@
 *.keystore
 *.jks
 /.claude/
+/tools/art/icon_preview.png
