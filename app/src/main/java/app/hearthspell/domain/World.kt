@@ -173,7 +173,11 @@ class World(
     val requests: List<Spell> by lazy {
         val candidates = spells.filter { !it.paused && it.createdAt < weekStartMs + 7 * DAY_MS }
         fun staleness(s: Spell): Double {
-            val lastBefore = castsOf(s.id).firstOrNull { it.at < weekStartMs }?.at ?: s.createdAt.coerceAtMost(s.lastCastAt)
+            val own = castsOf(s.id)
+            // The last cast before the week; else where the spell stood before its first cast this week.
+            val lastBefore = own.firstOrNull { it.at < weekStartMs }?.at
+                ?: own.lastOrNull { it.at >= weekStartMs }?.prevLastCastAt
+                ?: s.lastCastAt
             return (weekStartMs - lastBefore).toDouble() / (s.intervalDays * DAY_MS)
         }
         val weekly = candidates.filter { it.intervalDays >= 3 }
