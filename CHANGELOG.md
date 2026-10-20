@@ -2,6 +2,40 @@
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.2.0] - 2026-10-21
+
+### A living tower
+- At night a tidy floor glows warm, a dusty one sinks into the dark and an imp's floor flickers violet. Late at night the helpers doze with little z's.
+- Every floor tidy: a comet crosses the night sky, a rainbow the day sky.
+- A home-screen widget: the tower from outside, a window per floor, warm where it's tidy and violet where imps moved in.
+
+### Friends
+- Tap a helper on a floor: it hops, says a line of its own and hearts float up.
+- A cat moves in after the first few spells, gets a name and sleeps on the floor you've just tidied (or on its cushion). Tap it and it purrs.
+- The apprentice walks about the floors too.
+- Eighteen named imps, each with a habit and a parting word on being shown the door, and a bestiary of the ones you've met. The room and the season decide who moves in, never how long a chore waited.
+
+### Things to find
+- Gifts: after a quiet night on a tidy floor, its awake helpers may leave a trinket on the windowsill (seventeen, a few of them rare). They wait three days.
+- Souvenirs: every letter from the master brings something in the envelope, to keep in the tower.
+- The star chart: each rank a spell climbs lights a star; twelve constellations, shown over the roof at night.
+
+### Things to do with mana and market trips
+- The cauldron: reagents bought at the market leave essences; brew potions that make the tower prettier for a week (pink smoke, rainbow fireflies, sparkles, bubbles, blossom, moonglow).
+- The wardrobe: seven robes and seven hats.
+- Seasonal decor (a pumpkin lantern, a little fir) and a cat cushion.
+
+### Seasons
+- Autumn leaves, Hallowe'en pumpkins and bats, winter snow, New Year garlands and fireworks, spring petals, summer butterflies.
+
+### Gentle rhythm
+- Sunday tea: on Sunday and Monday the helpers tell you about the week in a few warm lines.
+- Coming home after five days or more: a welcome from the master, and the first spell is a Great Spring Cleaning with confetti and double mana. The reminder after a long absence comes from the master himself.
+- Sound and touch: chiptune chimes synthesised on the phone; spells in a row climb a scale and the buzz grows.
+
+### Under the hood
+- Database version 2 (finds, brews, wardrobe), migrated automatically; backups include the new data and still read version 1 files.
+
 ## [1.1.0] - 2026-10-17
 
 ### Hints
