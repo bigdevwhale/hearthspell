@@ -33,6 +33,12 @@ import app.hearthspell.R
 import app.hearthspell.container
 import app.hearthspell.content.LetterText
 import app.hearthspell.content.LetterTexts
+import app.hearthspell.content.DecorKind
+import app.hearthspell.content.Souvenirs
+import app.hearthspell.data.keep
+import app.hearthspell.ui.LocalFeel
+import app.hearthspell.ui.Tone
+import app.hearthspell.ui.components.PixelButton
 import app.hearthspell.ui.Go
 import app.hearthspell.ui.LocalPerson
 import app.hearthspell.ui.WData
@@ -146,6 +152,18 @@ private fun Envelope(sealed: Boolean, dim: Boolean = false) {
 }
 
 @Composable
+private fun AnimatedSouvenir(kind: DecorKind) {
+    var f by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(600)
+            f = 1 - f
+        }
+    }
+    SpriteImage(Art.decor(kind, f), 52.dp)
+}
+
+@Composable
 private fun MasterSprite(size: Dp) {
     var f by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
@@ -196,6 +214,37 @@ fun LetterScreen(n: Int, data: WData, go: Go) {
                 Gap(18.dp)
                 Text(stringResource(R.string.letter_sign), style = UType.Body.copy(color = InkMuted), modifier = Modifier.align(Alignment.End))
                 Text(stringResource(R.string.letter_master), style = UType.Heading.copy(color = Ink), modifier = Modifier.align(Alignment.End).padding(top = 4.dp))
+                Souvenirs.forLetter(n)?.let { sv ->
+                    Gap(16.dp)
+                    Text(t(sv.note), style = UType.Body.copy(color = InkMuted))
+                }
+            }
+
+            // The souvenir that came in the envelope.
+            Souvenirs.forLetter(n)?.let { sv ->
+                val kept = w.decor.any { it.kind == sv.decor.name }
+                Gap(12.dp)
+                Panel(Modifier.fillMaxWidth(), fill = U.c.surface2) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AnimatedSouvenir(sv.decor)
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(stringResource(R.string.souvenir_in_envelope).uppercase(), style = UType.Eyebrow.copy(color = U.c.accent))
+                            Gap(4.dp)
+                            Text(t(sv.decor.title), style = UType.Strong)
+                        }
+                    }
+                    Gap(10.dp)
+                    if (kept) {
+                        Text(stringResource(R.string.souvenir_kept), style = UType.Muted.copy(color = U.c.good))
+                    } else {
+                        val feel = LocalFeel.current
+                        PixelButton(stringResource(R.string.souvenir_keep), {
+                            feel?.tone(Tone.GIFT)
+                            container.write { keep(sv.decor) }
+                        }, Modifier.fillMaxWidth(), icon = Glyphs.chest)
+                    }
+                }
             }
 
             // The requests belong to this week, so they ride along with the newest letter.

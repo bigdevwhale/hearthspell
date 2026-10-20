@@ -15,7 +15,7 @@ class ArtTest {
         assertTrue(all.size > HelperKind.entries.size * 4 + DecorKind.entries.size)
         all.forEach { s ->
             assertTrue("sprite too small: ${s.w}x${s.h}", s.w >= 6 && s.h >= 5)
-            assertTrue("sprite too big: ${s.w}x${s.h}", s.w <= 48 && s.h <= 56)
+            assertTrue("sprite too big: ${s.w}x${s.h}", s.w <= 80 && s.h <= 56)
         }
     }
 

@@ -44,9 +44,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
+
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -67,6 +67,12 @@ import app.hearthspell.domain.World
 import app.hearthspell.ui.Go
 import app.hearthspell.ui.WData
 import app.hearthspell.ui.art.Art
+import app.hearthspell.ui.art.Looks
+import app.hearthspell.ui.art.SpriteImage
+import app.hearthspell.content.ImpKind
+import app.hearthspell.ui.Chime
+import app.hearthspell.ui.LocalFeel
+import app.hearthspell.ui.Tone
 import app.hearthspell.ui.art.Glyphs
 import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.art.PixelSprite
@@ -93,8 +99,11 @@ import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** A cast that just happened, for the sparkle and "+mana" burst. */
-private data class Burst(val mana: Int, val poof: Boolean, val key: Long)
+/**
+ * A cast that just happened, for the sparkle and "+mana" burst. [chain] counts casts in a row;
+ * [grand] is the first cast after coming home.
+ */
+private data class Burst(val mana: Int, val poof: Boolean, val key: Long, val chain: Int = 0, val grand: Boolean = false)
 
 /** The shared cast flow: feedback, undo and helpers waking up. */
 @Stable
@@ -103,13 +112,15 @@ private class Caster {
     var undoId by mutableStateOf<Long?>(null)
     var undoMana by mutableStateOf(0)
     var waking by mutableStateOf<HelperKind?>(null)
+    /** The imp just shown the door, for its parting words. */
+    var farewell by mutableStateOf<Pair<ImpKind, Long>?>(null)
 }
 
 @Composable
 private fun rememberCaster(data: WData): Pair<Caster, (Spell) -> Unit> {
     val context = LocalContext.current
     val container = context.container
-    val haptics = LocalHapticFeedback.current
+    val feel = LocalFeel.current
     val scope = rememberCoroutineScope()
     val caster = remember { Caster() }
     val cast: (Spell) -> Unit = { s ->
@@ -117,8 +128,16 @@ private fun rememberCaster(data: WData): Pair<Caster, (Spell) -> Unit> {
         val mana = w.manaFor(s)
         val kind = HelperKind.of(s.helper)
         val helper = w.helper(kind)
-        if (data.settings.haptics) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-        caster.burst = Burst(mana, w.glow(s) == Glow.IMPS, System.nanoTime())
+        val step = Chime.nextStep()
+        val imp = w.impOf(s)
+        val grand = w.homecoming
+        when {
+            grand -> feel?.tone(Tone.FANFARE, 0.8f)
+            imp != null -> { feel?.cast(step); feel?.tone(Tone.POOF, 0f) }
+            else -> feel?.cast(step)
+        }
+        caster.burst = Burst(mana, imp != null, System.nanoTime(), step, grand)
+        if (imp != null) caster.farewell = imp to System.nanoTime()
         // The helper wakes on the cast that brings its spells to the first level.
         val key = "helper:${kind.name}"
         if (!helper.awake && HelperState.levelOf(helper.casts + 1) > 0 && key !in data.settings.seen) {
@@ -132,6 +151,12 @@ private fun rememberCaster(data: WData): Pair<Caster, (Spell) -> Unit> {
                 caster.undoMana = mana
                 caster.undoId = id
             }
+        }
+    }
+    LaunchedEffect(caster.farewell) {
+        if (caster.farewell != null) {
+            delay(4500)
+            caster.farewell = null
         }
     }
     LaunchedEffect(caster.undoId) {
@@ -155,10 +180,19 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
     val tick = rememberTicker()
     val sky = Sky(day = !U.c.dark)
     val spells = w.spellsOf(id).sortedWith(compareBy<Spell> { it.paused }.thenBy { w.freshness(it) })
+    val kind = FloorKind.of(floor.kind)
     Box(Modifier.fillMaxSize().background(U.c.bg)) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 96.dp)) {
             item {
                 TopBar(floorName(floor), go::back, Tip.FLOOR) {
+                    if (kind == FloorKind.KITCHEN) {
+                        IconTile(Glyphs.flask, go::brew, size = 42.dp, tint = U.c.mana)
+                        Spacer(Modifier.width(8.dp))
+                    }
+                    if (kind == FloorKind.BEDROOM) {
+                        IconTile(Glyphs.star, go::stars, size = 42.dp, tint = U.c.accent)
+                        Spacer(Modifier.width(8.dp))
+                    }
                     IconTile(Glyphs.chest, { go.decor(id) }, size = 42.dp)
                     Spacer(Modifier.width(8.dp))
                     IconTile(Glyphs.pencil, { go.floorForm(id) }, size = 42.dp)
@@ -166,8 +200,7 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
             }
             item {
                 Box(Modifier.background(sky.low)) {
-                    val bg = ImageBitmap.imageResource(SCENES.getValue(FloorKind.of(floor.kind)).res)
-                    SceneCanvas(SCENE_H) { drawFloor(w.look(floor), bg, tick.value, sky) }
+                    LiveFloor(data, floor, tick, sky)
                     ManaBurst(caster.burst, Modifier.matchParentSize())
                 }
             }
@@ -176,7 +209,9 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
                 val dust = w.dust(id)
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(roomName(floor), style = UType.Sub, modifier = Modifier.weight(1f))
+                    val impKinds = w.impsOn(id)
                     val (label, color) = when {
+                        imps == 1 && impKinds.size == 1 -> gs(R.string.floor_imp_named, t(impKinds[0].title)) to U.c.imp
                         imps > 0 -> gp(R.plurals.floor_imps_here, imps, imps) to U.c.imp
                         dust > 0.5f -> gs(R.string.floor_dusty) to U.c.muted
                         else -> gs(R.string.floor_spotless) to U.c.good
@@ -205,7 +240,10 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
                 item { Text(gs(R.string.floor_hint), style = UType.Small, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) }
             }
         }
-        UndoBar(caster, Modifier.align(Alignment.BottomCenter))
+        Column(Modifier.align(Alignment.BottomCenter)) {
+            Farewell(caster)
+            UndoBar(caster)
+        }
         WakeDialog(caster)
     }
 }
@@ -238,7 +276,10 @@ fun CantripsScreen(data: WData, go: Go) {
                 )
             }
         }
-        UndoBar(caster, Modifier.align(Alignment.BottomCenter))
+        Column(Modifier.align(Alignment.BottomCenter)) {
+            Farewell(caster)
+            UndoBar(caster)
+        }
         WakeDialog(caster)
     }
 }
@@ -341,8 +382,19 @@ private fun ManaBurst(burst: Burst?, modifier: Modifier = Modifier) {
             val cy = size.height * 0.55f
             val r = v * size.height * 0.45f
             val alpha = (1f - v).coerceIn(0f, 1f)
-            for (i in 0 until 12) {
-                val a = i * (Math.PI * 2 / 12) + v
+            val n = if (burst.grand) 28 else 12 + burst.chain.coerceAtMost(8)
+            if (burst.grand) {
+                // Confetti raining over the whole floor.
+                for (i in 0 until 40) {
+                    val h = (i * 7919 + 13) % 1000
+                    val x = size.width * (h / 1000f)
+                    val y = size.height * (v * 1.2f + (h % 97) / 300f) - size.height * 0.2f
+                    val col = listOf(Nes.yellow, Nes.pink, Nes.sky, Nes.leaf, Nes.orange)[i % 5]
+                    drawRect(col, Offset(x, y), Size(cell * 1.4f, cell * 1.4f), alpha = alpha)
+                }
+            }
+            for (i in 0 until n) {
+                val a = i * (Math.PI * 2 / n) + v
                 val x = cx + (Math.cos(a) * r * (1 + (i % 3) * 0.25f)).toFloat()
                 val y = cy + (Math.sin(a) * r * 0.7f).toFloat()
                 val col = when (i % 3) { 0 -> Nes.yellow; 1 -> mana; else -> Nes.white }
@@ -361,13 +413,42 @@ private fun ManaBurst(burst: Burst?, modifier: Modifier = Modifier) {
                 }
             }
         }
-        Row(
+        Column(
             Modifier.graphicsLayer { translationY = -v * 60.dp.toPx(); this.alpha = (1.4f - v).coerceIn(0f, 1f) },
-            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            PixelIcon(Glyphs.mana, mana, size = 22.dp)
-            Spacer(Modifier.width(6.dp))
-            Text(gs(R.string.cast_mana, burst.mana), style = UType.Display.copy(color = mana, fontSize = 20.sp))
+            if (burst.grand) {
+                Text(gs(R.string.home_grand), style = UType.Heading.copy(color = Nes.yellow), textAlign = TextAlign.Center)
+                Spacer(Modifier.height(4.dp))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PixelIcon(Glyphs.mana, mana, size = 22.dp)
+                Spacer(Modifier.width(6.dp))
+                Text(gs(R.string.cast_mana, burst.mana), style = UType.Display.copy(color = mana, fontSize = 20.sp))
+            }
+            if (burst.chain >= 2) Text(gs(R.string.cast_chain, burst.chain + 1), style = UType.Eyebrow.copy(color = Nes.yellow))
+        }
+    }
+}
+
+@Composable
+private fun Farewell(caster: Caster) {
+    val (imp, _) = caster.farewell ?: return
+    val tick = rememberTicker(300)
+    Row(
+        Modifier
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+            .fillMaxWidth()
+            .pixelBox(U.c.surface2, U.c.outline, U.c.bevel)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SpriteImage(Looks.imp(imp, (tick.value % 2).toInt()), 40.dp)
+        Spacer(Modifier.width(10.dp))
+        Column(Modifier.weight(1f)) {
+            Text(t(imp.title), style = UType.Eyebrow.copy(color = U.c.imp))
+            Spacer(Modifier.height(4.dp))
+            Text(t(imp.farewell), style = UType.Body)
         }
     }
 }

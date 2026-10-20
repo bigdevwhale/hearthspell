@@ -103,7 +103,7 @@ fun DecorScreen(floorId: Long, data: WData, go: Go) {
             }
 
             SectionTitle(stringResource(R.string.decor_title))
-            DecorKind.entries.chunked(3).forEach { row ->
+            DecorKind.entries.filter { it.forSale(w.seasons) }.chunked(3).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { kind ->
                         ShopCell(kind, w, Modifier.weight(1f)) {
@@ -169,6 +169,7 @@ private fun ShopCell(kind: DecorKind, w: World, modifier: Modifier, onBuy: () ->
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SpriteImage(Art.decor(kind), 52.dp, alpha = if (afford) 1f else 0.45f)
+        if (kind.season != null) Text(t(kind.season.title), style = UType.Small.copy(color = c.mana))
         Gap(6.dp)
         Text(t(kind.title), style = UType.Small.copy(color = if (afford) c.ink else c.faint), maxLines = 2, minLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
         Gap(4.dp)

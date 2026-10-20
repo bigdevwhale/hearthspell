@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Coming home after a while. -->
+    <string name="home_title">Welcome home</string>
+    <plurals name="home_text">
+        <item quantity="one">Away %d day. The imps threw a party, but the tower kept your seat warm. Your first spell today counts double.</item>
+        <item quantity="other">Away %d days. The imps threw a party, but the tower kept your seat warm. Your first spell today counts double.</item>
+    </plurals>
+    <string name="home_grand">Great spring cleaning!</string>
+    <string name="notif_return_title">The tower kept your seat warm</string>
+    <string name="notif_return_text">The imps had a little party. No harm done. One small spell, whenever you\'re ready.</string>
+
+    <!-- Casting. -->
+    <string name="cast_chain">Chain ×%d</string>
+    <string name="floor_imp_named">%s has moved in</string>
+
+    <!-- Gifts. -->
+    <string name="gift_title">%s left you something</string>
+    <string name="gift_text">On the windowsill of the %s. Tap to pick it up.</string>
+    <string name="gift_found_by">Found by the %s while you slept.</string>
+    <string name="gift_rare">A rare find!</string>
+    <string name="gift_keep">Into the treasures</string>
+    <string name="gift_picked">Found: %s!</string>
+
+    <!-- The cat. -->
+    <string name="cat_title">A cat came in</string>
+    <string name="cat_text">Through the window, as cats do. It looked at the tidy floor, purred, and decided to stay. It will sleep wherever it\'s cleanest. What shall we call it?</string>
+    <string name="cat_default_name">Ember</string>
+    <string name="cat_ok">Welcome home, cat</string>
+    <string name="tea_cat">%s slept through the whole week and regrets nothing.</string>
+
+    <!-- Stars. -->
+    <string name="stars_title">Star chart</string>
+    <string name="stars_count">%1$d of %2$d stars lit</string>
+    <string name="stars_how">Every time a spell climbs a rank (Apprentice, Adept, Master, Archmage), a new star lights up over the Observatory.</string>
+    <string name="stars_list">Constellations</string>
+    <string name="stars_new_title">A constellation lit up!</string>
+    <string name="stars_new_ok">How lovely</string>
+
+    <!-- Brewing. -->
+    <string name="brew_title">The cauldron</string>
+    <string name="brew_sub">Every reagent you bring from the market leaves an essence on the alchemy shelf. Brew them into potions: they do nothing useful at all, and make the tower prettier for a week.</string>
+    <string name="brew_shelf">Alchemy shelf</string>
+    <string name="brew_active">Brewing now</string>
+    <plurals name="brew_days_left">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="brew_recipes">Recipes</string>
+    <string name="brew_do">Brew</string>
+    <string name="brew_again">Brew again (+7 days)</string>
+    <string name="brew_done">%s is ready!</string>
+
+    <!-- Wardrobe. -->
+    <string name="wardrobe_title">Wardrobe</string>
+    <string name="wardrobe_sub">What the apprentice wears on the tower and on every floor. Tap to buy with mana, tap again to change.</string>
+    <string name="wardrobe_robes">Robes</string>
+    <string name="wardrobe_hats">Hats</string>
+    <string name="wardrobe_worn">Wearing</string>
+    <string name="wardrobe_wear">Put on</string>
+
+    <!-- Bestiary. -->
+    <string name="bestiary_title">Bestiary</string>
+    <string name="bestiary_sub">Every imp you have shown the door. Which one moves in depends on the room and the season, never on how long a chore waited.</string>
+    <string name="bestiary_count">%1$d of %2$d imps met</string>
+    <plurals name="bestiary_seen">
+        <item quantity="one">Shown the door once</item>
+        <item quantity="other">Shown the door %d times</item>
+    </plurals>
+    <string name="bestiary_hint_season">Only comes in its season: %s</string>
+    <string name="bestiary_hint_floor">Haunts the %s</string>
+    <string name="bestiary_hint_any">Turns up anywhere</string>
+
+    <!-- Treasures. -->
+    <string name="treasures_title">Treasures</string>
+    <string name="treasures_sub">Little things the helpers find after a quiet night on a tidy floor.</string>
+    <string name="treasures_count">%1$d of %2$d found</string>
+    <string name="treasures_shelf">The shelf</string>
+    <string name="treasures_rare">rare</string>
+    <string name="treasures_how">Keep a floor tidy overnight and its awake helpers may leave something on the windowsill. Gifts wait three days. A few are rare, and an acorn or a star shard goes into a potion now and then.</string>
+
+    <!-- Sunday tea. -->
+    <string name="tea_card_title">Sunday tea is poured</string>
+    <string name="tea_card_text">The helpers are waiting at the table to tell you about the week.</string>
+    <string name="tea_title">Sunday tea</string>
+    <string name="tea_week">The week of the %1$d–%2$d</string>
+    <plurals name="tea_casts">
+        <item quantity="one">You cast %d spell this week. It counted.</item>
+        <item quantity="other">You cast %d spells this week.</item>
+    </plurals>
+    <string name="tea_helper">The %s worked hardest and has earned a biscuit.</string>
+    <string name="tea_floor">The %s shone brightest.</string>
+    <plurals name="tea_imps">
+        <item quantity="one">%d imp was shown the door.</item>
+        <item quantity="other">%d imps were shown the door.</item>
+    </plurals>
+    <string name="tea_no_imps">Not a single imp stayed for tea.</string>
+    <string name="tea_gifts">The helpers brought you: %s.</string>
+    <string name="tea_close_1">Pour another cup. Next week can wait till Monday.</string>
+    <string name="tea_close_2">The kettle hums. The tower is warm. That will do nicely.</string>
+    <string name="tea_close_3">Whatever was left undone will still be there, and so will we.</string>
+    <string name="tea_close_4">A good week. Have the last biscuit, you earned it.</string>
+    <string name="tea_clink">Clink cups</string>
+
+    <!-- Souvenirs. -->
+    <string name="souvenir_in_envelope">In the envelope</string>
+    <string name="souvenir_keep">Put it in the chest</string>
+    <string name="souvenir_kept">It\'s in the tower. Place it from the chest in the decor shop.</string>
+
+    <!-- Hints for the new screens. -->
+    <string name="tip_stars_t">A map of what you\'ve learnt</string>
+    <string name="tip_stars">Each rank a spell climbs lights one star. They fill the constellations one by one, and the finished ones shine over the roof at night.</string>
+    <string name="tip_brew_t">Bubble, bubble</string>
+    <string name="tip_brew">Reagents from the market leave essences here. A potion needs a few, sometimes a trinket too, and makes the tower prettier for a week.</string>
+    <string name="tip_wardrobe_t">Dress for the tower</string>
+    <string name="tip_wardrobe">Robes and hats for mana. The pointed hat takes the colour of your robe. You\'ll walk about every floor in whatever you choose.</string>
+    <string name="tip_bestiary_t">Know your imps</string>
+    <string name="tip_bestiary">Every imp you send packing is written down here, with its habits. Some only haunt one room, a few only come in their season.</string>
+    <string name="tip_treasures_t">Things we found</string>
+    <string name="tip_treasures">We tidy at night too, you know. When a floor stays clean, we find things and leave them on the sill for you.</string>
+
+    <!-- The home-screen widget. -->
+    <string name="widget_name">The tower</string>
+    <string name="widget_desc">Your tower with its windows: warm where it\'s tidy, violet where imps moved in.</string>
+    <string name="widget_quiet">All quiet</string>
+    <plurals name="widget_imps">
+        <item quantity="one">%d imp</item>
+        <item quantity="other">%d imps</item>
+    </plurals>
+</resources>

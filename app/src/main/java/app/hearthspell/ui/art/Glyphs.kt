@@ -236,4 +236,26 @@ object Glyphs {
         "....xx...",
         "....xx...",
     )
+    val flask = Glyph(
+        "...xxx...",
+        "....x....",
+        "...xxx...",
+        "...x.x...",
+        "..x...x..",
+        ".x.....x.",
+        "x.xxxxx.x",
+        "x.xxxxx.x",
+        ".xxxxxxx.",
+    )
+    val hat = Glyph(
+        "....x....",
+        "...xx....",
+        "...xxx...",
+        "..xxxx...",
+        "..xxxxx..",
+        ".xxxxxx..",
+        ".xxxxxxx.",
+        "xxxxxxxxx",
+        ".........",
+    )
 }

@@ -137,13 +137,15 @@ class WorldTest {
         )
         // Spell 2 was last cast well before this week.
         val before = Cast(9, 2, now - 20 * DAY_MS, 10)
-        val w = world(spells, listOf(before))
+        // A daily spell cast yesterday, so this isn't a homecoming (which would double the mana again).
+        val recent = Cast(10, 1, now - DAY_MS, 5, prevLastCastAt = now - 5 * DAY_MS)
+        val w = world(spells, listOf(before, recent))
         assertEquals(3, w.requests.size)
         assertTrue(w.requests.none { it.intervalDays < 3 })
         assertEquals(listOf(2L, 3L), w.requests.take(2).map { it.id }.sorted())
         // Casting a request mid-week doesn't reshuffle them.
         val castAt = now - DAY_MS / 2
-        val after = world(spells.map { if (it.id == 2L) it.copy(lastCastAt = castAt) else it }, listOf(before, Cast(1, 2, castAt, 20, requested = true)))
+        val after = world(spells.map { if (it.id == 2L) it.copy(lastCastAt = castAt) else it }, listOf(before, recent, Cast(1, 2, castAt, 20, requested = true)))
         assertEquals(w.requests.map { it.id }, after.requests.map { it.id })
         assertTrue(after.requestDone(2))
         assertFalse(after.isPendingRequest(2))
@@ -152,7 +154,7 @@ class WorldTest {
         assertEquals(10, after.manaFor(after.spell(2)!!))
         // The same requests on Sunday of the same week.
         val sunday = LocalDate.of(2026, 10, 18).atTime(20, 0).toInstant(zone).toEpochMilli()
-        assertEquals(w.requests.map { it.id }, world(spells, listOf(before), at = sunday).requests.map { it.id })
+        assertEquals(w.requests.map { it.id }, world(spells, listOf(before, recent), at = sunday).requests.map { it.id })
     }
 
     @Test

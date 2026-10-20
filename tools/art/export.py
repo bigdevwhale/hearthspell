@@ -7,6 +7,7 @@ from PIL import Image
 import decor as D
 import helpers as Hp
 import scenes as Sc
+import extras as X
 from pixlib import Canvas, sheet
 
 ROOT = sys.argv[1]
@@ -67,6 +68,39 @@ def write_png(cv, path):
     im.save(path)
 
 
+def write_widget_preview(roof, wall, glass, base):
+    """The home-screen widget as the picker shows it: a three-floor tower, two windows warm and one with imps."""
+    sky_top = 14
+    h = sky_top + roof.h + 3 * wall.h + base.h
+    cv = Canvas(128, h)
+    for y in range(h - base.h):
+        c = (11, 9, 32) if y < h // 3 else (21, 17, 53) if y < h * 2 // 3 else (33, 26, 74)
+        cv.rect(0, y, 128, 1, c)
+    for k in range(30):
+        cv.set((k * 37) % 128, (k * 53) % (h - base.h), (255, 244, 214) if k % 3 == 0 else (169, 150, 230))
+    cv.blit(Sc.moon(), 6, 4)
+    cv.blit(roof, 0, sky_top)
+    gx, gy, gw, gh = glass[:4]
+    for i, imps in enumerate((False, True, False)):
+        y = sky_top + roof.h + i * wall.h
+        ox, oy = 4 + gx, y + gy
+        top, bottom = ((74, 26, 100), (122, 48, 158)) if imps else ((255, 218, 98), (255, 148, 40))
+        cv.rect(ox, oy, gw, gh // 2, top)
+        cv.rect(ox, oy + gh // 2, gw, gh - gh // 2, bottom)
+        if imps:
+            cv.rect(ox + gw // 2 - 3, oy + gh // 2, 1, 2, (252, 224, 112))
+            cv.rect(ox + gw // 2 + 2, oy + gh // 2, 1, 2, (252, 224, 112))
+        cv.blit(wall, 4, y)
+    cv.blit(base, 4, h - base.h)
+    im = Image.new('RGBA', (cv.w, cv.h), (0, 0, 0, 0))
+    p = im.load()
+    for y in range(cv.h):
+        for x in range(cv.w):
+            if cv.px[y][x] is not None:
+                p[x, y] = cv.px[y][x]
+    im.resize((cv.w * 3, cv.h * 3), Image.NEAREST).save(os.path.join(RES, 'widget_preview.png'))
+
+
 def main():
     os.makedirs(RES, exist_ok=True)
     lines = []
@@ -76,11 +110,19 @@ def main():
     decors = {}
     for k, f in D.DECOR.items():
         decors[k] = [f(0), f(1)] if k in anim else [f()]
+    # Seasonal pieces, the cat's cushion and the master's souvenirs are decor too.
+    for k, f in list(X.SEASONAL.items()) + list(X.SOUVENIRS.items()):
+        decors[k] = [f(0)] if k in ('CUSHION',) or k in X.STILL_SOUVENIRS else [f(0), f(1)]
     masters = [D.master(0), D.master(1)]
     apprentices = [D.apprentice(0), D.apprentice(1)]
     flames = Sc.flame_frames()
     steams = Sc.steam_frames()
-    extras = {'moon': Sc.moon(), 'cloud': Sc.cloud(), 'cobweb': Sc.cobweb()}
+    extras = {'moon': Sc.moon(), 'cloud': Sc.cloud(), 'cobweb': Sc.cobweb(), 'tea': X.tea_table(), 'heart': X.heart()}
+    trinkets = {k: f() for k, f in X.TRINKETS.items()}
+    cats = [X.cat_sleep(0), X.cat_sleep(1), X.cat_sit(0), X.cat_sit(1)]
+    bodies = [X.apprentice_body(0), X.apprentice_body(1)]
+    hats = {k: [f(0), f(1)] for k, f in X.HATS.items()}
+    bats = [X.bat(0), X.bat(1)]
 
     # Previews, to look at before shipping.
     prev = []
@@ -137,7 +179,16 @@ object Art {
     s += '        )\n'
     block('decors', 'Map<DecorKind, Array<Sprite>>', s)
 
-    for name, arr in (('masters', masters), ('apprentices', apprentices), ('flames', flames), ('steams', steams)):
+    s = '        mapOf(\n' + ''.join(f'            "{k}" to {kt_sprite(c, "            ")},\n' for k, c in trinkets.items()) + '        )\n'
+    block('trinkets', 'Map<String, Sprite>', s)
+
+    s = '        mapOf(\n'
+    for k, fr in hats.items():
+        s += f'            "{k}" to arrayOf(\n' + ''.join(f'                {kt_sprite(c, "                ")},\n' for c in fr) + '            ),\n'
+    s += '        )\n'
+    block('hats', 'Map<String, Array<Sprite>>', s)
+
+    for name, arr in (('masters', masters), ('apprentices', apprentices), ('flames', flames), ('steams', steams), ('cats', cats), ('bodies', bodies), ('bats', bats)):
         s = '        arrayOf(\n' + ''.join(f'            {kt_sprite(c, "            ")},\n' for c in arr) + '        )\n'
         block(name, 'Array<Sprite>', s)
 
@@ -176,6 +227,21 @@ object Art {
     val moon: Sprite get() = extras.getValue("moon")
     val cloud: Sprite get() = extras.getValue("cloud")
     val cobweb: Sprite get() = extras.getValue("cobweb")
+    val teaTable: Sprite get() = extras.getValue("tea")
+    val heart: Sprite get() = extras.getValue("heart")
+
+    /** A trinket a helper brought, by [app.hearthspell.content.Trinket] name. */
+    fun trinket(name: String): Sprite = trinkets.getValue(name)
+
+    /** The tower cat: curled up asleep (frames 0, 1 breathe) or sitting up (frame 1 blinks). */
+    fun catAsleep(frame: Int): Sprite = cats[frame and 1]
+    fun catAwake(frame: Int): Sprite = cats[2 + (frame and 1)]
+
+    /** The apprentice without a hat, in the red robe; hats share its 26x38 grid. */
+    fun apprenticeBody(frame: Int): Sprite = bodies[frame and 1]
+    fun hat(name: String, frame: Int): Sprite = hats.getValue(name)[frame and 1]
+
+    fun bat(frame: Int): Sprite = bats[frame and 1]
 
     /** A furnishing that tells a floor's kind at a glance (the full rooms are scene bitmaps). */
     fun prop(kind: FloorKind): Sprite = when (kind) {
@@ -195,7 +261,8 @@ object Art {
     /** Every sprite, for tests and previews. */
     fun all(): List<Sprite> =
         HelperKind.entries.flatMap { k -> (0..3).map { helper(k, it) } } +
-            listOf(imp(0), imp(1), master(0), master(1), apprentice(0), apprentice(1), moon, cloud, cobweb) +
+            listOf(imp(0), imp(1), master(0), master(1), apprentice(0), apprentice(1), moon, cloud, cobweb, teaTable, heart) +
+            trinkets.values + cats + bodies + bats + hats.values.flatMap { it.toList() } +
             DecorKind.entries.flatMap { k -> decors.getValue(k).toList() } + (0..2).map { flame(it) } + (0..3).map { steam(it) }
 }
 ''')
@@ -212,6 +279,9 @@ object Art {
     write_png(roof, os.path.join(RES, 'hs_roof.png'))
     base, bm = Sc.base()
     write_png(base, os.path.join(RES, 'hs_base.png'))
+    wall, wg = X.wall()
+    write_png(wall, os.path.join(RES, 'hs_wall.png'))
+    write_widget_preview(roof, wall, wg, base)
 
     m = ['''package app.hearthspell.ui.tower
 
@@ -247,6 +317,9 @@ internal const val BASE_GROUND = ''' + str(bm['ground']) + '''
 internal val ROOF_CHIMNEY = ''' + f"{rm['chimney'][0]} to {rm['chimney'][1]}" + '''
 internal val ROOF_LANTERN = ''' + f"{rm['lantern'][0]} to {rm['lantern'][1]}" + '''
 internal val BASE_TORCHES = listOf(''' + ', '.join(f'{x} to {y}' for x, y in bm['torches']) + ''')
+internal const val WALL_H = ''' + str(wall.h) + '''
+/** The window of the outside wall (hs_wall): x, y, w, h. */
+internal val WALL_GLASS = intArrayOf(''' + ', '.join(str(int(v)) for v in wg[:4]) + ''')
 
 internal val SCENES: Map<FloorKind, SceneMeta> = mapOf(
 ''']

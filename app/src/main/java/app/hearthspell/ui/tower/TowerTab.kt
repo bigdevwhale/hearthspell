@@ -41,6 +41,9 @@ import app.hearthspell.domain.World
 import app.hearthspell.ui.Go
 import app.hearthspell.ui.WData
 import app.hearthspell.ui.art.Art
+import app.hearthspell.ui.art.Looks
+import app.hearthspell.ui.art.drawPixels
+import app.hearthspell.content.Stars
 import app.hearthspell.ui.art.Glyphs
 import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.art.PixelSprite
@@ -64,14 +67,33 @@ import app.hearthspell.ui.tips.TipHost
 import app.hearthspell.ui.theme.UType
 import kotlin.math.floor
 
-/** What a floor looks like right now, from the world. */
-internal fun World.look(f: Floor): FloorLook = FloorLook(
-    id = f.id,
-    kind = FloorKind.of(f.kind),
-    dust = dust(f.id),
-    imps = imps(f.id),
-    helpers = helpersOn(f.id).map { it.kind },
-    decor = decorOn(f.id),
+/** What a floor looks like right now, from the world; [withApprentice] when the apprentice is there in person. */
+internal fun WData.look(f: Floor, withApprentice: Boolean = false): FloorLook {
+    val w = world
+    val hour = java.time.Instant.ofEpochMilli(w.now).atZone(w.zone).hour
+    val imps = w.impsOn(f.id)
+    return FloorLook(
+        id = f.id,
+        kind = FloorKind.of(f.kind),
+        dust = w.dust(f.id),
+        imps = imps,
+        helpers = w.helpersOn(f.id).map { it.kind },
+        decor = w.decorOn(f.id),
+        cat = settings.catName.isNotBlank() && w.catFloorId == f.id,
+        gift = w.giftOn(f.id)?.trinket,
+        asleep = (hour >= 22 || hour < 6) && imps.isEmpty(),
+        apprentice = if (withApprentice) { frame -> Looks.apprentice(settings.robe, settings.hat, frame) } else null,
+        potions = w.potions,
+        seasons = w.seasons,
+    )
+}
+
+/** The sky over the tower today. */
+internal fun World.towerSky(): TowerSky = TowerSky(
+    seasons = seasons,
+    potions = potions,
+    allClear = floors.isNotEmpty() && totalImps == 0 && floors.all { dust(it.id) < 0.35f },
+    constellations = Stars.all.mapIndexed { i, c -> c to Stars.litIn(i, starsLit) },
 )
 
 @Composable
@@ -79,12 +101,15 @@ fun TowerTab(data: WData, go: Go) {
     val w = data.world
     val tick = rememberTicker()
     val sky = Sky(day = !U.c.dark)
+    val ts = w.towerSky()
     // The tour of the tower, right after onboarding.
     TipHost(Tip.TOWER)
+    TowerMoments(data)
     Box(Modifier.fillMaxSize()) {
     LazyColumn(Modifier.fillMaxSize().background(sky.low), contentPadding = PaddingValues(bottom = 8.dp)) {
         item { Box(Modifier.fillMaxWidth().background(sky.top)) { TowerHeader(data, go) } }
         item { Box(Modifier.fillMaxWidth().background(sky.top)) { Requests(data, go) } }
+        item { Box(Modifier.fillMaxWidth().background(sky.top)) { TowerCards(data, go) } }
         item {
             Row(Modifier.fillMaxWidth().background(sky.top).padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 PixelButton(gs(R.string.tower_low_energy), go::cantrips, Modifier.weight(1f), kind = ButtonKind.SECONDARY, icon = Glyphs.moon)
@@ -94,16 +119,16 @@ fun TowerTab(data: WData, go: Go) {
         }
         item {
             val roof = ImageBitmap.imageResource(R.drawable.hs_roof)
-            SceneCanvas(ROOF_ROWS, Modifier.background(sky.top).padding(top = 6.dp)) { drawRoof(roof, tick.value, sky) }
+            SceneCanvas(ROOF_ROWS, Modifier.background(sky.top).padding(top = 6.dp)) { drawRoof(roof, tick.value, sky, ts) }
         }
         if (w.floors.isEmpty()) {
             item { EmptyTower(go) }
         }
-        items(w.floors, key = { it.id }) { f -> FloorCard(f, w, tick, sky) { go.floor(f.id) } }
+        items(w.floors, key = { it.id }) { f -> FloorCard(f, data, tick, sky) { go.floor(f.id) } }
         item { AddFloor(tick, sky) { go.floorForm(0) } }
         item {
             val base = ImageBitmap.imageResource(R.drawable.hs_base)
-            SceneCanvas(BASE_ROWS) { drawBase(base, tick.value, sky) }
+            SceneCanvas(BASE_ROWS) { drawBase(base, tick.value, sky, ts) }
         }
     }
     // Keeps the scrolled tower from showing through the status bar icons.
@@ -118,7 +143,11 @@ private fun TowerHeader(data: WData, go: Go) {
         Modifier.fillMaxWidth().statusBarsPadding().padding(start = 16.dp, end = 12.dp, top = 10.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PixelSprite(Art.apprentice(0), 1.5.dp)
+        val frame = rememberTicker(700)
+        androidx.compose.foundation.Canvas(Modifier.size(39.dp, 57.dp).clickable(onClick = go::wardrobe)) {
+            val s = Looks.apprentice(data.settings.robe, data.settings.hat, (frame.value % 2).toInt())
+            drawPixels(s, 0f, 0f, size.width / s.w)
+        }
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             val name = data.settings.name
@@ -191,8 +220,8 @@ private fun Requests(data: WData, go: Go) {
 
 /** One floor of the tower with its name on a plaque. */
 @Composable
-private fun FloorCard(f: Floor, w: World, tick: State<Long>, sky: Sky, onClick: () -> Unit) {
-    val look = w.look(f)
+private fun FloorCard(f: Floor, data: WData, tick: State<Long>, sky: Sky, onClick: () -> Unit) {
+    val look = data.look(f)
     BoxWithConstraints(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         val density = LocalDensity.current
         val px = cellPx(constraints.maxWidth.toFloat())
@@ -211,10 +240,14 @@ private fun FloorCard(f: Floor, w: World, tick: State<Long>, sky: Sky, onClick: 
             Text(floorName(f), style = UType.Eyebrow.copy(color = Nes.cream, fontSize = 8.sp), maxLines = 2)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(roomName(f), style = UType.Small.copy(color = Nes.sand), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (look.imps > 0) {
+                if (look.imps.isNotEmpty()) {
                     Spacer(Modifier.width(6.dp))
                     PixelIcon(Glyphs.imp, Nes.pink, size = 10.dp)
-                    Text("${look.imps}", style = UType.Small.copy(color = Nes.pink))
+                    Text("${look.imps.size}", style = UType.Small.copy(color = Nes.pink))
+                }
+                if (look.gift != null) {
+                    Spacer(Modifier.width(6.dp))
+                    PixelIcon(Glyphs.star, Nes.yellow, size = 10.dp)
                 }
             }
         }

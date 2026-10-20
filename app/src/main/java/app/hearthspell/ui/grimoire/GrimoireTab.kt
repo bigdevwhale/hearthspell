@@ -43,6 +43,10 @@ import app.hearthspell.R
 import app.hearthspell.content.DecorKind
 import app.hearthspell.content.HelperKind
 import app.hearthspell.content.Spells
+import app.hearthspell.content.ImpKind
+import app.hearthspell.content.Stars
+import app.hearthspell.content.Trinket
+import app.hearthspell.ui.art.Looks
 import app.hearthspell.data.Spell
 import app.hearthspell.domain.HelperState
 import app.hearthspell.domain.Mana
@@ -85,7 +89,7 @@ fun GrimoireTab(data: WData, go: Go) {
     Column(Modifier.fillMaxSize()) {
         TopBar(stringResource(R.string.grimoire_title), null, Tip.GRIMOIRE) { ManaTag(w.mana, Modifier.padding(end = 4.dp)) }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-            CirclePanel(w)
+            CirclePanel(w, data.settings, go::wardrobe)
             Gap(10.dp)
             Panel(Modifier.fillMaxWidth(), onClick = { go.decor(0) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -97,6 +101,17 @@ fun GrimoireTab(data: WData, go: Go) {
                     }
                     PixelIcon(Glyphs.back, U.c.faint, Modifier.graphicsLayer { scaleX = -1f }, size = 16.dp)
                 }
+            }
+
+            Gap(10.dp)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Tile(Modifier.weight(1f), { SpriteImage(Art.decor(DecorKind.TELESCOPE), 36.dp) }, stringResource(R.string.stars_title), "${w.starsLit}/${Stars.total}", go::stars)
+                Tile(Modifier.weight(1f), { SpriteImage(Art.decor(DecorKind.CAULDRON), 36.dp) }, stringResource(R.string.brew_title), if (w.potions.isEmpty()) "·" else "${w.potions.size}", go::brew)
+            }
+            Gap(8.dp)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Tile(Modifier.weight(1f), { SpriteImage(Looks.imp(ImpKind.PIP, 0), 36.dp) }, stringResource(R.string.bestiary_title), "${w.impsMet.size}/${ImpKind.entries.size}", go::bestiary)
+                Tile(Modifier.weight(1f), { SpriteImage(Art.trinket(Trinket.BUTTON.name), 30.dp) }, stringResource(R.string.treasures_title), "${w.trinketsFound.size}/${Trinket.entries.size}", go::treasures)
             }
 
             val awake = w.helpers.count { it.awake }
@@ -122,13 +137,27 @@ fun GrimoireTab(data: WData, go: Go) {
 }
 
 @Composable
-private fun CirclePanel(w: World) {
+private fun Tile(modifier: Modifier, icon: @Composable () -> Unit, title: String, sub: String, onClick: () -> Unit) {
+    Panel(modifier, onClick = onClick, padding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            icon()
+            Spacer(Modifier.width(10.dp))
+            Column(Modifier.weight(1f)) {
+                Text(title, style = UType.Strong, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(sub, style = UType.Small.copy(color = U.c.accent))
+            }
+        }
+    }
+}
+
+@Composable
+private fun CirclePanel(w: World, s: app.hearthspell.data.Settings, onWardrobe: () -> Unit) {
     val circle = w.circle
     val from = Mana.circles.getOrElse(circle - 1) { 0 }
     val to = Mana.circles.getOrNull(circle)
     Panel(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AnimatedSprite({ Art.apprentice(it) }, 64.dp)
+            Box(Modifier.clickable(onClick = onWardrobe)) { AnimatedSprite({ Looks.apprentice(s.robe, s.hat, it) }, 64.dp) }
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.grimoire_circle, circle).uppercase(), style = UType.Title.copy(color = U.c.accent))

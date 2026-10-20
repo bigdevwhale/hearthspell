@@ -5,6 +5,11 @@ import app.hearthspell.content.Aisle
 import app.hearthspell.content.DecorKind
 import app.hearthspell.content.FloorKind
 import app.hearthspell.content.Spells
+import app.hearthspell.content.Garment
+import app.hearthspell.content.ImpKind
+import app.hearthspell.content.Potion
+import app.hearthspell.content.Stars
+import app.hearthspell.content.Trinket
 import app.hearthspell.domain.DAY_MS
 import app.hearthspell.domain.Gender
 import app.hearthspell.domain.Mana
@@ -89,6 +94,26 @@ object DemoSeed {
             dao.upsertDecor(Decor(kind = kind.name, floorId = fid, slot = slot, cost = kind.cost, boughtAt = start + (i + 3) * 6 * DAY_MS))
         }
         dao.upsertDecor(Decor(kind = DecorKind.CANDLES.name, floorId = 0, cost = DecorKind.CANDLES.cost, boughtAt = now - 3 * DAY_MS))
+        // A cushion for the cat in the observatory, and the master's first souvenirs.
+        floorIds[FloorKind.BEDROOM]?.let { dao.upsertDecor(Decor(kind = DecorKind.CUSHION.name, floorId = it, slot = 1, cost = DecorKind.CUSHION.cost, boughtAt = now - 9 * DAY_MS)) }
+        floorIds[FloorKind.HALL]?.let { dao.upsertDecor(Decor(kind = DecorKind.PUMPKIN.name, floorId = it, slot = 1, cost = DecorKind.PUMPKIN.cost, boughtAt = now - 2 * DAY_MS)) }
+        floorIds[FloorKind.KITCHEN]?.let { dao.upsertDecor(Decor(kind = DecorKind.TEACUP.name, floorId = it, slot = 2, cost = 0, boughtAt = start + DAY_MS)) }
+        dao.upsertDecor(Decor(kind = DecorKind.FROG.name, floorId = 0, cost = 0, boughtAt = start + 8 * DAY_MS))
+
+        // Imps met along the way, trinkets the helpers brought, two potions brewing, a new robe and hat.
+        listOf(ImpKind.PIP, ImpKind.CRUMBWHISTLE, ImpKind.BUBBLEGOB, ImpKind.HIX, ImpKind.SNOREWICK, ImpKind.LEAFNIBBLE, ImpKind.HALLOWIMP, ImpKind.NIBS)
+            .forEachIndexed { i, k ->
+                repeat(1 + i % 3) { j -> dao.insertFind(Find(type = FIND_IMP, kind = k.name, day = today.toEpochDay() - 40 + i * 4 + j, at = start + (i * 4 + j) * DAY_MS)) }
+            }
+        listOf(Trinket.FEATHER, Trinket.BUTTON, Trinket.ACORN, Trinket.ACORN, Trinket.MARBLE, Trinket.SHELL, Trinket.CORK, Trinket.STAR, Trinket.RIBBON)
+            .forEachIndexed { i, t ->
+                val d = today.toEpochDay() - 30 + i * 3
+                dao.insertFind(Find(type = FIND_GIFT, kind = t.name, helper = "BROOM", day = d, at = now - (30 - i * 3) * DAY_MS))
+            }
+        dao.insertBrew(Brew(potion = Potion.EMBERSMOKE.name, at = now - 2 * DAY_MS))
+        dao.insertBrew(Brew(potion = Potion.FIREFLIES.name, at = now - DAY_MS))
+        dao.insertWear(Wear(kind = Garment.MIDNIGHT.name, cost = Garment.MIDNIGHT.cost, boughtAt = now - 12 * DAY_MS))
+        dao.insertWear(Wear(kind = Garment.STAR.name, cost = Garment.STAR.cost, boughtAt = now - 12 * DAY_MS))
 
         // The shopping list, and reagents remembered from earlier trips.
         data class R(val en: String, val ru: String, val aisle: Aisle, val needed: Boolean, val gap: Double, val daysAgo: Double)
@@ -126,6 +151,11 @@ object DemoSeed {
                 gender = Gender.FEMALE,
                 startDay = startDay,
                 lettersRead = (0 until arrived - 1).map { n -> n.toString() }.toSet(),
+                catName = t("Ember", "Уголёк"),
+                robe = Garment.MIDNIGHT.name,
+                hat = Garment.STAR.name,
+                // The constellations already lit don't need announcing in screenshots.
+                seen = Stars.all.map { c -> "star:${c.key}" }.toSet(),
             )
         }
     }

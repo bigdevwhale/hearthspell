@@ -25,6 +25,15 @@ class Sprite(val w: Int, val h: Int, private val cells: Array<Color?>) {
     /** A copy with some colours swapped (palette swaps: a red imp, a sleepy grey helper). */
     fun recolor(map: Map<Color, Color>): Sprite = Sprite(w, h, Array(cells.size) { i -> cells[i]?.let { map[it] ?: it } })
 
+    /** Every pixel in one colour: a silhouette. */
+    fun recolorAll(c: Color): Sprite = Sprite(w, h, Array(cells.size) { i -> cells[i]?.let { c } })
+
+    /** [top] drawn over this sprite; both must be the same size. */
+    fun under(top: Sprite): Sprite {
+        require(top.w == w && top.h == h)
+        return Sprite(w, h, Array(cells.size) { i -> top.cells[i] ?: cells[i] })
+    }
+
     /** Every colour multiplied towards grey: used for helpers that are still asleep. */
     fun muted(): Sprite = Sprite(w, h, Array(cells.size) { i ->
         cells[i]?.let { c ->

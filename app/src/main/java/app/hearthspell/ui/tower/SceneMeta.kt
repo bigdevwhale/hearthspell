@@ -32,6 +32,9 @@ internal const val BASE_GROUND = 28
 internal val ROOF_CHIMNEY = 93 to 18
 internal val ROOF_LANTERN = 64 to 2
 internal val BASE_TORCHES = listOf(35 to 10, 85 to 10)
+internal const val WALL_H = 26
+/** The window of the outside wall (hs_wall): x, y, w, h. */
+internal val WALL_GLASS = intArrayOf(53, 6, 14, 13)
 
 internal val SCENES: Map<FloorKind, SceneMeta> = mapOf(
     FloorKind.KITCHEN to SceneMeta(

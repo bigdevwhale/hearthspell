@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 /** Plain JSON backup: everything stays on the device unless the user exports it. */
 object Backup {
-    private const val VERSION = 1
+    private const val VERSION = 2
 
     suspend fun export(db: HearthDatabase, settings: Settings): String {
         val d = db.dao()
@@ -17,6 +17,9 @@ object Backup {
             .put("name", settings.name)
             .put("gender", settings.gender.name)
             .put("lettersRead", JSONArray(settings.lettersRead.toList()))
+            .put("catName", settings.catName)
+            .put("robe", settings.robe)
+            .put("hat", settings.hat)
             .put("floors", JSONArray(d.floors().map { JSONObject().put("id", it.id).put("kind", it.kind).put("name", it.name).put("sort", it.sort) }))
             .put("spells", JSONArray(d.spells().map {
                 JSONObject().put("id", it.id).put("floorId", it.floorId).put("presetKey", it.presetKey ?: JSONObject.NULL).put("name", it.name)
@@ -35,6 +38,12 @@ object Backup {
             .put("decor", JSONArray(d.decor().map {
                 JSONObject().put("id", it.id).put("kind", it.kind).put("floorId", it.floorId).put("slot", it.slot).put("cost", it.cost).put("boughtAt", it.boughtAt)
             }))
+            .put("finds", JSONArray(d.finds().map {
+                JSONObject().put("id", it.id).put("type", it.type).put("kind", it.kind).put("helper", it.helper).put("day", it.day)
+                    .put("at", it.at).put("castId", it.castId)
+            }))
+            .put("brews", JSONArray(d.brews().map { JSONObject().put("id", it.id).put("potion", it.potion).put("at", it.at) }))
+            .put("wardrobe", JSONArray(d.wardrobe().map { JSONObject().put("id", it.id).put("kind", it.kind).put("cost", it.cost).put("boughtAt", it.boughtAt) }))
             .toString(1)
     }
 
@@ -62,16 +71,26 @@ object Backup {
             )
         }
         val decor = root.list("decor") { Decor(getLong("id"), getString("kind"), optLong("floorId"), optInt("slot"), optInt("cost"), optLong("boughtAt")) }
+        // Version 1 backups have none of these.
+        val finds = root.list("finds") {
+            Find(getLong("id"), getString("type"), getString("kind"), optString("helper"), optLong("day"), optLong("at"), optLong("castId"))
+        }
+        val brews = root.list("brews") { Brew(getLong("id"), getString("potion"), optLong("at")) }
+        val wardrobe = root.list("wardrobe") { Wear(getLong("id"), getString("kind"), optInt("cost"), optLong("boughtAt")) }
         val read = root.optJSONArray("lettersRead")?.let { a -> (0 until a.length()).map { a.getString(it) }.toSet() } ?: emptySet()
 
         db.withTransaction {
             val d = db.dao()
             d.wipeCasts(); d.wipeSpells(); d.wipeFloors(); d.wipeReagents(); d.wipeDecor()
+            d.wipeFinds(); d.wipeBrews(); d.wipeWardrobe()
             floors.forEach { d.upsertFloor(it) }
             spells.forEach { d.upsertSpell(it) }
             casts.forEach { d.insertCast(it) }
             reagents.forEach { d.upsertReagent(it) }
             decor.forEach { d.upsertDecor(it) }
+            finds.forEach { d.insertFind(it) }
+            brews.forEach { d.insertBrew(it) }
+            wardrobe.forEach { d.insertWear(it) }
         }
         store.update {
             it.copy(
@@ -80,6 +99,9 @@ object Backup {
                 name = root.optString("name", it.name),
                 gender = app.hearthspell.domain.Gender.of(root.optString("gender")),
                 lettersRead = read,
+                catName = root.optString("catName", it.catName),
+                robe = root.optString("robe", "CRIMSON"),
+                hat = root.optString("hat", "POINTED"),
             )
         }
     }

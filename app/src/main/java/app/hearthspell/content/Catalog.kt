@@ -185,8 +185,11 @@ object Spells {
     const val MARKET = "whole.market"
 }
 
-/** Things to furnish the tower with, bought with mana. */
-enum class DecorKind(val title: L, val cost: Int) {
+/**
+ * Things to furnish the tower with, bought with mana. [season] pieces are sold only in their season (every year);
+ * [souvenir]s are never sold: the master sends them with his letters.
+ */
+enum class DecorKind(val title: L, val cost: Int, val season: Season? = null, val souvenir: Boolean = false) {
     CANDLES(L("Candles", "Свечи"), 25),
     HERBS(L("Drying herbs", "Сушёные травы"), 30),
     LANTERN(L("Lantern", "Фонарь"), 30),
@@ -206,7 +209,26 @@ enum class DecorKind(val title: L, val cost: Int) {
     CAT(L("Cat", "Кот"), 120),
     TELESCOPE(L("Telescope", "Телескоп"), 140),
     OWL(L("Owl", "Сова"), 150),
-    FIREPLACE(L("Fireplace", "Камин"), 160);
+    FIREPLACE(L("Fireplace", "Камин"), 160),
+    CUSHION(L("Cat cushion", "Кошачья подушка"), 45),
+    PUMPKIN(L("Pumpkin lantern", "Тыква-фонарь"), 40, Season.HALLOWEEN),
+    FIR(L("Little fir tree", "Ёлочка"), 90, Season.NEW_YEAR),
+
+    TEACUP(L("The master's teacup", "Чашка мастера"), 0, souvenir = true),
+    FROG(L("Clay frog", "Глиняная лягушка"), 0, souvenir = true),
+    SNOWGLOBE(L("Monastery snow globe", "Снежный шар с монастырём"), 0, souvenir = true),
+    DRAGON_SCALE(L("Pudding's scale", "Чешуйка Пудинг"), 0, souvenir = true),
+    IMP_JAR(L("Imp in a jar", "Пакостник в банке"), 0, souvenir = true),
+    BELL(L("Bell from the City of Bells", "Колокольчик из Города колоколов"), 0, souvenir = true),
+    LIGHTHOUSE(L("Little lighthouse", "Маячок"), 0, souvenir = true),
+    SHIP(L("Ship in a bottle", "Корабль в бутылке"), 0, souvenir = true),
+    PAPER_LANTERN(L("Paper lantern", "Бумажный фонарик"), 0, souvenir = true),
+    OLD_MAP(L("Old map", "Старая карта"), 0, souvenir = true),
+    AURORA(L("Jar of northern lights", "Банка северного сияния"), 0, souvenir = true),
+    COMPASS(L("Travel compass", "Дорожный компас"), 0, souvenir = true);
+
+    /** Sold in the shop right now. */
+    fun forSale(seasons: Set<Season>): Boolean = !souvenir && (season == null || season in seasons)
 
     companion object {
         fun of(key: String?): DecorKind? = entries.firstOrNull { it.name == key }

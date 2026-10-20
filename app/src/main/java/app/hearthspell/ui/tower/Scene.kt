@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,8 +25,13 @@ import androidx.compose.ui.unit.Dp
 import app.hearthspell.content.DecorKind
 import app.hearthspell.content.FloorKind
 import app.hearthspell.content.HelperKind
+import app.hearthspell.content.ImpKind
+import app.hearthspell.content.Potion
+import app.hearthspell.content.Season
+import app.hearthspell.content.Trinket
 import app.hearthspell.data.Decor
 import app.hearthspell.ui.art.Art
+import app.hearthspell.ui.art.Looks
 import app.hearthspell.ui.art.Sprite
 import app.hearthspell.ui.art.drawPixels
 import kotlinx.coroutines.delay
@@ -138,7 +147,7 @@ internal fun Grid.disc(cx: Int, cy: Int, r: Int, c: Color, alpha: Float) {
 }
 
 /** Twinkling stars scattered over a box. */
-private fun Grid.stars(x0: Int, y0: Int, w: Int, h: Int, n: Int, seed: Long, tick: Long, sky: Sky) {
+internal fun Grid.stars(x0: Int, y0: Int, w: Int, h: Int, n: Int, seed: Long, tick: Long, sky: Sky) {
     if (sky.day || w <= 0 || h <= 0) return
     for (i in 0 until n) {
         val hh = hash(seed, i.toLong())
@@ -165,24 +174,90 @@ private fun Grid.sideSky(rows: Int, sky: Sky, seed: Long, tick: Long) {
     stars(TX + SCENE_W, 0, GW - TX - SCENE_W, rows, rows / 12, seed + 1, tick, sky)
 }
 
-private val WALL_DECOR = setOf(DecorKind.PAINTING, DecorKind.CLOCK, DecorKind.BANNER, DecorKind.HERBS, DecorKind.LANTERN)
+internal val WALL_DECOR = setOf(
+    DecorKind.PAINTING, DecorKind.CLOCK, DecorKind.BANNER, DecorKind.HERBS, DecorKind.LANTERN, DecorKind.OLD_MAP, DecorKind.PAPER_LANTERN,
+)
 
 private val DUST = Color(0xFFD8C8A8)
 private val DUST_VEIL = Color(0xFF6E5C4C)
 private val SHADOW = Color(0xFF140A1A)
 private val FIRE_HOT = Color(0xFFFFFCD6)
 private val FIRE_MID = Color(0xFFFF9428)
-private val FIRE_GLOW = Color(0xFFFFDA62)
+internal val FIRE_GLOW = Color(0xFFFFDA62)
 
 /** Everything that lives on a floor, gathered for drawing. */
 internal class FloorLook(
     val id: Long,
     val kind: FloorKind,
     val dust: Float,
-    val imps: Int,
+    val imps: List<ImpKind>,
     val helpers: List<HelperKind>,
     val decor: List<Decor>,
-)
+    /** The tower cat sleeps here. */
+    val cat: Boolean = false,
+    /** A trinket a helper left here, glinting on the floor. */
+    val gift: Trinket? = null,
+    /** Late at night on a tidy floor the helpers doze. */
+    val asleep: Boolean = false,
+    /** The apprentice walking about (on the floor being looked at). */
+    val apprentice: ((Int) -> Sprite)? = null,
+    val potions: Set<Potion> = emptySet(),
+    val seasons: Set<Season> = emptySet(),
+) {
+    val clean: Boolean get() = imps.isEmpty() && dust < 0.35f
+}
+
+/** Taps on a floor scene: when (in ticks) each helper and the cat were last patted. Read while drawing. */
+@Stable
+internal class Touch {
+    val pats = mutableStateMapOf<HelperKind, Long>()
+    var cat by mutableLongStateOf(-1000L)
+    var apprentice by mutableLongStateOf(-1000L)
+}
+
+/** Where things stand on a floor, so taps can find them. */
+internal fun FloorLook.helperSpots(tick: Long, m: SceneMeta): List<Pair<HelperKind, IntRange>> {
+    val lanes = helpers.size + if (apprentice != null) 1 else 0
+    return helpers.mapIndexed { i, kind ->
+        val s = Art.helper(kind, 0)
+        val (x, _) = if (asleep) restX(i, s.w, id, m.walk, lanes) else helperX(i, s.w, tick, id, m.walk, lanes)
+        kind to (x until x + s.w)
+    }
+}
+
+/** Where a dozing helper rests: the middle of its lane. */
+internal fun restX(i: Int, w: Int, id: Long, walk: IntRange, count: Int): Pair<Int, Boolean> {
+    val lane = (walk.last - walk.first) / count.coerceAtLeast(1)
+    val x = if (lane >= w + 6) walk.first + lane * i + (lane - w) / 2 else walk.first + (hash(id, i.toLong()) % (walk.last - walk.first - w).coerceAtLeast(1))
+    return x to (i % 2 == 1)
+}
+
+internal const val CAT_X = 14
+internal const val GIFT_X = SCENE_W - 34
+
+/** The cat curls up on a cushion if the floor has one, else by the left wall. */
+internal fun FloorLook.catX(m: SceneMeta): Int {
+    val cushion = decor.indexOfFirst { it.kind == DecorKind.CUSHION.name }
+    return if (cushion >= 0) cushionX(m, cushion) + 1 else CAT_X
+}
+
+private fun FloorLook.cushionX(m: SceneMeta, index: Int): Int {
+    // Mirrors the standing-decor placement in drawFloor.
+    val items = decor.mapNotNull { DecorKind.of(it.kind) }.filter { it != DecorKind.RUG }
+    var floorSpot = 0
+    var wallSpot = 0
+    val spots = m.floor.size.coerceAtLeast(1)
+    val target = decor[index].kind
+    items.forEach { k ->
+        val s = Art.decor(k)
+        if (k in WALL_DECOR && wallSpot < m.wall.size) { wallSpot++; return@forEach }
+        val base = m.floor.getOrNull(floorSpot % spots) ?: 40
+        val x = (base - (floorSpot / spots) * 18).coerceIn(10, SCENE_W - 10 - s.w)
+        floorSpot++
+        if (k.name == target) return x
+    }
+    return CAT_X
+}
 
 /** Where a helper stands right now: x in scene pixels and whether it faces left. */
 internal fun helperX(i: Int, w: Int, tick: Long, id: Long, walk: IntRange, count: Int = 1): Pair<Int, Boolean> {
@@ -247,10 +322,11 @@ private fun Grid.windowSky(m: SceneMeta, sky: Sky, tick: Long, id: Long) {
 }
 
 /** Draws one floor of the tower in full: sky, room, decor, flames, helpers, imps and dust. */
-internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, sky: Sky) {
+internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, sky: Sky, touch: Touch? = null) {
     val g = grid()
     val m = SCENES.getValue(look.kind)
     g.sideSky(SCENE_H, sky, look.id, tick)
+    g.seasonAir(SCENE_H, look.seasons, look.potions, sky, tick, look.id)
     g.windowSky(m, sky, tick, look.id)
     g.image(bg, TX, 0)
 
@@ -305,32 +381,86 @@ internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, s
         }
     }
 
-    // Helpers pace along the floor, bobbing and blinking.
-    look.helpers.forEachIndexed { i, kind ->
-        val frame = ((tick / 3 + i * 2) % 4).toInt()
-        val s = Art.helper(kind, frame)
-        val (x, flip) = helperX(i, s.w, tick, look.id, m.walk, look.helpers.size)
-        g.footShadow(TX + x + s.w / 2, SCENE_FLOOR + 1, s.w - 6)
-        g.sprite(s, TX + x, SCENE_FLOOR + 2 - s.h, flip)
+    // Light: a tidy floor glows warm at night, a dusty one sinks into the dark, imps flicker violet.
+    g.lighting(look, m, tick, sky)
+    if (Potion.BUBBLES in look.potions) g.bubbles(look.id, tick)
+
+    // The tower cat, curled up asleep; a pat sits it up for a moment.
+    if (look.cat) {
+        val cx = look.catX(m)
+        val since = tick - (touch?.cat ?: -1000L)
+        if (since in 0..24) {
+            val s = Art.catAwake(if (since % 8 < 2) 1 else 0)
+            g.footShadow(TX + cx + s.w / 2, SCENE_FLOOR + 1, s.w - 4)
+            g.sprite(s, TX + cx + 3, SCENE_FLOOR + 2 - s.h)
+            g.hearts(TX + cx + 12, SCENE_FLOOR - s.h, since)
+        } else {
+            val s = Art.catAsleep(((tick / 6) % 2).toInt())
+            g.footShadow(TX + cx + s.w / 2, SCENE_FLOOR + 1, s.w - 2)
+            g.sprite(s, TX + cx, SCENE_FLOOR + 2 - s.h)
+            g.zees(TX + cx + 6, SCENE_FLOOR - s.h - 2, tick, look.id)
+        }
     }
 
-    // Imps hop about and grin.
+    // A gift glints where a helper left it.
+    look.gift?.let { t ->
+        val s = Art.trinket(t.name)
+        val bob = if ((tick / 4) % 2 == 0L) 0 else 1
+        g.disc(TX + GIFT_X + s.w / 2, SCENE_FLOOR - s.h / 2, 9, FIRE_GLOW, 0.10f + 0.05f * ((tick / 3) % 2))
+        g.sprite(s, TX + GIFT_X, SCENE_FLOOR + 1 - s.h - bob)
+        if ((tick + look.id) % 10 < 3) g.twinkle(TX + GIFT_X + s.w - 2, SCENE_FLOOR - s.h - 2)
+    }
+
+    // Helpers pace along the floor, bobbing and blinking; late at night on a tidy floor they doze.
+    val lanes = look.helpers.size + if (look.apprentice != null) 1 else 0
+    look.helpers.forEachIndexed { i, kind ->
+        val since = tick - (touch?.pats?.get(kind) ?: -1000L)
+        val patted = since in 0..20
+        val frame = if (look.asleep && !patted) 3 else ((tick / 3 + i * 2) % 4).toInt()
+        val s = Art.helper(kind, frame)
+        val (x, flip) = if (look.asleep) restX(i, s.w, look.id, m.walk, lanes) else helperX(i, s.w, tick, look.id, m.walk, lanes)
+        val hop = if (patted) intArrayOf(0, 3, 5, 6, 5, 3, 0, 0, 2, 3, 2, 0)[(since % 12).toInt()] else 0
+        if (Potion.STARDUST in look.potions && !look.asleep) g.sparkleTrail(TX + x + s.w / 2, SCENE_FLOOR - 4, flip, tick, i)
+        g.footShadow(TX + x + s.w / 2, SCENE_FLOOR + 1, s.w - 6 - hop)
+        g.sprite(s, TX + x, SCENE_FLOOR + 2 - s.h - hop, flip)
+        if (patted) g.hearts(TX + x + s.w / 2, SCENE_FLOOR - s.h - 2, since)
+        else if (look.asleep) g.zees(TX + x + s.w / 2 + 3, SCENE_FLOOR - s.h, tick, look.id + i)
+    }
+
+    // The apprentice walks the floor too, in the clothes from the wardrobe.
+    look.apprentice?.let { dress ->
+        val since = tick - (touch?.apprentice ?: -1000L)
+        val s = dress(((tick / 4) % 2).toInt())
+        val i = look.helpers.size
+        val (x, flip) = if (look.asleep) restX(i, s.w, look.id, m.walk, lanes) else helperX(i, s.w, tick, look.id + 5, m.walk, lanes)
+        val hop = if (since in 0..11) intArrayOf(0, 3, 5, 6, 5, 3, 0, 0, 2, 3, 2, 0)[since.toInt()] else 0
+        g.footShadow(TX + x + s.w / 2, SCENE_FLOOR + 1, s.w - 6)
+        g.sprite(s, TX + x, SCENE_FLOOR + 2 - s.h - hop, flip)
+        if (since in 0..20) g.twinkle(TX + x + (if (flip) 1 else s.w - 2), SCENE_FLOOR - s.h + 2)
+    }
+
+    // Imps hop about and grin, each in its own colours.
     val impSpots = listOf(30, 66, 88)
-    for (i in 0 until look.imps.coerceAtMost(3)) {
-        val s = Art.imp(((tick / 3 + i) % 2).toInt())
+    look.imps.take(3).forEachIndexed { i, kind ->
+        val s = Looks.imp(kind, ((tick / 3 + i) % 2).toInt())
         val hop = intArrayOf(0, 2, 4, 5, 4, 2, 0, 0)[((tick + i * 3) % 8).toInt()]
         val x = impSpots[i] + (sin((tick + i * 40) / 12.0) * 6).toInt()
         g.footShadow(TX + x + s.w / 2, SCENE_FLOOR + 1, s.w - 8 - hop)
         g.sprite(s, TX + x, SCENE_FLOOR + 2 - s.h - hop, flip = (tick / 24 + i) % 2 == 0L)
     }
+
+    if (Potion.BLOSSOM in look.potions) g.blossomWalls(look.id, SCENE_H, tick)
 }
 
 /** The sky, the moon (or sun and clouds), the roof with its chimney smoke and glowing spire. */
-internal fun DrawScope.drawRoof(roof: ImageBitmap, tick: Long, sky: Sky) {
+internal fun DrawScope.drawRoof(roof: ImageBitmap, tick: Long, sky: Sky, ts: TowerSky = TowerSky()) {
     val g = grid()
     drawRect(sky.top, Offset.Zero, size)
     g.skyGradient(ROOF_ROWS, sky)
-    g.stars(0, 0, GW, ROOF_ROWS - 10, 46, 7, tick, sky)
+    g.stars(0, 0, GW, ROOF_ROWS - 10, if (Potion.MOONGLOW in ts.potions) 80 else 46, 7, if (Potion.MOONGLOW in ts.potions) tick * 2 else tick, sky)
+    if (!sky.day) g.constellations(ts.constellations, tick)
+    g.seasonAir(ROOF_ROWS - 8, ts.seasons, ts.potions, sky, tick, 3, wide = true)
+    g.skyShow(ts, sky, tick)
     if (sky.day) {
         val sun = Color(0xFFFFE070)
         g.rect(12, 6, 10, 10, sun)
@@ -344,20 +474,36 @@ internal fun DrawScope.drawRoof(roof: ImageBitmap, tick: Long, sky: Sky) {
             g.sprite(c, x, 14 + k * 16)
         }
     } else {
+        if (Potion.MOONGLOW in ts.potions) {
+            g.disc(19, 15, 16, Color(0xFFB062E0), 0.10f + 0.04f * ((tick / 4) % 2))
+            g.disc(19, 15, 12, Color(0xFFD696F0), 0.10f)
+        }
         g.sprite(Art.moon, 10, 6)
+        // A pumpkin-coloured moon for Hallowe'en.
+        if (Season.HALLOWEEN in ts.seasons) g.disc(19, 15, 8, Color(0xFFFC7400), 0.28f)
     }
     val oy = SKY_ROWS
     val rx = (GW - ROOF_W) / 2
     g.image(roof, rx, oy)
-    // Smoke puffs from the chimney, rising and fading.
+    if (Season.WINTER in ts.seasons) g.snowCap(roof, rx, oy)
+    if (Season.NEW_YEAR in ts.seasons) g.garland(rx, oy + ROOF_H - 5, ROOF_W, tick)
+    // Smoke puffs from the chimney, rising and fading; pink and gold with the embersmoke potion.
     val (cx, cy) = ROOF_CHIMNEY
     val smoke = if (sky.day) Color(0xFFE8ECF4) else Color(0xFF8C86A8)
+    val ember = Potion.EMBERSMOKE in ts.potions
     for (k in 0 until 5) {
         val life = ((tick + k * 6) % 30).toInt()
         val r = 1 + life / 8
         val x = rx + cx + life / 3 + (sin((tick + k * 9) / 6.0) * 1.5).toInt()
         val y = oy + cy - life
-        g.rect(x - r, y - r, r * 2 + 1, r * 2 + 1, smoke, alpha = (1f - life / 30f) * 0.7f)
+        if (ember) {
+            // Round puffs, pink and gold in turn.
+            val c = if (k % 2 == 0) Color(0xFFF878B8) else Color(0xFFFCE070)
+            g.disc(x, y, r + 1, c, (1f - life / 30f) * 0.75f)
+            g.dot(x - r / 2, y - r / 2, Color(0xFFFFFCF4), (1f - life / 30f) * 0.8f)
+        } else {
+            g.rect(x - r, y - r, r * 2 + 1, r * 2 + 1, smoke, alpha = (1f - life / 30f) * 0.7f)
+        }
     }
     // The spire's lantern.
     val (lx, ly) = ROOF_LANTERN
@@ -368,11 +514,17 @@ internal fun DrawScope.drawRoof(roof: ImageBitmap, tick: Long, sky: Sky) {
 }
 
 /** The ground floor: the front door between flickering torches, grass, and fireflies at night. */
-internal fun DrawScope.drawBase(base: ImageBitmap, tick: Long, sky: Sky) {
+internal fun DrawScope.drawBase(base: ImageBitmap, tick: Long, sky: Sky, ts: TowerSky = TowerSky()) {
     val g = grid()
     g.sideSky(BASE_GROUND, sky, 11, tick)
-    val grass = if (sky.day) listOf(Color(0xFF62B04A), Color(0xFF4A9640), Color(0xFF357A38))
-    else listOf(Color(0xFF2E6A44), Color(0xFF235438), Color(0xFF183E2C))
+    g.seasonAir(BASE_GROUND, ts.seasons, ts.potions, sky, tick, 11)
+    val snow = Season.WINTER in ts.seasons
+    val grass = when {
+        snow && sky.day -> listOf(Color(0xFFF4F8FF), Color(0xFFDCE6F4), Color(0xFFB8C6DC))
+        snow -> listOf(Color(0xFFB8C2E0), Color(0xFF8C98BC), Color(0xFF6A7498))
+        sky.day -> listOf(Color(0xFF62B04A), Color(0xFF4A9640), Color(0xFF357A38))
+        else -> listOf(Color(0xFF2E6A44), Color(0xFF235438), Color(0xFF183E2C))
+    }
     drawRect(grass[1], Offset(0f, g.px * BASE_GROUND), Size(size.width, size.height - g.px * BASE_GROUND))
     drawRect(grass[0], Offset(0f, g.px * BASE_GROUND), Size(size.width, g.px))
     for (i in 0 until 70) {
@@ -387,6 +539,19 @@ internal fun DrawScope.drawBase(base: ImageBitmap, tick: Long, sky: Sky) {
     g.rect(GW / 2 - 9, BASE_GROUND, 18, 1, Color(0xFFE8C88A))
     g.image(base, TX, 0)
     BASE_TORCHES.forEachIndexed { i, (x, y) -> g.flame(TX + x, y + 1, 1f, ((tick + i) % 3).toInt()) }
+    if (Potion.BLOSSOM in ts.potions) g.blossomWalls(5, BASE_GROUND, tick)
+    // Jack-o'-lanterns on the steps.
+    if (Season.HALLOWEEN in ts.seasons) {
+        val p = Art.decor(DecorKind.PUMPKIN, ((tick / 3) % 2).toInt())
+        g.sprite(p, GW / 2 - 24 - p.w, BASE_ROWS - p.h - 1)
+        g.sprite(p, GW / 2 + 24, BASE_ROWS - p.h - 1)
+    }
+    if (Season.NEW_YEAR in ts.seasons) {
+        val f = Art.decor(DecorKind.FIR, ((tick / 4) % 2).toInt())
+        g.sprite(f, 4, BASE_ROWS - f.h)
+    }
+    if (Season.SUMMER in ts.seasons && sky.day) g.butterflies(tick)
+    if (Potion.FIREFLIES in ts.potions) g.rainbowFlies(tick, BASE_GROUND)
     if (!sky.day) {
         for (k in 0 until 6) {
             val h = hash(77, k.toLong())

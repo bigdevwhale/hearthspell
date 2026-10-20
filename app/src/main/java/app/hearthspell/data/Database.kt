@@ -1,6 +1,7 @@
 package app.hearthspell.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -92,6 +93,44 @@ data class Decor(
     val boughtAt: Long,
 )
 
+/**
+ * Something found or met: a trinket a helper left ([FIND_GIFT], its [helper] and the [day] it was found for)
+ * or an imp shown the door ([FIND_IMP], with the [castId] that did it, so undo takes it back).
+ */
+@Entity(tableName = "finds", indices = [Index("castId")])
+data class Find(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val type: String,
+    /** [app.hearthspell.content.Trinket] or [app.hearthspell.content.ImpKind] name. */
+    val kind: String,
+    val helper: String = "",
+    val day: Long = 0,
+    val at: Long,
+    val castId: Long = 0,
+)
+
+const val FIND_GIFT = "GIFT"
+const val FIND_IMP = "IMP"
+
+/** A potion brewed at [at]; it lasts [app.hearthspell.content.Potion.DAYS] days. */
+@Entity(tableName = "brews")
+data class Brew(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    /** [app.hearthspell.content.Potion] name. */
+    val potion: String,
+    val at: Long,
+)
+
+/** A piece of the apprentice's wardrobe, bought with mana. */
+@Entity(tableName = "wardrobe")
+data class Wear(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    /** [app.hearthspell.content.Garment] name. */
+    val kind: String,
+    val cost: Int,
+    val boughtAt: Long,
+)
+
 @Dao
 interface HearthDao {
     @Query("SELECT * FROM floors ORDER BY sort, id") fun observeFloors(): Flow<List<Floor>>
@@ -99,12 +138,18 @@ interface HearthDao {
     @Query("SELECT * FROM casts ORDER BY at DESC") fun observeCasts(): Flow<List<Cast>>
     @Query("SELECT * FROM reagents ORDER BY name COLLATE NOCASE") fun observeReagents(): Flow<List<Reagent>>
     @Query("SELECT * FROM decor ORDER BY boughtAt") fun observeDecor(): Flow<List<Decor>>
+    @Query("SELECT * FROM finds ORDER BY at DESC") fun observeFinds(): Flow<List<Find>>
+    @Query("SELECT * FROM brews ORDER BY at DESC") fun observeBrews(): Flow<List<Brew>>
+    @Query("SELECT * FROM wardrobe ORDER BY boughtAt") fun observeWardrobe(): Flow<List<Wear>>
 
     @Query("SELECT * FROM floors ORDER BY sort, id") suspend fun floors(): List<Floor>
     @Query("SELECT * FROM spells ORDER BY sort, id") suspend fun spells(): List<Spell>
     @Query("SELECT * FROM casts ORDER BY at DESC") suspend fun casts(): List<Cast>
     @Query("SELECT * FROM reagents ORDER BY name COLLATE NOCASE") suspend fun reagents(): List<Reagent>
     @Query("SELECT * FROM decor ORDER BY boughtAt") suspend fun decor(): List<Decor>
+    @Query("SELECT * FROM finds ORDER BY at DESC") suspend fun finds(): List<Find>
+    @Query("SELECT * FROM brews ORDER BY at DESC") suspend fun brews(): List<Brew>
+    @Query("SELECT * FROM wardrobe ORDER BY boughtAt") suspend fun wardrobe(): List<Wear>
 
     @Upsert suspend fun upsertFloor(f: Floor): Long
     @Query("DELETE FROM floors WHERE id = :id") suspend fun deleteFloorRow(id: Long)
@@ -128,17 +173,26 @@ interface HearthDao {
     @Query("DELETE FROM decor WHERE id = :id") suspend fun deleteDecor(id: Long)
     @Query("UPDATE decor SET floorId = 0 WHERE floorId = :floorId") suspend fun unplaceDecorOf(floorId: Long)
 
+    @Insert suspend fun insertFind(f: Find): Long
+    @Query("DELETE FROM finds WHERE castId = :castId AND castId != 0") suspend fun deleteFindsOfCast(castId: Long)
+    @Insert suspend fun insertBrew(b: Brew): Long
+    @Insert suspend fun insertWear(w: Wear): Long
+
     @Query("DELETE FROM floors") suspend fun wipeFloors()
     @Query("DELETE FROM spells") suspend fun wipeSpells()
     @Query("DELETE FROM casts") suspend fun wipeCasts()
     @Query("DELETE FROM reagents") suspend fun wipeReagents()
     @Query("DELETE FROM decor") suspend fun wipeDecor()
+    @Query("DELETE FROM finds") suspend fun wipeFinds()
+    @Query("DELETE FROM brews") suspend fun wipeBrews()
+    @Query("DELETE FROM wardrobe") suspend fun wipeWardrobe()
 }
 
 @Database(
-    entities = [Floor::class, Spell::class, Cast::class, Reagent::class, Decor::class],
-    version = 1,
+    entities = [Floor::class, Spell::class, Cast::class, Reagent::class, Decor::class, Find::class, Brew::class, Wear::class],
+    version = 2,
     exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 abstract class HearthDatabase : RoomDatabase() {
     abstract fun dao(): HearthDao

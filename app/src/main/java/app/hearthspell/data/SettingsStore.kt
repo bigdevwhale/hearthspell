@@ -36,6 +36,11 @@ data class Settings(
     val lettersRead: Set<String> = emptySet(),
     /** Moments already shown once (a helper woke up, a rank reached). */
     val seen: Set<String> = emptySet(),
+    /** The tower cat's name, given when it first came in; empty before that. */
+    val catName: String = "",
+    /** What the apprentice wears: [app.hearthspell.content.Garment] names. */
+    val robe: String = "CRIMSON",
+    val hat: String = "POINTED",
 )
 
 class SettingsStore(context: Context) {
@@ -55,6 +60,9 @@ class SettingsStore(context: Context) {
         sound = this[SOUND] ?: true,
         lettersRead = this[LETTERS_READ] ?: emptySet(),
         seen = this[SEEN] ?: emptySet(),
+        catName = this[CAT_NAME] ?: "",
+        robe = this[ROBE] ?: "CRIMSON",
+        hat = this[HAT] ?: "POINTED",
     )
 
     suspend fun now(): Settings = settings.first()
@@ -73,6 +81,9 @@ class SettingsStore(context: Context) {
             it[SOUND] = s.sound
             it[LETTERS_READ] = s.lettersRead
             it[SEEN] = s.seen
+            it[CAT_NAME] = s.catName
+            it[ROBE] = s.robe
+            it[HAT] = s.hat
         }
     }
 
@@ -88,5 +99,8 @@ class SettingsStore(context: Context) {
         val SOUND = booleanPreferencesKey("sound")
         val LETTERS_READ = stringSetPreferencesKey("letters_read")
         val SEEN = stringSetPreferencesKey("seen")
+        val CAT_NAME = stringPreferencesKey("cat_name")
+        val ROBE = stringPreferencesKey("robe")
+        val HAT = stringPreferencesKey("hat")
     }
 }

@@ -77,10 +77,13 @@ object Alarms {
         else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextAt(s.remindAt, LocalDateTime.now(zone)).atZone(zone).toInstant().toEpochMilli(), p)
     }
 
-    private suspend fun world(context: Context): World {
+    internal suspend fun world(context: Context): World {
         val c = context.container
         val d = c.dao
-        return World(d.floors(), d.spells(), d.casts(), d.reagents(), d.decor(), System.currentTimeMillis(), ZoneId.systemDefault(), c.settings.now().startDay)
+        return World(
+            d.floors(), d.spells(), d.casts(), d.reagents(), d.decor(), System.currentTimeMillis(), ZoneId.systemDefault(), c.settings.now().startDay,
+            d.finds(), d.brews(), d.wardrobe(),
+        )
     }
 
     suspend fun fire(context: Context) {
@@ -96,6 +99,11 @@ object Alarms {
         val letterToday = newest > 0 && (w.day - s.startDay) % 7 == 0L && newest.toString() !in s.lettersRead
         if (letterToday) {
             notify(context, g(R.string.notif_letter_title), g(R.string.notif_letter_text), "letter/$newest")
+            return
+        }
+        // Back after a long while: the master writes himself, gently, once the imps have had their party.
+        if (w.homecoming && w.daysAway in 5..60 && w.totalImps > 0) {
+            notify(context, g(R.string.notif_return_title), g(R.string.notif_return_text), "tower")
             return
         }
         val worst = w.due.firstOrNull { w.glow(it) == Glow.IMPS } ?: return

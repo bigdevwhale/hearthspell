@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -59,6 +60,12 @@ import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.components.PX
 import app.hearthspell.ui.components.rememberNow
 import app.hearthspell.ui.decor.DecorScreen
+import app.hearthspell.ui.extras.BestiaryScreen
+import app.hearthspell.ui.extras.BrewScreen
+import app.hearthspell.ui.extras.StarsScreen
+import app.hearthspell.ui.extras.TeaScreen
+import app.hearthspell.ui.extras.TreasuresScreen
+import app.hearthspell.ui.extras.WardrobeScreen
 import app.hearthspell.ui.grimoire.GrimoireTab
 import app.hearthspell.ui.grimoire.HelperScreen
 import app.hearthspell.ui.grimoire.SpellScreen
@@ -83,6 +90,12 @@ import java.time.ZoneId
 
 enum class Tab { TOWER, GRIMOIRE, MARKET, LETTERS }
 
+/** Screens a notification (or `adb ... --es route`) may open directly. */
+private val SCREENS = setOf("stars", "brew", "wardrobe", "bestiary", "treasures", "tea", "decor?floor=0", "cantrips", "settings")
+
+/** Sounds and buzzes, as the settings allow. */
+val LocalFeel = staticCompositionLocalOf<Feel?> { null }
+
 /** Everything stored plus the settings, rebuilt once a minute or on any change. */
 @Immutable
 class WData(val world: World, val settings: Settings) {
@@ -105,6 +118,12 @@ class Go(private val nav: NavHostController) {
     fun trip() = nav.navigate("trip")
     fun cantrips() = nav.navigate("cantrips")
     fun settings() = nav.navigate("settings")
+    fun stars() = nav.navigate("stars")
+    fun brew() = nav.navigate("brew")
+    fun wardrobe() = nav.navigate("wardrobe")
+    fun bestiary() = nav.navigate("bestiary")
+    fun treasures() = nav.navigate("treasures")
+    fun tea() = nav.navigate("tea")
     fun back() = nav.popBackStack()
     fun home() = nav.popBackStack("main", inclusive = false)
 }
@@ -124,10 +143,16 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
     val casts by dao.observeCasts().collectAsStateWithLifecycle(initialValue = emptyList())
     val reagents by dao.observeReagents().collectAsStateWithLifecycle(initialValue = emptyList())
     val decor by dao.observeDecor().collectAsStateWithLifecycle(initialValue = emptyList())
+    val finds by dao.observeFinds().collectAsStateWithLifecycle(initialValue = emptyList())
+    val brews by dao.observeBrews().collectAsStateWithLifecycle(initialValue = emptyList())
+    val wardrobe by dao.observeWardrobe().collectAsStateWithLifecycle(initialValue = emptyList())
     val minute = rememberNow(60_000)
-    val data = remember(floors, spells, casts, reagents, decor, settings, minute) {
+    val data = remember(floors, spells, casts, reagents, decor, finds, brews, wardrobe, settings, minute) {
         WData(
-            World(floors.orEmpty(), spells, casts, reagents, decor, System.currentTimeMillis(), ZoneId.systemDefault(), settings.startDay),
+            World(
+                floors.orEmpty(), spells, casts, reagents, decor, System.currentTimeMillis(), ZoneId.systemDefault(), settings.startDay,
+                finds, brews, wardrobe,
+            ),
             settings,
         )
     }
@@ -148,6 +173,10 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
             route == "tower" -> tab = Tab.TOWER
             route.startsWith("floor/") -> { tab = Tab.TOWER; route.removePrefix("floor/").toLongOrNull()?.let { go.floor(it) } }
             route.startsWith("letter/") -> { tab = Tab.LETTERS; route.removePrefix("letter/").toIntOrNull()?.let { go.letter(it) } }
+            route == "grimoire" -> tab = Tab.GRIMOIRE
+            route == "market" -> tab = Tab.MARKET
+            route == "letters" -> tab = Tab.LETTERS
+            route in SCREENS -> nav.navigate(route)
         }
         openRoute.value = null
     }
@@ -161,7 +190,8 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
         }
     }
 
-    CompositionLocalProvider(LocalPerson provides Person(settings.name, settings.gender)) {
+    val feel = remember(settings.sound, settings.haptics) { Feel(context.applicationContext, settings.sound, settings.haptics) }
+    CompositionLocalProvider(LocalPerson provides Person(settings.name, settings.gender), LocalFeel provides feel) {
         Box(Modifier.fillMaxSize().background(U.c.bg)) {
             NavHost(
                 navController = nav,
@@ -204,6 +234,12 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
                 composable("trip") { TripScreen(data, go) }
                 composable("cantrips") { CantripsScreen(data, go) }
                 composable("settings") { SettingsScreen(data, go) }
+                composable("stars") { StarsScreen(data, go) }
+                composable("brew") { BrewScreen(data, go) }
+                composable("wardrobe") { WardrobeScreen(data, go) }
+                composable("bestiary") { BestiaryScreen(data, go) }
+                composable("treasures") { TreasuresScreen(data, go) }
+                composable("tea") { TeaScreen(data, go) }
             }
         }
     }

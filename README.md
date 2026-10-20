@@ -37,9 +37,12 @@ In Hearthspell every chore has its own rhythm. Its **freshness** fades slowly fr
 | ✨ | **Spells are chores** | 45 ready-made spells with sensible intervals, from "wash the dishes" to "clean the oven", each with a small incantation. Or write your own: any name, any interval, three levels of effort. Pause a spell for a holiday. |
 | 😈 | **Imps, not punishment** | A spell past its interval brings an imp to its floor. Imps are harmless and a bit cheeky. One cast sends one packing. |
 | 🧹 | **Helpers wake up** | 17 helpers (Broom, Sponge, Bucket, Teapot, Watering Can, Candle, Key, Satchel…) each tied to their spells. Cast a spell five times and its helper wakes and starts pacing the floor; it grows through four levels. |
-| 💧 | **Mana and decor** | Every cast earns mana: 5 for a cantrip, 10 for a spell, 20 for a great one. Spend it on 20 pieces of decor (a cat, a cauldron, a telescope, glowing mushrooms, a fireplace…) and place up to four on each floor. |
+| 💧 | **Mana and decor** | Every cast earns mana: 5 for a cantrip, 10 for a spell, 20 for a great one. Spend it on 21 pieces of decor plus seasonal ones (a cat, a cauldron, a telescope, glowing mushrooms, a fireplace…) and place up to four on each floor. |
 | 📜 | **The master's requests** | Each week the master asks for three spells that have waited longest. They're worth double mana until Sunday. |
 | 🌙 | **Low on energy** | One button shows only the small spells, most urgent first. Even a small spell drives the imps out. |
+| 🕯️ | **A living tower** | At night a tidy floor glows warm, a dusty one sinks into the dark and an imp's floor flickers violet. Late at night the helpers doze. When every floor is tidy a comet crosses the sky (a rainbow by day). |
+| 🐾 | **Pat everyone** | Tap a helper and it hops, says something and hearts float up. A cat moves in after your first few spells, gets a name and sleeps wherever you've just tidied. Tap it and it purrs. |
+| 🎃 | **Seasons** | Autumn leaves, Hallowe'en pumpkins and bats, winter snow on the roof, New Year garlands and fireworks, spring petals, summer butterflies. Seasonal decor comes back every year. |
 
 ## The rest of the house
 
@@ -47,6 +50,16 @@ In Hearthspell every chore has its own rhythm. Its **freshness** fades slowly fr
 - **The market.** The shopping list as reagents for the tower, sorted into shop sections with tower names (Gifts of the Field, Milk Rivers, Cleaning Elixirs…). The section is guessed from the name in English or Russian. The app learns how often you buy things and suggests what's running low. Market mode is a big one-hand checklist; finishing the trip casts your market spell.
 - **Letters from the master.** Twelve letters, one a week, from Master Ambrose on his travels: salt marshes, a monastery of silent brooms, an old friend who is a dragon, the real reason he left, and the road home.
 - **One quiet reminder a day,** in a helper's voice, only when imps have moved in or a letter has arrived.
+- **The bestiary.** Eighteen named imps (Pip the Sock-Chewer, Crumbwhistle of the kitchen, Snorewick under the bed, a Hallowimp in a sheet…), each with a habit and a parting word. Which one moves in depends on the room and the season, never on how long a chore waited.
+- **Gifts from the helpers.** After a quiet night on a tidy floor, its helpers may leave a trinket on the windowsill: a button, a feather, an acorn, now and then a rare star shard. Gifts wait three days. A shelf of seventeen to collect.
+- **The star chart.** Every rank a spell climbs lights a star over the Observatory; the stars fill twelve constellations (the Great Broom, the Teapot, Pudding the Dragon…) and the lit ones shine over the roof at night.
+- **The cauldron.** Every reagent bought at the market leaves an essence on the alchemy shelf. Brew them into potions that do nothing useful and make the tower prettier for a week: pink chimney smoke, rainbow fireflies, soap bubbles, flowers on the walls.
+- **The wardrobe.** Robes and hats for mana: a flower crown, a frog cap, cat ears, a little crown. The apprentice walks about every floor in them.
+- **Souvenirs.** Each of the master's letters brings something in the envelope: a clay frog, a dragon's scale, a ship in a bottle, a jar of northern lights.
+- **Sunday tea.** On Sunday the helpers gather round the table and tell you about the week in a few warm lines. No charts.
+- **Coming home.** Back after five days or more, the master welcomes you, the first spell is a Great Spring Cleaning with confetti and counts double. Nothing is ever lost for being away.
+- **Sound and touch.** Little chiptune chimes, synthesised on the phone; spells cast in a row climb a scale and the buzz grows a little.
+- **A home-screen widget**: the tower from outside, its windows warm where it's tidy and violet (with two yellow eyes) where imps moved in.
 
 <table>
   <tr>

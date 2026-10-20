@@ -92,7 +92,12 @@ enum class Tip(val speaker: Speaker, val pages: List<Page>) {
     LETTERS(Speaker.Master, listOf(Page(R.string.tip_letters_t, R.string.tip_letters))),
     DECOR(Speaker.Thing(DecorKind.CAT), listOf(Page(R.string.tip_decor_t, R.string.tip_decor))),
     SPELL_FORM(Speaker.Helper(HelperKind.LADLE), listOf(Page(R.string.tip_form_t, R.string.tip_form))),
-    FLOORS(Speaker.Helper(HelperKind.KEY), listOf(Page(R.string.tip_floors_t, R.string.tip_floors)));
+    FLOORS(Speaker.Helper(HelperKind.KEY), listOf(Page(R.string.tip_floors_t, R.string.tip_floors))),
+    STARS(Speaker.Thing(DecorKind.TELESCOPE), listOf(Page(R.string.tip_stars_t, R.string.tip_stars))),
+    BREW(Speaker.Thing(DecorKind.CAULDRON), listOf(Page(R.string.tip_brew_t, R.string.tip_brew))),
+    WARDROBE(Speaker.Helper(HelperKind.IRON), listOf(Page(R.string.tip_wardrobe_t, R.string.tip_wardrobe))),
+    BESTIARY(Speaker.Thing(DecorKind.IMP_JAR), listOf(Page(R.string.tip_bestiary_t, R.string.tip_bestiary))),
+    TREASURES(Speaker.Helper(HelperKind.BROOM), listOf(Page(R.string.tip_treasures_t, R.string.tip_treasures)));
 
     val key: String get() = "tip:$name"
 

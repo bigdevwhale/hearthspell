@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Coming home after a while. -->
+    <string name="home_title">С возвращением</string>
+    <plurals name="home_text">
+        <item quantity="one">Тебя не было %d день. Пакостники устроили вечеринку, но башня берегла твоё место. Первое заклинание сегодня стоит вдвое больше.</item>
+        <item quantity="few">Тебя не было %d дня. Пакостники устроили вечеринку, но башня берегла твоё место. Первое заклинание сегодня стоит вдвое больше.</item>
+        <item quantity="many">Тебя не было %d дней. Пакостники устроили вечеринку, но башня берегла твоё место. Первое заклинание сегодня стоит вдвое больше.</item>
+        <item quantity="other">Тебя не было %d дня. Пакостники устроили вечеринку, но башня берегла твоё место. Первое заклинание сегодня стоит вдвое больше.</item>
+    </plurals>
+    <string name="home_grand">Великая весенняя уборка!</string>
+    <string name="notif_return_title">Башня бережёт твоё место</string>
+    <string name="notif_return_text">Пакостники немного повеселились. Ничего страшного. Одно маленькое заклинание, когда будешь {готов|готова}.</string>
+
+    <!-- Casting. -->
+    <string name="cast_chain">Цепочка ×%d</string>
+    <string name="floor_imp_named">Завёлся %s</string>
+
+    <!-- Gifts. -->
+    <string name="gift_title">%s: тебе подарок!</string>
+    <string name="gift_text">На подоконнике: %s. Нажми, чтобы забрать.</string>
+    <string name="gift_found_by">Это нашёл помощник %s, пока ты спал{|а}.</string>
+    <string name="gift_rare">Редкая находка!</string>
+    <string name="gift_keep">В сокровища</string>
+    <string name="gift_picked">Находка: %s!</string>
+
+    <!-- The cat. -->
+    <string name="cat_title">Пришёл кот</string>
+    <string name="cat_text">Через окно, как и положено котам. Посмотрел на чистый пол, замурлыкал и решил остаться. Спать он будет там, где чище всего. Как его назовём?</string>
+    <string name="cat_default_name">Уголёк</string>
+    <string name="cat_ok">Добро пожаловать, кот</string>
+    <string name="tea_cat">%s проспал всю неделю и ни о чём не жалеет.</string>
+
+    <!-- Stars. -->
+    <string name="stars_title">Звёздная карта</string>
+    <string name="stars_count">Зажглось звёзд: %1$d из %2$d</string>
+    <string name="stars_how">Каждый раз, когда заклинание поднимается на ранг (Подмастерье, Знаток, Мастер, Архимаг), над Обсерваторией загорается новая звезда.</string>
+    <string name="stars_list">Созвездия</string>
+    <string name="stars_new_title">Зажглось созвездие!</string>
+    <string name="stars_new_ok">Как красиво</string>
+
+    <!-- Brewing. -->
+    <string name="brew_title">Котёл</string>
+    <string name="brew_sub">Каждый реагент с рынка оставляет на алхимической полке эссенцию. Свари из них зелье: пользы от него никакой, зато башня неделю будет краше.</string>
+    <string name="brew_shelf">Алхимическая полка</string>
+    <string name="brew_active">Сейчас действуют</string>
+    <plurals name="brew_days_left">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дня</item>
+        <item quantity="many">%d дней</item>
+        <item quantity="other">%d дня</item>
+    </plurals>
+    <string name="brew_recipes">Рецепты</string>
+    <string name="brew_do">Сварить</string>
+    <string name="brew_again">Сварить ещё (+7 дней)</string>
+    <string name="brew_done">%s готово!</string>
+
+    <!-- Wardrobe. -->
+    <string name="wardrobe_title">Гардероб</string>
+    <string name="wardrobe_sub">В чём {ученик|ученица} ходит по башне и по всем этажам. Нажми, чтобы купить за ману, и ещё раз, чтобы переодеться.</string>
+    <string name="wardrobe_robes">Мантии</string>
+    <string name="wardrobe_hats">Шляпы</string>
+    <string name="wardrobe_worn">Надето</string>
+    <string name="wardrobe_wear">Надеть</string>
+
+    <!-- Bestiary. -->
+    <string name="bestiary_title">Бестиарий</string>
+    <string name="bestiary_sub">Все пакостники, которых ты {выставил|выставила} за дверь. Кто заведётся, зависит от комнаты и времени года, а не от того, как долго ждало дело.</string>
+    <string name="bestiary_count">Знакомых пакостников: %1$d из %2$d</string>
+    <plurals name="bestiary_seen">
+        <item quantity="one">Выставлен за дверь %d раз</item>
+        <item quantity="few">Выставлен за дверь %d раза</item>
+        <item quantity="many">Выставлен за дверь %d раз</item>
+        <item quantity="other">Выставлен за дверь %d раза</item>
+    </plurals>
+    <string name="bestiary_hint_season">Приходит только в своё время года: %s</string>
+    <string name="bestiary_hint_floor">Водится здесь: %s</string>
+    <string name="bestiary_hint_any">Заводится где угодно</string>
+
+    <!-- Treasures. -->
+    <string name="treasures_title">Сокровища</string>
+    <string name="treasures_sub">Мелочи, которые помощники находят после тихой ночи на чистом этаже.</string>
+    <string name="treasures_count">Найдено: %1$d из %2$d</string>
+    <string name="treasures_shelf">Полка</string>
+    <string name="treasures_rare">редкое</string>
+    <string name="treasures_how">Если этаж остался чистым на ночь, его помощники могут оставить что-нибудь на подоконнике. Подарки ждут три дня. Некоторые редкие, а жёлудь или осколок звезды иногда нужны для зелья.</string>
+
+    <!-- Sunday tea. -->
+    <string name="tea_card_title">Воскресный чай налит</string>
+    <string name="tea_card_text">Помощники ждут за столом, чтобы рассказать тебе о неделе.</string>
+    <string name="tea_title">Воскресное чаепитие</string>
+    <string name="tea_week">Неделя %1$d–%2$d</string>
+    <plurals name="tea_casts">
+        <item quantity="one">За неделю ты {сотворил|сотворила} %d заклинание. И оно засчитано.</item>
+        <item quantity="few">За неделю ты {сотворил|сотворила} %d заклинания.</item>
+        <item quantity="many">За неделю ты {сотворил|сотворила} %d заклинаний.</item>
+        <item quantity="other">За неделю ты {сотворил|сотворила} %d заклинания.</item>
+    </plurals>
+    <string name="tea_helper">Больше всех трудился помощник %s и заслужил печенье.</string>
+    <string name="tea_floor">Ярче всех сиял этаж %s.</string>
+    <plurals name="tea_imps">
+        <item quantity="one">%d пакостник выставлен за дверь.</item>
+        <item quantity="few">%d пакостника выставлены за дверь.</item>
+        <item quantity="many">%d пакостников выставлены за дверь.</item>
+        <item quantity="other">%d пакостника выставлены за дверь.</item>
+    </plurals>
+    <string name="tea_no_imps">Ни один пакостник не остался на чай.</string>
+    <string name="tea_gifts">Помощники принесли тебе: %s.</string>
+    <string name="tea_close_1">Налей ещё чашку. Следующая неделя подождёт до понедельника.</string>
+    <string name="tea_close_2">Чайник напевает. В башне тепло. Этого вполне достаточно.</string>
+    <string name="tea_close_3">Что не успели, то никуда не денется. И мы тоже.</string>
+    <string name="tea_close_4">Хорошая неделя. Возьми последнее печенье, ты {заслужил|заслужила}.</string>
+    <string name="tea_clink">Чокнуться чашками</string>
+
+    <!-- Souvenirs. -->
+    <string name="souvenir_in_envelope">В конверте</string>
+    <string name="souvenir_keep">Положить в сундук</string>
+    <string name="souvenir_kept">Уже в башне. Поставь его из сундука в лавке убранства.</string>
+
+    <!-- Hints for the new screens. -->
+    <string name="tip_stars_t">Карта того, что ты {выучил|выучила}</string>
+    <string name="tip_stars">Каждый ранг заклинания зажигает одну звезду. Они по одной складываются в созвездия, а готовые ночью сияют над крышей.</string>
+    <string name="tip_brew_t">Буль-буль</string>
+    <string name="tip_brew">Реагенты с рынка оставляют здесь эссенции. Зелью нужно несколько, иногда ещё и безделушка, и неделю башня будет краше.</string>
+    <string name="tip_wardrobe_t">Наряд для башни</string>
+    <string name="tip_wardrobe">Мантии и шляпы за ману. Острая шляпа принимает цвет мантии. В чём выберешь, в том и будешь ходить по этажам.</string>
+    <string name="tip_bestiary_t">Знай своих пакостников</string>
+    <string name="tip_bestiary">Каждый выставленный пакостник записывается сюда вместе с повадками. Одни водятся только в одной комнате, другие приходят лишь в своё время года.</string>
+    <string name="tip_treasures_t">Что мы нашли</string>
+    <string name="tip_treasures">Мы ведь и ночью прибираемся. Когда этаж остаётся чистым, мы находим всякое и оставляем тебе на подоконнике.</string>
+
+    <!-- The home-screen widget. -->
+    <string name="widget_name">Башня</string>
+    <string name="widget_desc">Твоя башня с окнами: тёплыми там, где чисто, и фиолетовыми, где завелись пакостники.</string>
+    <string name="widget_quiet">Всё спокойно</string>
+    <plurals name="widget_imps">
+        <item quantity="one">%d пакостник</item>
+        <item quantity="few">%d пакостника</item>
+        <item quantity="many">%d пакостников</item>
+        <item quantity="other">%d пакостника</item>
+    </plurals>
+</resources>

@@ -7,6 +7,7 @@ import app.hearthspell.data.HearthDao
 import app.hearthspell.data.HearthDatabase
 import app.hearthspell.data.SettingsStore
 import app.hearthspell.notify.Alarms
+import app.hearthspell.notify.TowerWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,9 +27,10 @@ class AppContainer(private val context: Context) {
         }
     }
 
-    /** Re-arm reminders after anything changed. */
+    /** Re-arm reminders and redraw the home-screen tower after anything changed. */
     suspend fun changed() {
         Alarms.reschedule(context)
+        runCatching { TowerWidget.update(context) }
     }
 }
 

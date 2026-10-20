@@ -3,16 +3,23 @@ package app.hearthspell.data
 import app.hearthspell.content.Aisle
 import app.hearthspell.content.DecorKind
 import app.hearthspell.content.FloorKind
+import app.hearthspell.content.Garment
+import app.hearthspell.content.Potion
 import app.hearthspell.content.SpellPreset
 import app.hearthspell.content.Spells
 import app.hearthspell.domain.DAY_MS
+import app.hearthspell.domain.Gift
 import app.hearthspell.domain.World
 import kotlin.random.Random
 
 /** Operations that touch several rows or tables. */
 
-/** Casts a spell: logs it with the mana it's worth right now and refreshes it. Returns the cast id (for undo). */
+/**
+ * Casts a spell: logs it with the mana it's worth right now and refreshes it. An imp living there goes into the
+ * bestiary. Returns the cast id (for undo).
+ */
 suspend fun HearthDao.cast(spell: Spell, world: World, at: Long = System.currentTimeMillis()): Long {
+    val imp = world.impOf(spell)
     val id = insertCast(
         Cast(
             spellId = spell.id,
@@ -23,6 +30,7 @@ suspend fun HearthDao.cast(spell: Spell, world: World, at: Long = System.current
         )
     )
     upsertSpell(spell.copy(lastCastAt = maxOf(spell.lastCastAt, at)))
+    if (imp != null) insertFind(Find(type = FIND_IMP, kind = imp.name, day = world.day, at = at, castId = id))
     return id
 }
 
@@ -30,6 +38,7 @@ suspend fun HearthDao.cast(spell: Spell, world: World, at: Long = System.current
 suspend fun HearthDao.undoCast(castId: Long) {
     val c = cast(castId) ?: return
     deleteCast(castId)
+    deleteFindsOfCast(castId)
     val s = spell(c.spellId) ?: return
     val restored = lastCastOf(s.id)?.let { maxOf(it, c.prevLastCastAt) } ?: c.prevLastCastAt
     upsertSpell(s.copy(lastCastAt = restored))
@@ -114,6 +123,31 @@ suspend fun HearthDao.buyDecor(kind: DecorKind, floorId: Long, world: World, now
     val slot = if (on == 0L) 0 else ((0 until DECOR_SLOTS).firstOrNull { s -> world.decorOn(on).none { it.slot == s } } ?: 0)
     upsertDecor(Decor(kind = kind.name, floorId = on, slot = slot, cost = kind.cost, boughtAt = now))
     return true
+}
+
+/** Picks up a helper's gift: the trinket goes into the treasures. */
+suspend fun HearthDao.claim(gift: Gift, at: Long = System.currentTimeMillis()) {
+    insertFind(Find(type = FIND_GIFT, kind = gift.trinket.name, helper = gift.helper.name, day = gift.day, at = at))
+}
+
+/** Brews a potion if the shelf holds what it needs. Returns false otherwise. */
+suspend fun HearthDao.brew(p: Potion, world: World, at: Long = System.currentTimeMillis()): Boolean {
+    if (!world.canBrew(p)) return false
+    insertBrew(Brew(potion = p.name, at = at))
+    return true
+}
+
+/** Buys a piece of clothing if there's mana for it. */
+suspend fun HearthDao.buy(g: Garment, world: World, at: Long = System.currentTimeMillis()): Boolean {
+    if (world.owns(g) || !world.canAfford(g)) return false
+    insertWear(Wear(kind = g.name, cost = g.cost, boughtAt = at))
+    return true
+}
+
+/** Puts a souvenir from a letter into the chest, once. */
+suspend fun HearthDao.keep(kind: DecorKind, at: Long = System.currentTimeMillis()) {
+    if (decor().any { it.kind == kind.name }) return
+    upsertDecor(Decor(kind = kind.name, floorId = 0, cost = 0, boughtAt = at))
 }
 
 // Reagents.
