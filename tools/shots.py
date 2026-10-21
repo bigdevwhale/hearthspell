@@ -13,8 +13,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 STATUS = 110  # status bar height at 1080 px wide
-OVERVIEW = ["tower", "floor", "grimoire", "letter"]
-SINGLE = ["tower", "floors", "floor", "spell", "grimoire", "helper", "decor", "market", "trip", "letters", "letter", "note"]
+OVERVIEW = ["tower", "cat", "stars", "letter"]
+SINGLE = ["tower", "floors", "floor", "spell", "grimoire", "helper", "decor", "market", "trip", "letters", "letter", "note",
+          "cat", "bestiary", "stars", "tea", "wardrobe", "brew", "treasures"]
 
 # The tower's night: deep indigo at the top, a little lighter at the horizon.
 NIGHT = [(11, 9, 32), (21, 17, 53), (33, 26, 74)]

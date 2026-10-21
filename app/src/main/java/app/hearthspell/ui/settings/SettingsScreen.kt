@@ -221,4 +221,6 @@ private fun ColumnScope.About() {
     Text("HEARTHSPELL", style = UType.Heading.copy(color = U.c.accent), modifier = Modifier.align(Alignment.CenterHorizontally))
     Gap(6.dp)
     Text(stringResource(R.string.settings_about, BuildConfig.VERSION_NAME), style = UType.Small, modifier = Modifier.align(Alignment.CenterHorizontally))
+    Gap(4.dp)
+    Text(stringResource(R.string.settings_font_credit), style = UType.Small, modifier = Modifier.align(Alignment.CenterHorizontally))
 }

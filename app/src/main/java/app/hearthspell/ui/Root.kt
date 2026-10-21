@@ -91,7 +91,7 @@ import java.time.ZoneId
 enum class Tab { TOWER, GRIMOIRE, MARKET, LETTERS }
 
 /** Screens a notification (or `adb ... --es route`) may open directly. */
-private val SCREENS = setOf("stars", "brew", "wardrobe", "bestiary", "treasures", "tea", "decor?floor=0", "cantrips", "settings")
+private val SCREENS = setOf("stars", "brew", "wardrobe", "bestiary", "treasures", "tea", "decor?floor=0", "cantrips", "settings", "trip", "floors")
 
 /** Sounds and buzzes, as the settings allow. */
 val LocalFeel = staticCompositionLocalOf<Feel?> { null }
@@ -177,6 +177,9 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
             route == "market" -> tab = Tab.MARKET
             route == "letters" -> tab = Tab.LETTERS
             route in SCREENS -> nav.navigate(route)
+            route.startsWith("spell/") || route.startsWith("helper/") -> nav.navigate(route)
+            // The demo build can show the master's note again, for screenshots.
+            route == "welcome" && BuildConfig.DEMO -> nav.navigate(route)
         }
         openRoute.value = null
     }

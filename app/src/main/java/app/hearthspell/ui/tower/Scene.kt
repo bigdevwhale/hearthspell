@@ -385,23 +385,6 @@ internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, s
     g.lighting(look, m, tick, sky)
     if (Potion.BUBBLES in look.potions) g.bubbles(look.id, tick)
 
-    // The tower cat, curled up asleep; a pat sits it up for a moment.
-    if (look.cat) {
-        val cx = look.catX(m)
-        val since = tick - (touch?.cat ?: -1000L)
-        if (since in 0..24) {
-            val s = Art.catAwake(if (since % 8 < 2) 1 else 0)
-            g.footShadow(TX + cx + s.w / 2, SCENE_FLOOR + 1, s.w - 4)
-            g.sprite(s, TX + cx + 3, SCENE_FLOOR + 2 - s.h)
-            g.hearts(TX + cx + 12, SCENE_FLOOR - s.h, since)
-        } else {
-            val s = Art.catAsleep(((tick / 6) % 2).toInt())
-            g.footShadow(TX + cx + s.w / 2, SCENE_FLOOR + 1, s.w - 2)
-            g.sprite(s, TX + cx, SCENE_FLOOR + 2 - s.h)
-            g.zees(TX + cx + 6, SCENE_FLOOR - s.h - 2, tick, look.id)
-        }
-    }
-
     // A gift glints where a helper left it.
     look.gift?.let { t ->
         val s = Art.trinket(t.name)
@@ -437,6 +420,23 @@ internal fun DrawScope.drawFloor(look: FloorLook, bg: ImageBitmap, tick: Long, s
         g.footShadow(TX + x + s.w / 2, SCENE_FLOOR + 1, s.w - 6)
         g.sprite(s, TX + x, SCENE_FLOOR + 2 - s.h - hop, flip)
         if (since in 0..20) g.twinkle(TX + x + (if (flip) 1 else s.w - 2), SCENE_FLOOR - s.h + 2)
+    }
+
+    // The tower cat, in front of everyone: curled up asleep, sitting up for a moment when patted.
+    if (look.cat) {
+        val cx = look.catX(m)
+        val since = tick - (touch?.cat ?: -1000L)
+        if (since in 0..24) {
+            val s = Art.catAwake(if (since % 8 < 2) 1 else 0)
+            g.footShadow(TX + cx + s.w / 2, SCENE_FLOOR + 1, s.w - 4)
+            g.sprite(s, TX + cx + 3, SCENE_FLOOR + 2 - s.h)
+            g.hearts(TX + cx + 12, SCENE_FLOOR - s.h, since)
+        } else {
+            val s = Art.catAsleep(((tick / 6) % 2).toInt())
+            g.footShadow(TX + cx + s.w / 2, SCENE_FLOOR + 1, s.w - 2)
+            g.sprite(s, TX + cx, SCENE_FLOOR + 2 - s.h)
+            g.zees(TX + cx + 6, SCENE_FLOOR - s.h - 2, tick, look.id)
+        }
     }
 
     // Imps hop about and grin, each in its own colours.

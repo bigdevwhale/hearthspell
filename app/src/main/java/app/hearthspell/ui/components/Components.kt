@@ -31,6 +31,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -168,7 +170,14 @@ fun TopBar(title: String, onBack: (() -> Unit)?, tip: Tip? = null, actions: @Com
             IconTile(Glyphs.back, onBack, size = 42.dp)
             Spacer(Modifier.width(14.dp))
         }
-        Text(title, style = UType.Title, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+        // One line, shrinking a step at a time until the title fits next to the buttons.
+        val base = UType.Title
+        var size by remember(title) { mutableStateOf(base.fontSize) }
+        Text(
+            title, style = base.copy(fontSize = size, lineHeight = size * 1.1f), modifier = Modifier.weight(1f),
+            maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
+            onTextLayout = { if (it.hasVisualOverflow && size.value > 18f) size = (size.value - 2f).sp },
+        )
         if (tip != null) {
             HelpTile(tip)
             Spacer(Modifier.width(8.dp))

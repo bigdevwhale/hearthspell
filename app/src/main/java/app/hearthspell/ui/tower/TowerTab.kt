@@ -59,7 +59,6 @@ import app.hearthspell.ui.gs
 import app.hearthspell.ui.roomName
 import app.hearthspell.ui.spellName
 import app.hearthspell.ui.theme.Nes
-import app.hearthspell.ui.theme.PressStart
 import app.hearthspell.ui.theme.U
 import app.hearthspell.ui.tips.HelpTile
 import app.hearthspell.ui.tips.Tip
@@ -163,7 +162,7 @@ private fun TowerHeader(data: WData, go: Go) {
                 Spacer(Modifier.width(12.dp))
                 PixelIcon(Glyphs.imp, if (w.totalImps > 0) U.c.imp else U.c.faint, size = 14.dp)
                 Spacer(Modifier.width(5.dp))
-                Text("${w.totalImps}", style = UType.Number.copy(fontSize = 10.sp, color = if (w.totalImps > 0) U.c.imp else U.c.faint))
+                Text("${w.totalImps}", style = UType.Number.copy(fontSize = 20.sp, color = if (w.totalImps > 0) U.c.imp else U.c.faint))
             }
         }
         HelpTile(Tip.TOWER)
@@ -237,7 +236,7 @@ private fun FloorCard(f: Floor, data: WData, tick: State<Long>, sky: Sky, onClic
                 .background(Color(0xB307060F))
                 .padding(horizontal = 6.dp, vertical = 4.dp),
         ) {
-            Text(floorName(f), style = UType.Eyebrow.copy(color = Nes.cream, fontSize = 8.sp), maxLines = 2)
+            Text(floorName(f), style = UType.Eyebrow.copy(color = Nes.cream), maxLines = 2)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(roomName(f), style = UType.Small.copy(color = Nes.sand), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (look.imps.isNotEmpty()) {
@@ -261,7 +260,7 @@ private fun AddFloor(tick: State<Long>, sky: Sky, onClick: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PixelIcon(Glyphs.plus, Nes.amber, size = 14.dp)
             Spacer(Modifier.width(8.dp))
-            Text(gs(R.string.tower_add_floor).uppercase(), style = UType.Button.copy(color = Nes.amber, fontFamily = PressStart))
+            Text(gs(R.string.tower_add_floor).uppercase(), style = UType.Button.copy(color = Nes.amber))
         }
     }
 }

@@ -17,7 +17,7 @@
 
 [English](README.md) · **Русский** · [Сайт](https://bigdevwhale.github.io/stillcraft/apps/hearthspell/) · [История изменений](CHANGELOG.md)
 
-<img src="docs/screenshots/overview.ru.png" alt="Hearthspell на телефоне: ночная башня с просьбами мастера, этаж с заклинаниями, гримуар помощников и письмо мастера" width="100%" />
+<img src="docs/screenshots/overview.ru.png" alt="Hearthspell на телефоне: ночная башня с просьбами мастера, кот на этаже, звёздная карта и письмо мастера с сувениром" width="100%" />
 
 </div>
 
@@ -80,6 +80,18 @@
     <td><img src="docs/screenshots/letter.ru.png" alt="Письмо с просьбами недели" /></td>
     <td><img src="docs/screenshots/note.ru.png" alt="Записка мастера на двери" /></td>
   </tr>
+  <tr>
+    <td><img src="docs/screenshots/cat.ru.png" alt="Кот башни мурлычет на этаже" /></td>
+    <td><img src="docs/screenshots/bestiary.ru.png" alt="Бестиарий пакостников" /></td>
+    <td><img src="docs/screenshots/treasures.ru.png" alt="Сокровища, найденные помощниками" /></td>
+    <td><img src="docs/screenshots/stars.ru.png" alt="Звёздная карта над Обсерваторией" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/brew.ru.png" alt="Котёл и зелья" /></td>
+    <td><img src="docs/screenshots/wardrobe.ru.png" alt="Гардероб ученика" /></td>
+    <td><img src="docs/screenshots/tea.ru.png" alt="Воскресное чаепитие с помощниками" /></td>
+    <td></td>
+  </tr>
 </table>
 
 ## Русский и English
@@ -99,7 +111,7 @@ APK лежит в **[Releases](https://github.com/bigdevwhale/hearthspell/releas
 
 ## Как устроено
 
-- **Kotlin + Jetpack Compose** со своим пиксельным интерфейсом: панели со ступенчатыми углами, кнопки, которые проседают при нажатии, сегментные полосы, шрифты Press Start 2P и Tiny5 (оба с полной кириллицей). Ночная тема и тема «пергамент».
+- **Kotlin + Jetpack Compose** со своим пиксельным интерфейсом: панели со ступенчатыми углами, кнопки, которые проседают при нажатии, сегментные полосы, пиксельный шрифт m6x11 Дэниела Линссена с кириллицей от Natto Games. Ночная тема и тема «пергамент».
 - **Пиксель-арт рисует код.** В `tools/art/` лежат Python-скрипты (Pillow), которые рисуют всех помощников, пакостников, убранство, сцены этажей и иконку: цветовые рампы со сдвигом оттенка, затенение по нормалям, упорядоченный дизеринг, выборочные контуры и ступенчатое свечение. `export.py` записывает спрайты в `ui/art/Art.kt`, а сцены в `res/drawable-nodpi`. В приложении спрайты рисуются из кэшированных картинок без сглаживания и остаются чёткими при любом масштабе.
 - **Room** хранит этажи, заклинания, произнесения, реагенты и убранство; **DataStore** — настройки.
 - `domain/World` держит правила: свежесть и пакостники, ранги, уровни помощников, мана, просьбы мастера, письма и то, что заканчивается. Это обычный Kotlin, покрытый юнит-тестами.

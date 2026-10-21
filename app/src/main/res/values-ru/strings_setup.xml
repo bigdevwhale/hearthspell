@@ -110,4 +110,5 @@
     <string name="settings_import_ok">Башня восстановлена</string>
     <string name="settings_import_fail">Это не копия Hearthspell</string>
     <string name="settings_about">Версия %1$s · без интернета, аккаунтов и рекламы</string>
+    <string name="settings_font_credit">Шрифт: m6x11 Дэниела Линссена, кириллица от Natto Games</string>
 </resources>

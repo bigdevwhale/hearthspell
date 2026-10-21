@@ -126,28 +126,28 @@ object Nes {
 
 val LocalPalette = staticCompositionLocalOf { NightPalette }
 
-/** Headings, numbers and buttons: the classic 8x8 console font. Keep it short, it's wide. */
-val PressStart = FontFamily(Font(R.font.press_start, FontWeight.Normal))
-
-/** Everything else: a compact pixel font that reads well in long lines. */
-val Tiny = FontFamily(Font(R.font.tiny5, FontWeight.Normal))
+/**
+ * Every text in the app: m6x11 by Daniel Linssen with Cyrillic by Natto Games (free with attribution),
+ * plus a few punctuation marks drawn in by tools/font/add_glyphs.py. One family, sizes set the hierarchy.
+ */
+val Pixel = FontFamily(Font(R.font.m6x11, FontWeight.Normal))
 
 object U {
     val c: Palette @Composable get() = LocalPalette.current
 }
 
 object UType {
-    val Display: TextStyle @Composable get() = TextStyle(fontFamily = PressStart, fontSize = 18.sp, lineHeight = 26.sp, color = U.c.ink)
-    val Title: TextStyle @Composable get() = TextStyle(fontFamily = PressStart, fontSize = 14.sp, lineHeight = 21.sp, color = U.c.ink)
-    val Heading: TextStyle @Composable get() = TextStyle(fontFamily = PressStart, fontSize = 11.sp, lineHeight = 17.sp, color = U.c.ink)
-    val Eyebrow: TextStyle @Composable get() = TextStyle(fontFamily = PressStart, fontSize = 8.sp, lineHeight = 12.sp, letterSpacing = 0.05.em, color = U.c.faint)
-    val Number: TextStyle @Composable get() = TextStyle(fontFamily = PressStart, fontSize = 13.sp, color = U.c.ink)
-    val Button: TextStyle @Composable get() = TextStyle(fontFamily = PressStart, fontSize = 10.sp, lineHeight = 14.sp)
-    val Body: TextStyle @Composable get() = TextStyle(fontFamily = Tiny, fontSize = 19.sp, lineHeight = 24.sp, color = U.c.ink)
-    val Strong: TextStyle @Composable get() = TextStyle(fontFamily = Tiny, fontSize = 21.sp, lineHeight = 25.sp, color = U.c.ink)
-    val Sub: TextStyle @Composable get() = TextStyle(fontFamily = Tiny, fontSize = 18.sp, lineHeight = 23.sp, color = U.c.muted)
-    val Muted: TextStyle @Composable get() = TextStyle(fontFamily = Tiny, fontSize = 16.sp, lineHeight = 20.sp, color = U.c.muted)
-    val Small: TextStyle @Composable get() = TextStyle(fontFamily = Tiny, fontSize = 14.sp, lineHeight = 17.sp, color = U.c.faint)
+    val Display: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 32.sp, lineHeight = 34.sp, color = U.c.ink)
+    val Title: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 27.sp, lineHeight = 29.sp, color = U.c.ink)
+    val Heading: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 23.sp, lineHeight = 25.sp, color = U.c.ink)
+    val Eyebrow: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 16.sp, lineHeight = 18.sp, letterSpacing = 0.04.em, color = U.c.faint)
+    val Number: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 22.sp, color = U.c.ink)
+    val Button: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 21.sp, lineHeight = 23.sp)
+    val Body: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 20.sp, lineHeight = 24.sp, color = U.c.ink)
+    val Strong: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 22.sp, lineHeight = 25.sp, color = U.c.ink)
+    val Sub: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 19.sp, lineHeight = 23.sp, color = U.c.muted)
+    val Muted: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 17.sp, lineHeight = 21.sp, color = U.c.muted)
+    val Small: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 16.sp, lineHeight = 18.sp, color = U.c.faint)
 }
 
 @Composable

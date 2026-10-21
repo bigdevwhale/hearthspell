@@ -2,6 +2,14 @@
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.2.1] - 2026-10-21
+
+### Look
+- A new typeface everywhere, in English and Russian: m6x11 by Daniel Linssen with Cyrillic by Natto Games, with dashes, an ellipsis, curly quotes and a tick drawn in to match. Credited in the settings.
+- Screen titles shrink to fit on one line instead of breaking mid-word.
+- The tower cat is drawn in front of the helpers, so it no longer hides behind them.
+- New screenshots for every screen, including the ones added in 1.2.
+
 ## [1.2.0] - 2026-10-21
 
 ### A living tower

@@ -424,7 +424,7 @@ private fun ManaBurst(burst: Burst?, modifier: Modifier = Modifier) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 PixelIcon(Glyphs.mana, mana, size = 22.dp)
                 Spacer(Modifier.width(6.dp))
-                Text(gs(R.string.cast_mana, burst.mana), style = UType.Display.copy(color = mana, fontSize = 20.sp))
+                Text(gs(R.string.cast_mana, burst.mana), style = UType.Display.copy(color = mana, fontSize = 34.sp))
             }
             if (burst.chain >= 2) Text(gs(R.string.cast_chain, burst.chain + 1), style = UType.Eyebrow.copy(color = Nes.yellow))
         }
