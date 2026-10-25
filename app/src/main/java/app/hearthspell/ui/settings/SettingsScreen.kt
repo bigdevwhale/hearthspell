@@ -50,6 +50,7 @@ import app.hearthspell.ui.art.Glyphs
 import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.components.ButtonKind
 import app.hearthspell.ui.components.Chip
+import app.hearthspell.ui.components.CommunityLinks
 import app.hearthspell.ui.components.ConfirmDialog
 import app.hearthspell.ui.components.Gap
 import app.hearthspell.ui.components.Panel
@@ -183,6 +184,8 @@ fun SettingsScreen(data: WData, go: Go) {
                     importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                 }, Modifier.weight(1f), kind = ButtonKind.SECONDARY)
             }
+
+            CommunityLinks()
 
             Gap(28.dp)
             About()
