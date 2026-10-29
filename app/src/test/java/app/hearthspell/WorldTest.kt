@@ -51,7 +51,16 @@ class WorldTest {
         assertEquals(0f, w.freshness(w.spell(4)!!), 0.001f)
         assertEquals(3, w.overdueDays(w.spell(4)!!))
         assertEquals(0, w.overdueDays(w.spell(2)!!))
-        assertEquals(3, w.daysLeft(w.spell(2)!!))
+        // Cast Oct 11 at midnight, due Oct 18: four calendar days from Oct 14.
+        assertEquals(4, w.daysLeft(w.spell(2)!!))
+    }
+
+    @Test
+    fun dailySpellJustCastIsDueTomorrow() {
+        val w = world(listOf(spell(1, days = 1, ago = 0.0), spell(2, days = 1, ago = 0.6), spell(3, days = 1, ago = 1.2)))
+        assertEquals(1, w.daysLeft(w.spell(1)!!))
+        assertEquals(0, w.daysLeft(w.spell(2)!!))
+        assertEquals(0, w.daysLeft(w.spell(3)!!))
     }
 
     @Test

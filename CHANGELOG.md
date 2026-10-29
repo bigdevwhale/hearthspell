@@ -8,6 +8,17 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.2.3] - 2026-10-29
+
+### Fixed
+- A daily spell cast today now says it's due tomorrow instead of still "Due today", and longer spells no longer show one day too few. Days left are counted by the calendar. ([#1](https://github.com/bigdevwhale/hearthspell/issues/1))
+
+<!-- tg
+Исправлено: ежедневное задание после отметки теперь показывает «Через 1 день», а не «Пора сегодня».
+Остальные задания тоже больше не показывают на день меньше, чем осталось.
+Спасибо за сообщение об ошибке!
+-->
+
 ## [1.2.2] - 2026-10-25
 
 ### Added

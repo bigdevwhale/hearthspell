@@ -112,11 +112,13 @@ class World(
         return if (late <= 0) 0 else (late / DAY_MS).toInt()
     }
 
-    /** Days left before it's due; 0 when due today or late. */
+    /** Calendar days left before it's due (a daily spell cast today is due tomorrow: 1); 0 when due today or late. */
     fun daysLeft(s: Spell): Int {
         if (s.paused) return s.intervalDays
-        val left = s.lastCastAt + s.intervalDays * DAY_MS - now
-        return if (left <= 0) 0 else (left / DAY_MS).toInt()
+        val dueAt = s.lastCastAt + s.intervalDays * DAY_MS
+        if (dueAt <= now) return 0
+        val dueDay = java.time.Instant.ofEpochMilli(dueAt).atZone(zone).toLocalDate().toEpochDay()
+        return (dueDay - day).toInt().coerceAtLeast(0)
     }
 
     fun glow(s: Spell): Glow {
