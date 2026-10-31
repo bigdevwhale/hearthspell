@@ -38,6 +38,9 @@
     <string name="spell_name_hint">Water the cactus</string>
     <string name="spell_floor">Floor</string>
     <string name="form_interval">How often</string>
+    <string name="form_next">Next time</string>
+    <string name="form_tomorrow">Tomorrow</string>
+    <string name="form_next_note">When the spell is due next. Pick the day you usually do it, and it keeps that rhythm.</string>
     <plurals name="spell_days_short">
         <item quantity="one">%dd</item>
         <item quantity="other">%dd</item>

@@ -48,6 +48,12 @@
     </plurals>
     <string name="spell_calendar">Last 12 weeks</string>
     <string name="spell_month">This month: %d</string>
+    <string name="spell_recent">Recent casts</string>
+    <string name="spell_recent_note">Tapped by mistake? Undo a cast: the spell fades back and its mana leaves your purse.</string>
+    <string name="spell_recent_spent">Some of this mana is already spent, so those casts can\'t be undone.</string>
+    <string name="spell_undo_title">Undo this cast?</string>
+    <string name="spell_undo_confirm">Yes, undo</string>
+    <string name="spell_undo_text">The spell fades back to where it was, and %d mana leaves your purse.</string>
     <string name="spell_edit">Edit</string>
     <string name="spell_helper">Helper</string>
     <string name="spell_paused">Paused</string>

@@ -27,6 +27,13 @@ import java.time.temporal.TemporalAdjusters
 
 const val DAY_MS = 24L * 60 * 60 * 1000
 
+/** Spells with more days than this left rest out of sight on their floor. */
+const val RESTING_DAYS = 7
+
+/** The lastCastAt that makes a spell of [intervalDays] due on [due]: it can wait until the end of that day. */
+fun lastCastFor(due: LocalDate, intervalDays: Int, zone: ZoneId): Long =
+    due.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1 - intervalDays * DAY_MS
+
 /** A helper and how far it has come: [level] 0 is still asleep. */
 data class HelperState(
     val kind: HelperKind,
@@ -120,6 +127,9 @@ class World(
         val dueDay = java.time.Instant.ofEpochMilli(dueAt).atZone(zone).toLocalDate().toEpochDay()
         return (dueDay - day).toInt().coerceAtLeast(0)
     }
+
+    /** Paused, or more than [RESTING_DAYS] left: nothing to think about this week. */
+    fun resting(s: Spell): Boolean = s.paused || daysLeft(s) > RESTING_DAYS
 
     fun glow(s: Spell): Glow {
         if (s.paused) return Glow.BRIGHT
@@ -388,6 +398,11 @@ class World(
         val start = today.atStartOfDay(zone).toInstant().toEpochMilli()
         casts.filter { it.at >= start }
     }
+
+    fun castToday(spellId: Long): Boolean = castsToday.any { it.spellId == spellId }
+
+    /** A cast can be taken back while the mana it earned is still in the purse. */
+    fun canUndo(c: Cast): Boolean = mana >= c.mana
 
     // Reagents.
 

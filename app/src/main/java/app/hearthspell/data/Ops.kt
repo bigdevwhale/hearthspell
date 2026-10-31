@@ -34,10 +34,12 @@ suspend fun HearthDao.cast(spell: Spell, world: World, at: Long = System.current
     return id
 }
 
-/** Takes a cast back: the spell fades to where it was. */
+/** Takes a cast back, the latest or an older one: the spell fades to where it was. */
 suspend fun HearthDao.undoCast(castId: Long) {
     val c = cast(castId) ?: return
     deleteCast(castId)
+    // The cast after it now follows the one before it, so undoing that one later restores the right moment.
+    relinkCasts(c.spellId, c.at, c.prevLastCastAt)
     deleteFindsOfCast(castId)
     val s = spell(c.spellId) ?: return
     val restored = lastCastOf(s.id)?.let { maxOf(it, c.prevLastCastAt) } ?: c.prevLastCastAt
@@ -56,6 +58,8 @@ suspend fun HearthDao.addSpell(
     random: Random = Random.Default,
     /** Freshness to start at; random between 0.25 and 0.9 by default so a new tower isn't all due at once. */
     freshness: Float = 0.25f + random.nextFloat() * 0.65f,
+    /** Overrides [freshness] when the user picked the day it's due. */
+    lastCastAt: Long? = null,
 ): Long {
     val sort = (spellIdsOf(floorId).size)
     val back = ((1f - freshness) * intervalDays * DAY_MS).toLong()
@@ -67,7 +71,7 @@ suspend fun HearthDao.addSpell(
             intervalDays = intervalDays.coerceAtLeast(1),
             effort = effort.coerceIn(1, 3),
             helper = helper,
-            lastCastAt = now - back,
+            lastCastAt = lastCastAt ?: (now - back),
             createdAt = now,
             sort = sort,
         )

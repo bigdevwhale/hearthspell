@@ -11,6 +11,7 @@ import app.hearthspell.domain.Glow
 import app.hearthspell.domain.HelperState
 import app.hearthspell.domain.Rank
 import app.hearthspell.domain.World
+import app.hearthspell.domain.lastCastFor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -193,5 +194,39 @@ class WorldTest {
         val w = world(emptyList(), reagents = r)
         assertEquals(listOf(1L), w.runningLow.map { it.id })
         assertEquals(listOf(3L), w.shoppingList.map { it.id })
+    }
+
+    @Test
+    fun aPickedDayIsWhenTheSpellIsDue() {
+        val today = LocalDate.of(2026, 10, 14)
+        // Due on Sunday Oct 18 (four days on), every 14 days; and one due today.
+        val sunday = spell(1, days = 14).copy(lastCastAt = lastCastFor(today.plusDays(4), 14, zone))
+        val todays = spell(2, days = 7).copy(lastCastAt = lastCastFor(today, 7, zone))
+        val w = world(listOf(sunday, todays))
+        assertEquals(4, w.daysLeft(w.spell(1)!!))
+        assertEquals(0, w.daysLeft(w.spell(2)!!))
+        // Due by the end of the day: no imps yet, only dust.
+        assertEquals(Glow.DUSTY, w.glow(w.spell(2)!!))
+        // Imps move in once Sunday is over.
+        val monday = world(listOf(sunday), at = today.plusDays(5).atTime(0, 1).toInstant(zone).toEpochMilli())
+        assertEquals(Glow.IMPS, monday.glow(monday.spell(1)!!))
+    }
+
+    @Test
+    fun spellsMoreThanAWeekOffRest() {
+        val w = world(listOf(spell(1, days = 30, ago = 1.0), spell(2, days = 30, ago = 25.0), spell(3, days = 7, ago = 0.0), spell(4, paused = true)))
+        assertTrue(w.resting(w.spell(1)!!))
+        assertFalse(w.resting(w.spell(2)!!))
+        assertFalse(w.resting(w.spell(3)!!))
+        assertTrue(w.resting(w.spell(4)!!))
+    }
+
+    @Test
+    fun aCastCanBeUndoneWhileItsManaIsUnspent() {
+        val cs = casts(1, 3, mana = 10)
+        val rich = world(listOf(spell(1)), cs)
+        assertTrue(rich.canUndo(cs[0]))
+        val spent = world(listOf(spell(1)), cs, decor = listOf(Decor(kind = "CUSHION", floorId = 0, cost = 25, boughtAt = now)))
+        assertFalse(spent.canUndo(cs[0]))
     }
 }

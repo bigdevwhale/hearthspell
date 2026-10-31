@@ -47,6 +47,10 @@
         <item quantity="other">Просрочено на %d дня</item>
     </plurals>
     <string name="spell_overdue">Пора</string>
+    <string name="spell_done_today">Сделано сегодня</string>
+    <string name="floor_resting">Отдыхают: %d</string>
+    <string name="floor_resting_sub">До срока больше недели</string>
+    <string name="floor_all_resting">На этой неделе здесь ничего не нужно. Остальные ждут ниже.</string>
     <string name="tower_spell_paused">На паузе</string>
     <string name="spell_request">Просьба мастера</string>
     <string name="spell_cast_a11y">Произнести: %1$s</string>

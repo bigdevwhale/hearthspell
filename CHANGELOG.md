@@ -8,6 +8,23 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.3.0] - 2026-10-31
+
+### Added
+- Pick the day a spell is due next: today, tomorrow, a day of the week or any day within its interval, when adding a spell or later in the editor. ([#2](https://github.com/bigdevwhale/hearthspell/issues/2))
+- A spell's page lists its last five casts, and any of them can be undone while its mana is unspent. ([#4](https://github.com/bigdevwhale/hearthspell/issues/4))
+- Spells with more than a week to go rest folded away at the bottom of their floor. ([#3](https://github.com/bigdevwhale/hearthspell/issues/3))
+
+### Changed
+- Fresh spells look calmer on a floor, and ones done today say so, so it's clear at a glance what still needs doing. ([#3](https://github.com/bigdevwhale/hearthspell/issues/3))
+
+<!-- tg
+Новое: при создании и редактировании задания можно выбрать, когда оно понадобится в следующий раз, например в воскресенье.
+На странице задания видны последние выполнения, и любое можно отменить, если мана за него ещё не потрачена.
+Задания, до которых больше недели, прячутся в свёрнутый список «Отдыхают», а сделанные выглядят спокойнее.
+Спасибо за идеи!
+-->
+
 ## [1.2.3] - 2026-10-29
 
 ### Fixed

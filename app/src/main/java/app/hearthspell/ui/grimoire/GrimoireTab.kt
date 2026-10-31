@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -47,7 +49,10 @@ import app.hearthspell.content.ImpKind
 import app.hearthspell.content.Stars
 import app.hearthspell.content.Trinket
 import app.hearthspell.ui.art.Looks
+import app.hearthspell.container
+import app.hearthspell.data.Cast
 import app.hearthspell.data.Spell
+import app.hearthspell.data.undoCast
 import app.hearthspell.domain.HelperState
 import app.hearthspell.domain.Mana
 import app.hearthspell.domain.Rank
@@ -60,6 +65,7 @@ import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.art.Sprite
 import app.hearthspell.ui.art.SpriteImage
 import app.hearthspell.ui.components.ButtonKind
+import app.hearthspell.ui.components.ConfirmDialog
 import app.hearthspell.ui.components.Gap
 import app.hearthspell.ui.components.ManaTag
 import app.hearthspell.ui.components.PX
@@ -72,6 +78,7 @@ import app.hearthspell.ui.components.pixelBox
 import app.hearthspell.ui.floorName
 import app.hearthspell.ui.gp
 import app.hearthspell.ui.gs
+import app.hearthspell.ui.locale
 import app.hearthspell.ui.spellName
 import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.U
@@ -80,6 +87,7 @@ import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 // The book of everything learned: the apprentice's circle, the helpers, and a page for every spell.
 
@@ -332,6 +340,7 @@ fun SpellScreen(id: Long, data: WData, go: Go) {
                 val monthStart = w.today.withDayOfMonth(1).atStartOfDay(w.zone).toInstant().toEpochMilli()
                 Text(stringResource(R.string.spell_month, w.castsOf(s.id).count { it.at >= monthStart }), style = UType.Muted)
             }
+            RecentCasts(w, s)
             Gap(16.dp)
             PixelButton(stringResource(R.string.spell_edit), { go.spellForm(s.id) }, Modifier.fillMaxWidth(), kind = ButtonKind.SECONDARY, icon = Glyphs.pencil)
             Gap(24.dp)
@@ -375,6 +384,54 @@ private fun lastCast(w: World, s: Spell): String {
         ago <= 0 -> stringResource(R.string.spell_today)
         ago == 1 -> stringResource(R.string.spell_yesterday)
         else -> pluralStringResource(R.plurals.spell_days_ago, ago, ago)
+    }
+}
+
+/** The last few casts, each of which can be taken back: a tap by mistake shouldn't stay forever. */
+@Composable
+private fun RecentCasts(w: World, s: Spell) {
+    val recent = w.castsOf(s.id).take(RECENT_CASTS)
+    if (recent.isEmpty()) return
+    val container = LocalContext.current.container
+    var asking by remember { mutableStateOf<Cast?>(null) }
+    SectionTitle(stringResource(R.string.spell_recent))
+    Panel(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)) {
+        recent.forEach { c ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(castWhen(w, c.at), style = UType.Body, modifier = Modifier.weight(1f))
+                ManaTag(c.mana, prefix = "+")
+                Spacer(Modifier.width(10.dp))
+                PixelButton(stringResource(R.string.undo), { asking = c }, kind = ButtonKind.SECONDARY, enabled = w.canUndo(c))
+            }
+        }
+    }
+    Gap(6.dp)
+    Text(
+        stringResource(if (recent.all { w.canUndo(it) }) R.string.spell_recent_note else R.string.spell_recent_spent),
+        style = UType.Muted,
+    )
+    asking?.let { c ->
+        ConfirmDialog(
+            gs(R.string.spell_undo_title),
+            gs(R.string.spell_undo_text, c.mana),
+            stringResource(R.string.spell_undo_confirm),
+            onConfirm = { container.write { undoCast(c.id) } },
+            onDismiss = { asking = null },
+        )
+    }
+}
+
+private const val RECENT_CASTS = 5
+
+/** "Today, 14:32", "Yesterday, 09:10" or "28 Oct, 18:05". */
+@Composable
+private fun castWhen(w: World, at: Long): String {
+    val z = Instant.ofEpochMilli(at).atZone(w.zone)
+    val time = z.format(DateTimeFormatter.ofPattern("HH:mm"))
+    return when (w.today.toEpochDay() - z.toLocalDate().toEpochDay()) {
+        0L -> stringResource(R.string.spell_today) + ", " + time
+        1L -> stringResource(R.string.spell_yesterday) + ", " + time
+        else -> z.format(DateTimeFormatter.ofPattern("d MMM, HH:mm", locale()))
     }
 }
 

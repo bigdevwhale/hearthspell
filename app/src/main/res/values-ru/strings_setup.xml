@@ -38,6 +38,9 @@
     <string name="spell_name_hint">Полить кактус</string>
     <string name="spell_floor">Этаж</string>
     <string name="form_interval">Как часто</string>
+    <string name="form_next">Следующий раз</string>
+    <string name="form_tomorrow">Завтра</string>
+    <string name="form_next_note">Когда заклинание понадобится снова. Выбери день, когда обычно это делаешь, и оно пойдёт в этом ритме.</string>
     <plurals name="spell_days_short">
         <item quantity="one">%d д</item>
         <item quantity="few">%d д</item>

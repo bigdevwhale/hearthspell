@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -34,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,6 +91,7 @@ import app.hearthspell.ui.components.pixelBox
 import app.hearthspell.ui.floorName
 import app.hearthspell.ui.gp
 import app.hearthspell.ui.gs
+import app.hearthspell.ui.locale
 import app.hearthspell.ui.roomName
 import app.hearthspell.ui.spellName
 import app.hearthspell.ui.t
@@ -180,6 +183,9 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
     val tick = rememberTicker()
     val sky = Sky(day = !U.c.dark)
     val spells = w.spellsOf(id).sortedWith(compareBy<Spell> { it.paused }.thenBy { w.freshness(it) })
+    // Spells with over a week to go wait folded away, so the list shows only what matters this week.
+    val (active, resting) = spells.partition { !w.resting(it) }
+    var showResting by rememberSaveable(id) { mutableStateOf(false) }
     val kind = FloorKind.of(floor.kind)
     Box(Modifier.fillMaxSize().background(U.c.bg)) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 96.dp)) {
@@ -233,8 +239,31 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
                     }
                 }
             }
-            items(spells, key = { it.id }) { s ->
+            if (active.isEmpty() && resting.isNotEmpty()) {
+                item { Text(gs(R.string.floor_all_resting), style = UType.Muted, modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) }
+            }
+            items(active, key = { it.id }) { s ->
                 SpellRow(s, w, Modifier.padding(horizontal = 16.dp, vertical = 5.dp), onCast = { cast(s) }, onOpen = { go.spell(s.id) }, onEdit = { go.spellForm(s.id) })
+            }
+            if (resting.isNotEmpty()) {
+                item(key = "resting") {
+                    Row(
+                        Modifier.fillMaxWidth().clickable { showResting = !showResting }.padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        PixelIcon(if (showResting) Glyphs.up else Glyphs.down, U.c.muted, size = 12.dp)
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(gs(R.string.floor_resting, resting.size).uppercase(), style = UType.Eyebrow)
+                            Text(gs(R.string.floor_resting_sub), style = UType.Small)
+                        }
+                    }
+                }
+                if (showResting) {
+                    items(resting.sortedWith(compareBy<Spell> { it.paused }.thenBy { w.daysLeft(it) }), key = { it.id }) { s ->
+                        SpellRow(s, w, Modifier.padding(horizontal = 16.dp, vertical = 5.dp), onCast = { cast(s) }, onOpen = { go.spell(s.id) }, onEdit = { go.spellForm(s.id) })
+                    }
+                }
             }
             if (spells.isNotEmpty()) {
                 item { Text(gs(R.string.floor_hint), style = UType.Small, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) }
@@ -295,6 +324,7 @@ private fun glowColor(g: Glow): Color = when (g) {
 @Composable
 private fun status(s: Spell, w: World): String = when {
     s.paused -> gs(R.string.tower_spell_paused)
+    w.castToday(s.id) -> gs(R.string.spell_done_today) + " · " + gp(R.plurals.spell_due_in, w.daysLeft(s), w.daysLeft(s)).lowercase(locale())
     w.overdueDays(s) > 0 -> gp(R.plurals.spell_late, w.overdueDays(s), w.overdueDays(s))
     w.glow(s) == Glow.IMPS -> gs(R.string.spell_overdue)
     w.daysLeft(s) == 0 -> gs(R.string.spell_due_today)
@@ -319,6 +349,9 @@ private fun SpellRow(
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
     val name = spellName(s)
+    // Fresh spells step back: nothing to do there for a while.
+    val calm = !s.paused && glow == Glow.BRIGHT
+    val doneToday = w.castToday(s.id)
     Row(
         modifier
             .fillMaxWidth()
@@ -331,7 +364,7 @@ private fun SpellRow(
         PixelSprite(if (helper.awake) Art.helper(helper.kind, 0) else Art.helperAsleep(helper.kind), 1.4.dp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(name, style = UType.Strong, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(name, style = UType.Strong.copy(color = if (calm) c.muted else c.ink), maxLines = 2, overflow = TextOverflow.Ellipsis)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(t(w.rank(s).title), style = UType.Small.copy(color = c.accent))
                 if (floorLabel != null) Text(" · $floorLabel", style = UType.Small, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -345,7 +378,14 @@ private fun SpellRow(
             Spacer(Modifier.height(6.dp))
             PixelBar(if (s.paused) 1f else w.freshness(s), Modifier.fillMaxWidth(), color = if (s.paused) c.faint else glowColor(glow), height = 11.dp)
             Spacer(Modifier.height(4.dp))
-            Text(status(s, w), style = UType.Muted.copy(color = if (glow == Glow.IMPS && !s.paused) c.imp else c.muted))
+            Text(
+                status(s, w),
+                style = UType.Muted.copy(color = when {
+                    glow == Glow.IMPS && !s.paused -> c.imp
+                    doneToday -> c.good
+                    else -> c.muted
+                }),
+            )
         }
         Spacer(Modifier.width(10.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -353,13 +393,16 @@ private fun SpellRow(
             Box(
                 Modifier
                     .size(48.dp)
-                    .pixelBox(if (request) c.mana else c.accent, c.outline, Color.White.copy(alpha = 0.35f), c.accentDeep)
+                    .then(
+                        if (calm && !request) Modifier.pixelBox(c.surface2, c.outline, c.bevel)
+                        else Modifier.pixelBox(if (request) c.mana else c.accent, c.outline, Color.White.copy(alpha = 0.35f), c.accentDeep)
+                    )
                     .combinedClickable(onClick = onCast, onLongClick = onOpen)
                     .semantics { contentDescription = desc },
                 contentAlignment = Alignment.Center,
-            ) { PixelIcon(Glyphs.check, c.onAccent, size = 20.dp) }
+            ) { PixelIcon(Glyphs.check, if (calm && !request) (if (doneToday) c.good else c.faint) else c.onAccent, size = 20.dp) }
             Spacer(Modifier.height(4.dp))
-            Text(gs(R.string.cast_mana, w.manaFor(s)), style = UType.Small.copy(color = c.mana))
+            Text(gs(R.string.cast_mana, w.manaFor(s)), style = UType.Small.copy(color = if (calm) c.muted else c.mana))
         }
         Spacer(Modifier.width(6.dp))
         IconTile(Glyphs.pencil, onEdit, size = 30.dp, fill = c.surface)

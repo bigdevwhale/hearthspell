@@ -46,6 +46,7 @@ import app.hearthspell.data.deleteFloor
 import app.hearthspell.data.deleteSpell
 import app.hearthspell.data.moveFloor
 import app.hearthspell.domain.DAY_MS
+import app.hearthspell.domain.lastCastFor
 import app.hearthspell.domain.Mana
 import app.hearthspell.ui.Go
 import app.hearthspell.ui.WData
@@ -66,6 +67,7 @@ import app.hearthspell.ui.components.ToggleRow
 import app.hearthspell.ui.components.TopBar
 import app.hearthspell.ui.floorName
 import app.hearthspell.ui.gp
+import app.hearthspell.ui.locale
 import app.hearthspell.ui.roomName
 import app.hearthspell.ui.t
 import app.hearthspell.ui.theme.U
@@ -74,6 +76,10 @@ import app.hearthspell.ui.tips.Tip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import kotlin.math.roundToInt
 
 private val quickDays = listOf(1, 2, 3, 7, 14, 30, 90)
 
@@ -94,6 +100,18 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
     var helper by rememberSaveable { mutableStateOf(existing?.helper ?: HelperKind.BROOM.name) }
     var paused by rememberSaveable { mutableStateOf(existing?.paused ?: false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    // Days from today until the spell is due next. An existing spell keeps its own rhythm until this is touched.
+    var dueTouched by rememberSaveable { mutableStateOf(false) }
+    var dueIn by rememberSaveable { mutableIntStateOf(0) }
+    val due = (
+        if (dueTouched) dueIn
+        else if (existing != null) world.daysLeft(existing.copy(intervalDays = days, paused = false))
+        else (days * 0.6f).roundToInt()
+    ).coerceIn(0, days)
+    fun setDue(d: Int) {
+        dueIn = d
+        dueTouched = true
+    }
 
     val canSave = floor != 0L && (name.isNotBlank() || preset != null)
 
@@ -101,17 +119,22 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
         if (!canSave) return
         val now = System.currentTimeMillis()
         val e = existing
+        val dueLastCast = lastCastFor(world.today.plusDays(due.toLong()), days, world.zone)
         container.write {
             if (e != null) {
                 upsertSpell(
                     e.copy(
                         name = name.trim(), floorId = floor, intervalDays = days, effort = effort, helper = helper, paused = paused,
                         // Resuming starts the interval afresh rather than waking up to a pile of imps.
-                        lastCastAt = if (e.paused && !paused) maxOf(e.lastCastAt, now - (e.intervalDays * DAY_MS) / 2) else e.lastCastAt,
+                        lastCastAt = when {
+                            dueTouched && !paused -> dueLastCast
+                            e.paused && !paused -> maxOf(e.lastCastAt, now - (e.intervalDays * DAY_MS) / 2)
+                            else -> e.lastCastAt
+                        },
                     )
                 )
             } else {
-                addSpell(floor, null, now, name = name.trim(), intervalDays = days, effort = effort, helper = helper, freshness = 0.6f)
+                addSpell(floor, null, now, name = name.trim(), intervalDays = days, effort = effort, helper = helper, lastCastAt = dueLastCast)
             }
         }
         go.back()
@@ -137,6 +160,17 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
             Gap(10.dp)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 quickDays.forEach { d -> Chip(gp(R.plurals.spell_days_short, d, d), d == days, { days = d }) }
+            }
+
+            if (!paused) {
+                SectionTitle(stringResource(R.string.form_next))
+                Stepper(due, ::setDue, dueLabel(world.today, due), Modifier.fillMaxWidth(), min = 0, max = days)
+                Gap(10.dp)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    (0..minOf(days, 6)).forEach { d -> Chip(dayChip(world.today, d), d == due, { setDue(d) }) }
+                }
+                Gap(6.dp)
+                Text(stringResource(R.string.form_next_note), style = UType.Muted)
             }
 
             SectionTitle(stringResource(R.string.form_effort))
@@ -196,6 +230,25 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
             danger = true,
         )
     }
+}
+
+/** "Today · Sat, 31 Oct", "Due in 3 days · Tue, 3 Nov". */
+@Composable
+private fun dueLabel(today: LocalDate, d: Int): String {
+    val head = when (d) {
+        0 -> stringResource(R.string.spell_today)
+        1 -> stringResource(R.string.form_tomorrow)
+        else -> gp(R.plurals.spell_due_in, d, d)
+    }
+    return head + " · " + today.plusDays(d.toLong()).format(DateTimeFormatter.ofPattern("EEE, d MMM", locale()))
+}
+
+/** Today, tomorrow, then the days of the week. */
+@Composable
+private fun dayChip(today: LocalDate, d: Int): String = when (d) {
+    0 -> stringResource(R.string.spell_today)
+    1 -> stringResource(R.string.form_tomorrow)
+    else -> today.plusDays(d.toLong()).dayOfWeek.getDisplayName(TextStyle.SHORT, locale()).replaceFirstChar { it.titlecase(locale()) }
 }
 
 /** Catalog spells of the floor's kind that aren't on it yet: one tap adds each. */

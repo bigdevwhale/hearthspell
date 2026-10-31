@@ -58,6 +58,12 @@
     </plurals>
     <string name="spell_calendar">Последние 12 недель</string>
     <string name="spell_month">В этом месяце: %d</string>
+    <string name="spell_recent">Последние выполнения</string>
+    <string name="spell_recent_note">Отметка по ошибке? Отмени её: заклинание вернётся к прежнему виду, а мана за него уйдёт.</string>
+    <string name="spell_recent_spent">Часть этой маны уже потрачена, поэтому такие выполнения не отменить.</string>
+    <string name="spell_undo_title">Отменить выполнение?</string>
+    <string name="spell_undo_confirm">Да, отменить</string>
+    <string name="spell_undo_text">Заклинание вернётся к прежнему виду, а %d маны уйдёт из кошелька.</string>
     <string name="spell_edit">Изменить</string>
     <string name="spell_helper">Помощник</string>
     <string name="spell_paused">На паузе</string>

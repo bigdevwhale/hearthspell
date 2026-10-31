@@ -165,6 +165,8 @@ interface HearthDao {
     @Query("DELETE FROM casts WHERE id = :id") suspend fun deleteCast(id: Long)
     @Query("DELETE FROM casts WHERE spellId = :spellId") suspend fun deleteCastsOf(spellId: Long)
     @Query("SELECT MAX(at) FROM casts WHERE spellId = :spellId") suspend fun lastCastOf(spellId: Long): Long?
+    @Query("UPDATE casts SET prevLastCastAt = :prev WHERE spellId = :spellId AND prevLastCastAt = :at AND at > :at")
+    suspend fun relinkCasts(spellId: Long, at: Long, prev: Long)
 
     @Upsert suspend fun upsertReagent(r: Reagent): Long
     @Query("DELETE FROM reagents WHERE id = :id") suspend fun deleteReagent(id: Long)
