@@ -76,7 +76,7 @@ python tools/play.py <папка со снимками>
 | Поле | Значение |
 |---|---|
 | App category | App → **House & Home** |
-| Tags (до 5) | To-do list, Habit tracker, Planner, Shopping list, House & home (берите ближайшие из списка Play) |
+| Tags (до 5) | **House & home**, **Productivity**, **Calendar**, **Self-help**, **Lifestyle** |
 | Email address | *ваш публичный email* — обязательно, его увидят все |
 | Website | `https://bigdevwhale.github.io/stillcraft/apps/hearthspell/` |
 | Phone | пусто |
@@ -84,6 +84,12 @@ python tools/play.py <папка со снимками>
 
 **Категория.** Это трекер домашних дел и список покупок — House & Home. Игровой слой (мана, помощники,
 пакостники) работает на дела, а не сам по себе, поэтому это App, а не Game. Альтернатива — **Productivity**.
+
+**Теги.** House & home — сама категория, уборка и хозяйство; Productivity — список дел со сроками;
+Calendar — у каждого дела свой ритм и выбранный день недели; Self-help — без наказаний и сгоревших
+серий, пыльный этаж просто ждёт; Lifestyle — домашний уклад, письма мастера, воскресное чаепитие.
+Тегов про уборку или список дел в Play нет. Если важнее список покупок, замените Lifestyle на Shopping
+(но этот тег обычно у магазинов).
 
 ## 4. App content (Policy → App content)
 
