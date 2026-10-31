@@ -9,6 +9,7 @@
 *The old master has gone travelling and left his tower to you, his apprentice. The tower is your home: every floor is a room, every chore is a spell. Cast them and the floors shine. Forget one and harmless imps move in. Master your spells and animated helpers wake up. The master writes once a week, and the market trip is a quest for reagents. Cozy pixel art, no punishments, no ads, no account, works offline.*
 
 [![Android CI](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml/badge.svg)](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml)
+[![Google Play](https://img.shields.io/badge/Google_Play-get_it-34A853?logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=app.hearthspell)
 [![Release](https://img.shields.io/github/v/release/bigdevwhale/hearthspell?color=FFB938&label=download&logo=android)](https://github.com/bigdevwhale/hearthspell/releases/latest)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-14112B?logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?logo=kotlin&logoColor=white)
@@ -100,7 +101,9 @@ Every screen, spell, incantation and letter is written natively in both language
 
 ## Download
 
-Get the APK from **[Releases](https://github.com/bigdevwhale/hearthspell/releases/latest)**, or the debug APK attached to any [CI run](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml). Hearthspell needs Android 8.0 (API 26) or newer.
+**[Get it on Google Play](https://play.google.com/store/apps/details?id=app.hearthspell)**.
+
+Or get the APK from **[Releases](https://github.com/bigdevwhale/hearthspell/releases/latest)**, or the debug APK attached to any [CI run](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml). Hearthspell needs Android 8.0 (API 26) or newer.
 
 > [!TIP]
 > On Xiaomi (MIUI / HyperOS), Huawei and some other phones, allow **Autostart** and remove battery limits so the daily reminder arrives on time.

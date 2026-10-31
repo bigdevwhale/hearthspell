@@ -9,6 +9,7 @@
 *Старый мастер ушёл странствовать и оставил башню тебе, своему ученику. Башня — это твой дом: каждый этаж — комната, каждое дело — заклинание. Произноси их, и этажи сияют. Забудешь — заведутся безобидные пакостники. Освой заклинание, и проснётся оживший помощник. Мастер пишет раз в неделю, а поход в магазин превращается в поход за реагентами. Уютный пиксель-арт, никаких наказаний, без рекламы и аккаунта, работает офлайн.*
 
 [![Android CI](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml/badge.svg)](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml)
+[![Google Play](https://img.shields.io/badge/Google_Play-скачать-34A853?logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=app.hearthspell)
 [![Release](https://img.shields.io/github/v/release/bigdevwhale/hearthspell?color=FFB938&label=скачать&logo=android)](https://github.com/bigdevwhale/hearthspell/releases/latest)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-14112B?logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?logo=kotlin&logoColor=white)
@@ -100,7 +101,9 @@
 
 ## Скачать
 
-APK лежит в **[Releases](https://github.com/bigdevwhale/hearthspell/releases/latest)**, а отладочный APK прикреплён к каждому [запуску CI](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml). Нужен Android 8.0 (API 26) или новее.
+**[Скачать в Google Play](https://play.google.com/store/apps/details?id=app.hearthspell)**.
+
+Или возьми APK в **[Releases](https://github.com/bigdevwhale/hearthspell/releases/latest)**, а отладочный APK прикреплён к каждому [запуску CI](https://github.com/bigdevwhale/hearthspell/actions/workflows/android.yml). Нужен Android 8.0 (API 26) или новее.
 
 > [!TIP]
 > На Xiaomi (MIUI / HyperOS), Huawei и некоторых других телефонах разреши **Автозапуск** и сними ограничения батареи, чтобы ежедневное напоминание приходило вовремя.
