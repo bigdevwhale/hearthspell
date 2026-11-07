@@ -8,6 +8,15 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.3.1] - 2026-11-07
+
+### Changed
+- In the grimoire, each floor's spells are in order of when they're due: overdue and today's on top, the freshly cast lower, the paused last (#5).
+
+<!-- tg
+В гримуаре заклинания каждого этажа теперь идут по сроку: просроченные и сегодняшние сверху, на паузе внизу.
+-->
+
 ## [1.3.0] - 2026-10-31
 
 ### Added

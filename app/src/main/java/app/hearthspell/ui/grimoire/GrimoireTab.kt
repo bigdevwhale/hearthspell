@@ -131,7 +131,8 @@ fun GrimoireTab(data: WData, go: Go) {
                 Text(gs(R.string.grimoire_empty), style = UType.Sub)
             }
             w.floors.forEach { f ->
-                val spells = w.spellsOf(f.id)
+                // What's due today and overdue first, the freshly cast lower, the paused last (#5).
+                val spells = w.spellsOf(f.id).sortedBy { w.freshness(it) }
                 if (spells.isEmpty()) return@forEach
                 Text(floorName(f), style = UType.Eyebrow.copy(color = U.c.accent), modifier = Modifier.padding(top = 10.dp, bottom = 8.dp))
                 spells.forEach { s ->
