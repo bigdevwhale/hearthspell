@@ -37,7 +37,7 @@
 
     <string name="card_room_clean">Здесь чисто и уютно</string>
     <plurals name="card_room_imps">
-        <item quantity="one">Сюда пробрался пакостник. Ненадолго!</item>
+        <item quantity="one">Сюда пробрался %d пакостник. Ненадолго!</item>
         <item quantity="few">Сюда пробрались %d пакостника. Ненадолго!</item>
         <item quantity="many">Сюда пробрались %d пакостников. Ненадолго!</item>
         <item quantity="other">Сюда пробрались %d пакостника. Ненадолго!</item>
