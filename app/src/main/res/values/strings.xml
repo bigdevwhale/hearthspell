@@ -37,4 +37,27 @@
     <string name="community_follow_sub">the bot writes when a version is out</string>
     <string name="community_chat">StillCraft chat</string>
     <string name="community_chat_sub">all the apps and people</string>
+    <string name="tab_stats">Chronicle</string>
+    <string name="stats_title">Chronicle</string>
+    <string name="stats_week">This week</string>
+    <string name="stats_casts">spells cast</string>
+    <string name="stats_mana">mana earned</string>
+    <string name="stats_imps">imps sent off</string>
+    <string name="stats_gifts">gifts found</string>
+    <string name="stats_days_tower">days in the tower</string>
+    <string name="stats_days">The last %d days</string>
+    <string name="stats_floors">How tidy each floor is</string>
+    <string name="stats_favourites">Favourite spells</string>
+    <string name="stats_all_time">All along</string>
+    <string name="stats_none">No floors yet.</string>
+    <plurals name="stats_times">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d times</item>
+    </plurals>
+    <plurals name="stats_day_casts">
+        <item quantity="one">%d spell</item>
+        <item quantity="other">%d spells</item>
+    </plurals>
+    <string name="grimoire_collections">Collections</string>
+    <string name="letters_open">Letters</string>
 </resources>

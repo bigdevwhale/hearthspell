@@ -7,6 +7,8 @@
     <string name="tower_requests_none">No requests this week. Add a few spells and the master will write.</string>
     <string name="tower_requests_done">All three done. The master will be proud.</string>
     <string name="tower_double">×2</string>
+    <string name="tower_vacation">You\'re away. The tower waits, every spell on pause.</string>
+    <string name="tower_vacation_end">I\'m back</string>
     <string name="tower_low_energy">Low on energy</string>
     <string name="tower_add_floor">Add a floor</string>
     <string name="tower_empty_title">The tower is empty</string>

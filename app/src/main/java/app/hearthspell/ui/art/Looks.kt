@@ -3,31 +3,25 @@ package app.hearthspell.ui.art
 import androidx.compose.ui.graphics.Color
 import app.hearthspell.content.Garment
 import app.hearthspell.content.ImpKind
-import app.hearthspell.content.ImpTint
 
-/** Sprites dressed up at runtime: imps repainted in their own colours, the apprentice in the chosen clothes. */
+/** Sprites dressed up at runtime: the apprentice in the chosen robe and hat. */
 object Looks {
-    private val imps = HashMap<Pair<ImpTint, Int>, Sprite>()
     private val apprentices = HashMap<Triple<Garment, Garment, Int>, Sprite>()
 
-    private fun ramp(r: LongArray): List<Color> = r.map { Color(it.toInt()) }
+    /** The red of the drawn robe (and the pointed hat), repainted for other robes. */
+    private val ROBE_HUES = 330f..18f
 
-    private fun swap(from: LongArray, to: LongArray): Map<Color, Color> = ramp(from).zip(ramp(to)).toMap()
-
-    fun imp(kind: ImpKind, frame: Int): Sprite = synchronized(imps) {
-        imps.getOrPut(kind.tint to (frame and 1)) {
-            val base = Art.imp(frame)
-            if (kind.tint == ImpTint.PURPLE) base else base.recolor(swap(ImpTint.PURPLE.ramp, kind.tint.ramp))
-        }
-    }
+    fun imp(kind: ImpKind, frame: Int): Sprite = Art.imp(kind, frame)
 
     /** The apprentice in [robe] and [hat]; the pointed hat takes the robe's colour. */
     fun apprentice(robe: Garment, hat: Garment, frame: Int): Sprite = synchronized(apprentices) {
         apprentices.getOrPut(Triple(robe, hat, frame and 1)) {
-            val swap = swap(Garment.CRIMSON.ramp!!, robe.ramp ?: Garment.CRIMSON.ramp)
-            val body = Art.apprenticeBody(frame).recolor(swap)
-            val top = Art.hat(hat.name, frame).let { if (hat == Garment.POINTED) it.recolor(swap) else it }
-            body.under(top)
+            val ramp = (robe.ramp ?: Garment.CRIMSON.ramp!!).map { Color(it.toInt()) }
+            fun dress(s: Sprite) = if (robe == Garment.CRIMSON) s else s.repaint(ROBE_HUES, 0.35f, ramp)
+            val body = dress(Art.apprenticeBody(frame))
+            val top = Art.hat(hat.name).let { if (hat == Garment.POINTED) dress(it) else it }
+            val (hx, hy) = Art.HAT_AT
+            body.under(top, hx, hy + top.rh * Art.hatSink(hat.name) / 100)
         }
     }
 

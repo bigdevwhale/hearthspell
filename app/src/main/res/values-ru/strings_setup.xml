@@ -40,7 +40,7 @@
     <string name="form_interval">Как часто</string>
     <string name="form_next">Следующий раз</string>
     <string name="form_tomorrow">Завтра</string>
-    <string name="form_next_note">Когда заклинание понадобится снова. Выбери день, когда обычно это делаешь, и оно пойдёт в этом ритме.</string>
+    <string name="form_next_note">Когда заклинание понадобится снова. Выбери день, когда обычно это делаешь, и дальше срок будет считаться от него.</string>
     <plurals name="spell_days_short">
         <item quantity="one">%d д</item>
         <item quantity="few">%d д</item>
@@ -92,6 +92,10 @@
     <string name="settings_floors">Этажи башни</string>
     <string name="settings_floors_sub">Порядок, названия, новые комнаты</string>
     <string name="settings_reminder">Напоминание</string>
+    <string name="settings_vacation">Отпуск</string>
+    <string name="settings_vacation_toggle">Я в отъезде</string>
+    <string name="settings_vacation_sub">Ставит на паузу сразу все заклинания. Когда вернёшься, каждое продолжит с того же места.</string>
+    <string name="settings_vacation_since">В отъезде с %1$s. Все заклинания на паузе.</string>
     <string name="settings_reminder_sub">Раз в день и только если завелись пакостники или пришло письмо.</string>
     <string name="settings_look">Вид и звук</string>
     <string name="settings_theme">Тема</string>
@@ -113,5 +117,5 @@
     <string name="settings_import_ok">Башня восстановлена</string>
     <string name="settings_import_fail">Это не копия Hearthspell</string>
     <string name="settings_about">Версия %1$s · без интернета, аккаунтов и рекламы</string>
-    <string name="settings_font_credit">Шрифт: m6x11 Дэниела Линссена, кириллица от Natto Games</string>
+    <string name="settings_font_credit">Шрифты: Kurale, Alegreya SC и Philosopher (SIL Open Font License). Рисунки сделаны генерацией изображений OpenAI.</string>
 </resources>

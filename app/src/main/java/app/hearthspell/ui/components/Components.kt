@@ -1,5 +1,12 @@
 package app.hearthspell.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -61,27 +68,34 @@ import app.hearthspell.ui.tips.TipHost
 import app.hearthspell.ui.theme.UType
 import kotlinx.coroutines.delay
 
-/** The size of one "UI pixel": outlines, bevels and stepped corners are drawn in multiples of it. */
-val PX: Dp = 3.dp
+/** A hairline: separators and thin borders. */
+val PX: Dp = 1.dp
 
 /**
- * An 8-bit box: a dark outline with stepped (notched) corners, a fill, a light bevel along the top
- * and a darker lip along the bottom. [pressed] drops the bevel, as if pushed in.
+ * A storybook pane: a rounded card with a soft drop shadow ([outline]), a gentle sheen from the top and a light rim
+ * ([bevel]). [lip] deepens the bottom edge. [pressed] flattens it, as if pushed in. Small boxes get rounder corners
+ * in proportion, so a checkbox reads as a soft square and a long bar as a pill.
  */
 fun Modifier.pixelBox(fill: Color, outline: Color, bevel: Color? = null, lip: Color? = null, pressed: Boolean = false): Modifier = drawBehind {
-    val p = PX.toPx()
     val w = size.width
     val h = size.height
-    // Outline: the rectangle minus its corner pixels.
-    drawRect(outline, Offset(p, 0f), Size(w - 2 * p, h))
-    drawRect(outline, Offset(0f, p), Size(w, h - 2 * p))
-    // Fill, inset by one pixel, again with notched corners.
-    drawRect(fill, Offset(2 * p, p), Size(w - 4 * p, h - 2 * p))
-    drawRect(fill, Offset(p, 2 * p), Size(w - 2 * p, h - 4 * p))
+    val r = minOf(16.dp.toPx(), minOf(w, h) * 0.32f)
+    val radius = CornerRadius(r, r)
     if (!pressed) {
-        bevel?.let { drawRect(it, Offset(2 * p, p), Size(w - 4 * p, p)) }
-        lip?.let { drawRect(it, Offset(2 * p, h - 2 * p), Size(w - 4 * p, p)) }
+        // A soft shadow below: a few faint, widening layers.
+        for (i in 1..3) {
+            val d = i * 1.5f.dp.toPx()
+            drawRoundRect(outline.copy(alpha = 0.16f / i), Offset(0f, d), Size(w, h), CornerRadius(r + d, r + d))
+        }
     }
+    drawRoundRect(fill, Offset.Zero, size, radius)
+    // Sheen: lighter at the top, fading down; a deeper lip at the bottom.
+    drawRoundRect(
+        Brush.verticalGradient(0f to Color.White.copy(alpha = if (pressed) 0.02f else 0.09f), 0.55f to Color.Transparent),
+        Offset.Zero, size, radius,
+    )
+    lip?.let { drawRoundRect(Brush.verticalGradient(0.6f to Color.Transparent, 1f to it.copy(alpha = it.alpha * 0.6f)), Offset.Zero, size, radius) }
+    bevel?.let { drawRoundRect(it.copy(alpha = it.alpha * 0.55f), Offset.Zero, size, radius, style = Stroke(1.dp.toPx())) }
 }
 
 /** A panel. */
@@ -126,17 +140,18 @@ fun PixelButton(
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
     val alpha = if (enabled) 1f else 0.45f
+    val scale by animateFloatAsState(if (pressed) 0.97f else 1f, label = "press")
     Box(
         modifier
-            .offset { IntOffset(0, if (pressed) PX.roundToPx() else 0) }
-            .pixelBox(fill.copy(alpha = alpha), c.outline, Color.White.copy(alpha = 0.35f * alpha), lip, pressed = pressed)
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+            .pixelBox(fill.copy(alpha = alpha), c.outline, Color.White.copy(alpha = 0.25f * alpha), lip, pressed = pressed)
             .clickable(interactionSource = interaction, indication = null, enabled = enabled, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 18.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             if (icon != null) {
-                PixelIcon(icon, ink.copy(alpha = alpha), size = 16.dp)
+                PixelIcon(icon, ink.copy(alpha = alpha), size = 20.dp)
                 Spacer(Modifier.width(10.dp))
             }
             Text(text, style = UType.Button, color = ink.copy(alpha = alpha), textAlign = TextAlign.Center)
@@ -155,7 +170,7 @@ fun IconTile(g: Glyph, onClick: () -> Unit, modifier: Modifier = Modifier, tint:
             .pixelBox(fill, U.c.outline, U.c.bevel, null, pressed)
             .clickable(interactionSource = interaction, indication = null, enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
-    ) { PixelIcon(g, if (enabled) tint else tint.copy(alpha = 0.35f), size = size * 0.42f) }
+    ) { PixelIcon(g, if (enabled) tint else tint.copy(alpha = 0.35f), size = size * 0.56f, muted = !enabled) }
 }
 
 /** A screen header with a back button. */
@@ -191,7 +206,7 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier, action: String? = 
     Row(modifier.fillMaxWidth().padding(top = 18.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(text.uppercase(), style = UType.Eyebrow, modifier = Modifier.weight(1f))
         if (action != null && onAction != null) {
-            Text(action, style = UType.Muted.copy(color = U.c.accent), modifier = Modifier.clickable(onClick = onAction).padding(4.dp))
+            Text(action, style = UType.Muted.copy(color = U.c.accent, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), modifier = Modifier.clickable(onClick = onAction).padding(4.dp))
         }
     }
 }
@@ -204,30 +219,29 @@ fun Chip(text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifie
         modifier
             .pixelBox(if (selected) color else c.surface2, c.outline, if (selected) Color.White.copy(alpha = 0.3f) else c.bevel)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 14.dp, vertical = 9.dp),
     ) {
-        Text(text, style = UType.Body, color = if (selected) c.onAccent else c.ink, maxLines = 1)
+        Text(text, style = UType.Body.copy(fontWeight = if (selected) androidx.compose.ui.text.font.FontWeight.Bold else null), color = if (selected) c.onAccent else c.ink, maxLines = 1)
     }
 }
 
-/** A segmented bar of [segments] blocks, [fraction] of them lit: the 8-bit progress bar. */
+/** A rounded progress bar, [fraction] filled with a glowing gradient; it glides when the value changes. */
 @Composable
 fun PixelBar(fraction: Float, modifier: Modifier = Modifier, color: Color = U.c.accent, segments: Int = 10, height: Dp = 12.dp) {
     val c = U.c
-    val lit = (fraction.coerceIn(0f, 1f) * segments).let { if (it > 0f && it < 1f) 1 else it.toInt() }
+    val f by animateFloatAsState(fraction.coerceIn(0f, 1f), animationSpec = tween(600), label = "bar")
     Box(
         modifier.height(height).drawBehind {
-            // A thinner frame than panels, so the lit blocks stay chunky even in a short bar.
-            val p = 2.dp.toPx()
-            drawRect(c.outline, Offset(0f, 0f), size)
-            val inner = Size(size.width - 2 * p, size.height - 2 * p)
-            drawRect(c.surface2, Offset(p, p), inner)
-            val gap = 1.dp.toPx()
-            val segW = (inner.width - gap * (segments + 1)) / segments
-            for (i in 0 until lit) {
-                val x = p + gap + i * (segW + gap)
-                drawRect(color, Offset(x, p + gap), Size(segW, inner.height - 2 * gap))
-                drawRect(Color.White.copy(alpha = 0.35f), Offset(x, p + gap), Size(segW, 1.dp.toPx()))
+            val r = CornerRadius(size.height / 2, size.height / 2)
+            drawRoundRect(c.outline.copy(alpha = 0.45f), Offset.Zero, size, r)
+            drawRoundRect(c.surface2, Offset(1.dp.toPx(), 1.dp.toPx()), Size(size.width - 2.dp.toPx(), size.height - 2.dp.toPx()), r)
+            if (f > 0f) {
+                val w = maxOf(size.height, size.width * f)
+                drawRoundRect(Brush.horizontalGradient(listOf(color.copy(alpha = 0.75f), color), endX = w), Offset.Zero, Size(w, size.height), r)
+                drawRoundRect(
+                    Brush.verticalGradient(0f to Color.White.copy(alpha = 0.35f), 0.5f to Color.Transparent),
+                    Offset.Zero, Size(w, size.height), r,
+                )
             }
         }
     )
@@ -280,15 +294,20 @@ fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit, modi
             if (sub != null) Text(sub, style = UType.Muted)
         }
         Spacer(Modifier.width(12.dp))
-        Box(Modifier.width(54.dp).height(30.dp).pixelBox(if (checked) c.good else c.surface2, c.outline)) {
-            Box(
-                Modifier
-                    .align(if (checked) Alignment.CenterEnd else Alignment.CenterStart)
-                    .padding(horizontal = 5.dp)
-                    .size(18.dp)
-                    .background(if (checked) c.ink else c.faint)
-            )
-        }
+        // A soft switch: the knob glides across, the track warms up when on.
+        val pos by animateFloatAsState(if (checked) 1f else 0f, label = "switch")
+        val track = androidx.compose.ui.graphics.lerp(c.surface2, c.good, pos)
+        Box(
+            Modifier.width(52.dp).height(30.dp).drawBehind {
+                val r = CornerRadius(size.height / 2, size.height / 2)
+                drawRoundRect(track, Offset.Zero, size, r)
+                drawRoundRect(c.bevel.copy(alpha = 0.5f * (1 - pos)), Offset.Zero, size, r, style = Stroke(1.dp.toPx()))
+                val k = size.height / 2 - 4.dp.toPx()
+                val cx = size.height / 2 + (size.width - size.height) * pos
+                drawCircle(c.outline.copy(alpha = 0.25f), k, Offset(cx, size.height / 2 + 1.5f.dp.toPx()))
+                drawCircle(if (checked) Color.White else c.muted, k, Offset(cx, size.height / 2))
+            }
+        )
     }
 }
 
@@ -297,7 +316,7 @@ fun ConfirmDialog(title: String, text: String, confirm: String, onConfirm: () ->
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = U.c.surface,
-        shape = androidx.compose.ui.graphics.RectangleShape,
+        shape = RoundedCornerShape(24.dp),
         title = { Text(title, style = UType.Heading) },
         text = { Text(text, style = UType.Body) },
         confirmButton = {
@@ -314,7 +333,7 @@ fun TimeDialog(minutes: Int, onDismiss: () -> Unit, onPicked: (Int) -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = U.c.surface,
-        shape = androidx.compose.ui.graphics.RectangleShape,
+        shape = RoundedCornerShape(24.dp),
         text = { TimePicker(state) },
         confirmButton = { PixelButton(stringResource(R.string.ok), { onPicked(state.hour * 60 + state.minute); onDismiss() }) },
         dismissButton = { PixelButton(stringResource(R.string.cancel), onDismiss, kind = ButtonKind.SECONDARY) },

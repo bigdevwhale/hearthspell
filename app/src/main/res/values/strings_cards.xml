@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cards_title">Postcards</string>
+    <string name="cards_sub">Pretty cards about your tower to show friends. Each has a QR code to the app on Google Play.</string>
+    <string name="cards_open">Postcards</string>
+    <string name="card_share">Share</string>
+    <string name="card_save">Save</string>
+    <string name="card_saved">Saved to Pictures/Hearthspell</string>
+    <string name="card_save_fail">Couldn\'t save the postcard</string>
+    <string name="card_text">My tower in Hearthspell, a cozy app for home chores: %s</string>
+    <string name="card_tagline">A cozy tower for your home chores</string>
+    <string name="card_store">Free on Google Play</string>
+    <string name="card_more">More postcards</string>
+
+    <string name="card_week_eyebrow">My week in the tower</string>
+    <plurals name="card_week_title">
+        <item quantity="one">%d spell this week</item>
+        <item quantity="other">%d spells this week</item>
+    </plurals>
+    <string name="card_week_best">The most magical day: %s</string>
+    <string name="card_week_quiet">A quiet week. The tower is waiting.</string>
+
+    <string name="card_tower_eyebrow">My tower</string>
+    <string name="card_tower_title">%s\'s tower</string>
+    <string name="card_tower_title_plain">My wizard tower</string>
+    <plurals name="card_tower_sub">
+        <item quantity="one">%d floor, every room of the home</item>
+        <item quantity="other">%d floors, every room of the home</item>
+    </plurals>
+
+    <string name="card_me_eyebrow">Apprenticeship</string>
+    <string name="card_me_title">Apprentice</string>
+
+    <string name="card_room_clean">Clean and cozy in here</string>
+    <plurals name="card_room_imps">
+        <item quantity="one">An imp has crept in. Not for long!</item>
+        <item quantity="other">%d imps have crept in. Not for long!</item>
+    </plurals>
+
+    <string name="card_helper_eyebrow">My helper</string>
+    <string name="card_helper_asleep">A sleeping helper</string>
+    <string name="card_helpers_eyebrow">The helpers</string>
+    <string name="card_helpers_title">%1$d of %2$d helpers awake</string>
+
+    <string name="card_imp_eyebrow">Shown the door</string>
+    <string name="card_bestiary_eyebrow">Bestiary</string>
+    <string name="card_bestiary_title">%1$d of %2$d imps met</string>
+    <string name="card_bestiary_sub">Every one shooed out of the tower by casting spells.</string>
+    <string name="card_treasures_eyebrow">Treasures</string>
+    <string name="card_treasures_title">%1$d of %2$d treasures found</string>
+    <string name="card_treasures_sub">Little gifts the helpers leave on tidy floors.</string>
+
+    <string name="card_spell_sub">%1$s · rank %2$s</string>
+
+    <string name="card_f_floors">floors</string>
+    <string name="card_f_awake">helpers awake</string>
+    <string name="card_f_tidy">tidy</string>
+    <string name="card_f_spells">spells here</string>
+    <string name="card_f_level">level</string>
+    <string name="card_f_circle">circle</string>
+    <string name="card_f_banished">times shooed</string>
+    <string name="card_f_cast">times cast</string>
+    <string name="card_f_met">imps met</string>
+</resources>

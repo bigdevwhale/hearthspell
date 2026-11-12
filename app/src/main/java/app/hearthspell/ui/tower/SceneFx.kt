@@ -53,37 +53,31 @@ internal fun Grid.lighting(look: FloorLook, m: SceneMeta, tick: Long, sky: Sky) 
     }
 }
 
-/** Two hearts floating up from a patted friend; [since] is ticks since the pat. */
-internal fun Grid.hearts(x: Int, y: Int, since: Long) {
+/** Two hearts floating up from a patted friend; [since] is steps since the pat. */
+internal fun Grid.hearts(x: Int, y: Int, since: Float) {
     val h = Art.heart
     for (k in 0..1) {
         val life = since - k * 5
-        if (life !in 0..16) continue
-        sprite(h, x - h.w / 2 + (if (k == 0) -4 else 4) + (sin(life / 2.0) * 1.5).toInt(), y - (life / 2).toInt(), alpha = 1f - life / 17f)
+        if (life !in 0f..16f) continue
+        spriteAt(h, x - h.w / 2f + (if (k == 0) -4 else 4) + sin(life / 2f) * 1.5f, y - life / 2f, alpha = 1f - life / 17f)
     }
 }
 
 /** Little z's rising from someone asleep. */
-internal fun Grid.zees(x: Int, y: Int, tick: Long, seed: Long) {
+internal fun Grid.zees(x: Int, y: Int, t: Float, seed: Long) {
     for (k in 0..1) {
-        val life = ((tick + seed * 7 + k * 12) % 24).toInt()
+        val life = (t + seed * 7 + k * 12) % 24f
         val zx = x + life / 4 + k * 2
         val zy = y - life / 2
         val a = 0.9f - life / 26f
-        rect(zx, zy, 3, 1, WHITE, a)
-        dot(zx + 1, zy + 1, WHITE, a)
-        rect(zx, zy + 2, 3, 1, WHITE, a)
+        rectAt(zx, zy, 3f, 1f, WHITE, a)
+        rectAt(zx + 1, zy + 1, 1f, 1f, WHITE, a)
+        rectAt(zx, zy + 2, 3f, 1f, WHITE, a)
     }
 }
 
 /** A four-point glint. */
-internal fun Grid.twinkle(x: Int, y: Int) {
-    dot(x, y, WHITE)
-    dot(x - 1, y, WHITE, 0.6f)
-    dot(x + 1, y, WHITE, 0.6f)
-    dot(x, y - 1, WHITE, 0.6f)
-    dot(x, y + 1, WHITE, 0.6f)
-}
+internal fun Grid.twinkle(x: Int, y: Int) = sparkle(x + 0.5f, y + 0.5f, 1.6f, WHITE)
 
 /** Sparkles left behind a walking helper (the stardust potion). */
 internal fun Grid.sparkleTrail(x: Int, y: Int, facingLeft: Boolean, tick: Long, i: Int) {
@@ -146,6 +140,8 @@ internal fun Grid.blossomWalls(seed: Long, rows: Int, tick: Long) {
  */
 internal fun Grid.seasonAir(rows: Int, seasons: Set<Season>, potions: Set<Potion>, sky: Sky, tick: Long, seed: Long, wide: Boolean = false) {
     if (rows <= 0) return
+    // Flakes, leaves and petals as soft specks rather than square pixels.
+    fun dot(x: Int, y: Int, c: Color, alpha: Float = 1f) = glow(x + 0.5f, y + 0.5f, 1.1f, c, alpha)
     val margin = kotlin.math.ceil(ox / px).toInt() + 1
     val strips = if (wide) listOf(-margin to GW + margin * 2) else listOf(-margin to TX + margin, TX + SCENE_W to GW - TX - SCENE_W + margin)
     fun particles(n: Int, salt: Long, speed: Int, drift: Double, draw: (Int, Int, Int) -> Unit) {
@@ -235,11 +231,15 @@ internal fun Grid.constellations(list: List<Pair<Constellation, Int>>, tick: Lon
     list.forEachIndexed { ci, (c, lit) ->
         if (lit == 0) return@forEachIndexed
         c.lines.forEach { (a, b) ->
-            if (a < lit && b < lit) line(c.stars[a].first, y(c.stars[a].second), c.stars[b].first, y(c.stars[b].second), Color(0xFF9B8AE0), 0.22f)
+            if (a < lit && b < lit) lineAt(
+                c.stars[a].first + 0.5f, y(c.stars[a].second) + 0.5f, c.stars[b].first + 0.5f, y(c.stars[b].second) + 0.5f,
+                Color(0xFFB8A8F0), 0.35f, 0.25f,
+            )
         }
         c.stars.take(lit).forEachIndexed { i, (x, yy) ->
             val bright = (tick / 3 + i * 7 + ci * 3) % 29 == 0L
-            if (bright) twinkle(x, y(yy)) else dot(x, y(yy), Color(0xFFFFF4D6), 0.95f)
+            if (bright) sparkle(x + 0.5f, y(yy) + 0.5f, 2f, Color(0xFFFFF4D6))
+            else glow(x + 0.5f, y(yy) + 0.5f, 1.1f, Color(0xFFFFF4D6), 0.95f)
         }
     }
 }

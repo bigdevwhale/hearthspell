@@ -88,10 +88,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 
-enum class Tab { TOWER, GRIMOIRE, MARKET, LETTERS }
+enum class Tab { TOWER, GRIMOIRE, MARKET, STATS }
 
 /** Screens a notification (or `adb ... --es route`) may open directly. */
-private val SCREENS = setOf("stars", "brew", "wardrobe", "bestiary", "treasures", "tea", "decor?floor=0", "cantrips", "settings", "trip", "floors")
+private val SCREENS = setOf("stars", "brew", "wardrobe", "bestiary", "treasures", "tea", "decor?floor=0", "cantrips", "settings", "trip", "floors", "postcards")
 
 /** Sounds and buzzes, as the settings allow. */
 val LocalFeel = staticCompositionLocalOf<Feel?> { null }
@@ -115,6 +115,8 @@ class Go(private val nav: NavHostController) {
     /** The decor shop, placing on [floorId] (0 = into the chest). */
     fun decor(floorId: Long = 0) = nav.navigate("decor?floor=$floorId")
     fun letter(n: Int) = nav.navigate("letter/$n")
+    fun letters() = nav.navigate("letters")
+    fun postcards() = nav.navigate("postcards")
     fun trip() = nav.navigate("trip")
     fun cantrips() = nav.navigate("cantrips")
     fun settings() = nav.navigate("settings")
@@ -151,10 +153,19 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
         WData(
             World(
                 floors.orEmpty(), spells, casts, reagents, decor, System.currentTimeMillis(), ZoneId.systemDefault(), settings.startDay,
-                finds, brews, wardrobe,
+                finds, brews, wardrobe, settings.pinnedRequests,
             ),
             settings,
         )
+    }
+
+    // The week's requests are pinned once there are three, so they don't shift as spells come and go (#7).
+    val week = data.world.weekStart.toEpochDay()
+    LaunchedEffect(week, settings.requestsWeek, data.world.freshRequests) {
+        val fresh = data.world.freshRequests
+        if (settings.onboarded && settings.requestsWeek != week && fresh.size == 3) {
+            container.settings.update { it.copy(requestsWeek = week, requestIds = fresh.map { s -> s.id }) }
+        }
     }
 
     // Onboarding finished elsewhere (the demo seed, a restored backup) while the welcome screen was up.
@@ -172,14 +183,24 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
         when {
             route == "tower" -> tab = Tab.TOWER
             route.startsWith("floor/") -> { tab = Tab.TOWER; route.removePrefix("floor/").toLongOrNull()?.let { go.floor(it) } }
-            route.startsWith("letter/") -> { tab = Tab.LETTERS; route.removePrefix("letter/").toIntOrNull()?.let { go.letter(it) } }
+            route.startsWith("letter/") -> { go.letters(); route.removePrefix("letter/").toIntOrNull()?.let { go.letter(it) } }
             route == "grimoire" -> tab = Tab.GRIMOIRE
             route == "market" -> tab = Tab.MARKET
-            route == "letters" -> tab = Tab.LETTERS
+            route == "letters" -> go.letters()
+            route == "stats" -> tab = Tab.STATS
             route in SCREENS -> nav.navigate(route)
             route.startsWith("spell/") || route.startsWith("helper/") -> nav.navigate(route)
             // The demo build can show the master's note again, for screenshots.
             route == "welcome" && BuildConfig.DEMO -> nav.navigate(route)
+            // And switch its language from adb, for both sets of screenshots.
+            route.startsWith("lang/") && BuildConfig.DEMO -> app.hearthspell.ui.settings.Language.set(route.removePrefix("lang/"))
+            route == "reseed" && BuildConfig.DEMO -> container.scope.launch {
+                app.hearthspell.data.DemoSeed.reseed(context, container.dao, container.settings, app.hearthspell.ui.settings.Language.current())
+                container.changed()
+                // The requests may have been pinned to the old spells while the new ones were coming in: pin afresh.
+                kotlinx.coroutines.delay(1500)
+                container.settings.update { it.copy(requestsWeek = -1, requestIds = emptyList()) }
+            }
         }
         openRoute.value = null
     }
@@ -231,6 +252,8 @@ fun HearthRoot(openRoute: MutableStateFlow<String?>, settings: Settings) {
                 composable("decor?floor={floor}", arguments = listOf(navArgument("floor") { type = NavType.LongType; defaultValue = 0L })) { e ->
                     DecorScreen(e.arguments?.getLong("floor") ?: 0L, data, go)
                 }
+                composable("postcards") { app.hearthspell.ui.share.PostcardsScreen(data, go) }
+                composable("letters") { LettersTab(data, go, onBack = go::back) }
                 composable("letter/{n}", arguments = listOf(navArgument("n") { type = NavType.IntType })) { e ->
                     LetterScreen(e.arguments?.getInt("n") ?: 0, data, go)
                 }
@@ -257,7 +280,7 @@ private fun MainTabs(tab: Tab, onTab: (Tab) -> Unit, go: Go, data: WData) {
                 Tab.TOWER -> TowerTab(data, go)
                 Tab.GRIMOIRE -> GrimoireTab(data, go)
                 Tab.MARKET -> MarketTab(data, go)
-                Tab.LETTERS -> LettersTab(data, go)
+                Tab.STATS -> app.hearthspell.ui.stats.StatsTab(data, go)
             }
         }
         val c = U.c
@@ -278,7 +301,7 @@ private fun MainTabs(tab: Tab, onTab: (Tab) -> Unit, go: Go, data: WData) {
             NavItem(Glyphs.tower, stringResource(R.string.tab_tower), tab == Tab.TOWER, badge = data.world.totalImps > 0) { onTab(Tab.TOWER) }
             NavItem(Glyphs.book, stringResource(R.string.tab_grimoire), tab == Tab.GRIMOIRE) { onTab(Tab.GRIMOIRE) }
             NavItem(Glyphs.basket, stringResource(R.string.tab_market), tab == Tab.MARKET, badge = data.world.shoppingList.isNotEmpty()) { onTab(Tab.MARKET) }
-            NavItem(Glyphs.letter, stringResource(R.string.tab_letters), tab == Tab.LETTERS, badge = unread > 0) { onTab(Tab.LETTERS) }
+            NavItem(Glyphs.chronicle, stringResource(R.string.tab_stats), tab == Tab.STATS) { onTab(Tab.STATS) }
         }
     }
 }
@@ -295,7 +318,7 @@ private fun RowScope.NavItem(icon: Glyph, label: String, selected: Boolean, badg
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(Modifier.size(30.dp), contentAlignment = Alignment.Center) {
-            PixelIcon(icon, color, size = 24.dp)
+            PixelIcon(icon, color, size = 28.dp, muted = !selected)
             // The badge: one red pixel-square at the icon's corner.
             if (badge) Box(Modifier.align(Alignment.TopEnd).size(7.dp).background(c.danger))
         }

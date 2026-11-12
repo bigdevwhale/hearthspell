@@ -1,1 +1,1 @@
-New in 1.3.1: in the grimoire, the spells of each floor are in order of when they are due, overdue and today's on top.
+New in 1.4.0: a new hand-painted look and storybook fonts. A Chronicle tab with your week, a chart of casts and favourite spells. Postcards to share your tower, rooms, helpers and imps. Holiday mode pauses every spell while you're away. The master's requests stay the same all week and count once cast.

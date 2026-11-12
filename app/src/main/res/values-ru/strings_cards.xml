@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cards_title">Открытки</string>
+    <string name="cards_sub">Красивые карточки о твоей башне, чтобы показать друзьям. На каждой есть QR-код на приложение в Google Play.</string>
+    <string name="cards_open">Открытки</string>
+    <string name="card_share">Поделиться</string>
+    <string name="card_save">Сохранить</string>
+    <string name="card_saved">Сохранено в Pictures/Hearthspell</string>
+    <string name="card_save_fail">Не получилось сохранить открытку</string>
+    <string name="card_text">Моя башня в Hearthspell, уютном приложении для домашних дел: %s</string>
+    <string name="card_tagline">Уютная башня для домашних дел</string>
+    <string name="card_store">Бесплатно в Google Play</string>
+    <string name="card_more">Все открытки</string>
+
+    <string name="card_week_eyebrow">Моя неделя в башне</string>
+    <plurals name="card_week_title">
+        <item quantity="one">%d заклинание за неделю</item>
+        <item quantity="few">%d заклинания за неделю</item>
+        <item quantity="many">%d заклинаний за неделю</item>
+        <item quantity="other">%d заклинания за неделю</item>
+    </plurals>
+    <string name="card_week_best">Самый волшебный день: %s</string>
+    <string name="card_week_quiet">Тихая неделя. Башня ждёт.</string>
+
+    <string name="card_tower_eyebrow">Моя башня</string>
+    <string name="card_tower_title">Башня: %s</string>
+    <string name="card_tower_title_plain">Моя волшебная башня</string>
+    <plurals name="card_tower_sub">
+        <item quantity="one">%d этаж, по комнате дома на каждом</item>
+        <item quantity="few">%d этажа, по комнате дома на каждом</item>
+        <item quantity="many">%d этажей, по комнате дома на каждом</item>
+        <item quantity="other">%d этажа, по комнате дома на каждом</item>
+    </plurals>
+
+    <string name="card_me_eyebrow">Ученичество</string>
+    <string name="card_me_title">{Ученик|Ученица}</string>
+
+    <string name="card_room_clean">Здесь чисто и уютно</string>
+    <plurals name="card_room_imps">
+        <item quantity="one">Сюда пробрался пакостник. Ненадолго!</item>
+        <item quantity="few">Сюда пробрались %d пакостника. Ненадолго!</item>
+        <item quantity="many">Сюда пробрались %d пакостников. Ненадолго!</item>
+        <item quantity="other">Сюда пробрались %d пакостника. Ненадолго!</item>
+    </plurals>
+
+    <string name="card_helper_eyebrow">Мой помощник</string>
+    <string name="card_helper_asleep">Спящий помощник</string>
+    <string name="card_helpers_eyebrow">Помощники</string>
+    <string name="card_helpers_title">Проснулись %1$d из %2$d помощников</string>
+
+    <string name="card_imp_eyebrow">{Выставил|Выставила} за дверь</string>
+    <string name="card_bestiary_eyebrow">Бестиарий</string>
+    <string name="card_bestiary_title">Знакомых пакостников: %1$d из %2$d</string>
+    <string name="card_bestiary_sub">Каждого {выгнал|выгнала} из башни заклинаниями.</string>
+    <string name="card_treasures_eyebrow">Сокровища</string>
+    <string name="card_treasures_title">Найдено сокровищ: %1$d из %2$d</string>
+    <string name="card_treasures_sub">Маленькие подарки, которые помощники оставляют на чистых этажах.</string>
+
+    <string name="card_spell_sub">%1$s · ранг: %2$s</string>
+
+    <string name="card_f_floors">этажей</string>
+    <string name="card_f_awake">помощников не спят</string>
+    <string name="card_f_tidy">чистота</string>
+    <string name="card_f_spells">заклинаний здесь</string>
+    <string name="card_f_level">уровень</string>
+    <string name="card_f_circle">круг</string>
+    <string name="card_f_banished">раз {выгнал|выгнала}</string>
+    <string name="card_f_cast">раз {произнёс|произнесла}</string>
+    <string name="card_f_met">пакостников встречено</string>
+</resources>

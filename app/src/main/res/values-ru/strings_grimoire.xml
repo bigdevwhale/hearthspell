@@ -17,6 +17,7 @@
     </plurals>
     <string name="grimoire_helpers">Помощники</string>
     <string name="grimoire_helpers_awake">Проснулось: %1$d из %2$d</string>
+    <string name="grimoire_all">Все</string>
     <string name="grimoire_spells">Заклинания</string>
     <string name="grimoire_decor">Лавка убранства</string>
     <string name="grimoire_decor_sub">Потратить ману на убранство башни</string>

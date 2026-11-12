@@ -16,8 +16,10 @@ sys.path.insert(0, str(Path(__file__).parent / "art"))
 from shots import EDGE, ground  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-FONT = ImageFont.truetype(str(ROOT / "app/src/main/res/font/m6x11.ttf"), 16)
-GOLD = (255, 185, 56)
+FONTS = ROOT / "app/src/main/res/font"
+HEAD = ImageFont.truetype(str(FONTS / "kurale.ttf"), 76)
+BODY = ImageFont.truetype(str(FONTS / "philosopher.ttf"), 46)
+GOLD = (244, 198, 110)
 CREAM = (255, 244, 214)
 LILAC = (169, 150, 230)
 
@@ -30,45 +32,47 @@ SCREENS = [
      ("Твой дом — башня волшебника", "Каждая комната — этаж, каждое дело — заклинание")),
     ("floors", ("Forget a chore and imps move in", "Harmless and cheeky. One cast sends them off"),
      ("Забытое дело — и заводятся пакостники", "Безобидные. Одно заклинание, и их нет")),
-    ("floor", ("Every chore keeps its own rhythm", "Every two days, weekly or once a month"),
-     ("У каждого дела свой ритм", "Раз в два дня, раз в неделю или раз в месяц")),
-    ("spell", ("Master spells, wake helpers", "From Novice to Archmage, with 17 helpers"),
-     ("Осваивай заклинания", "От Новичка до Архимага, 17 помощников")),
-    ("letter", ("Letters from the master", "Twelve of them, one a week, from his travels"),
-     ("Письма от мастера", "Двенадцать писем, по одному в неделю")),
+    ("floor", ("Every chore in its own time", "Every two days, weekly or once a month"),
+     ("Каждое дело — в свой срок", "Раз в два дня, раз в неделю или раз в месяц")),
+    ("grimoire", ("A grimoire of your spells", "Master them and wake 17 helpers"),
+     ("Гримуар твоих заклинаний", "Осваивай их и буди 17 помощников")),
+    ("stats", ("A chronicle of your week", "Spells, mana and the tidiest floors"),
+     ("Летопись твоей недели", "Заклинания, мана и самые чистые этажи")),
+    ("postcards", ("Share your tower", "Postcards of rooms, helpers and imps"),
+     ("Делись своей башней", "Открытки с комнатами, помощниками и пакостниками")),
     ("market", ("Shopping as a quest", "The list sorts itself into shop aisles"),
      ("Покупки — поход за реагентами", "Список сам раскладывается по отделам")),
-    ("stars", ("Light stars over the tower", "Twelve constellations to fill"),
-     ("Зажигай звёзды над башней", "Двенадцать созвездий")),
-    ("bestiary", ("Meet every imp", "Eighteen of them, by room and season"),
-     ("Познакомься со всеми пакостниками", "Восемнадцать, по комнатам и сезонам")),
+    ("letter", ("Letters from the master", "Twelve of them, one a week, from his travels"),
+     ("Письма от мастера", "Двенадцать писем, по одному в неделю")),
 ]
 
 TAGLINE = {
-    "en-US": ("Chores as spells", "in a cozy pixel tower"),
+    "en-US": ("Chores as spells", "in a cozy wizard's tower"),
     "ru-RU": ("Домашние дела —", "заклинания в уютной башне"),
 }
 
 
-def text(s: str, scale: int, color) -> Image.Image:
-    """Pixel text: drawn at the font's native 16 px without smoothing, then scaled up."""
-    l, t, r, b = FONT.getbbox(s)
-    im = Image.new("RGBA", (r - l + 2, b - t + 3), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    d.fontmode = "1"
-    d.text((1 - l, 1 - t), s, font=FONT, fill=(16, 12, 36, 255))  # a one-pixel shadow
-    d.text((-l, -t), s, font=FONT, fill=color + (255,))
-    return im.resize((im.width * scale, im.height * scale), Image.NEAREST)
+def text(s: str, size: int, color, face=None) -> Image.Image:
+    """Smooth storybook text with a soft shadow under it."""
+    font = face or (HEAD if size >= 60 else BODY)
+    l, t, r, b = font.getbbox(s)
+    pad = 12
+    im = Image.new("RGBA", (r - l + pad * 2, b - t + pad * 2), (0, 0, 0, 0))
+    shadow = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).text((pad - l + 2, pad - t + 4), s, font=font, fill=(8, 6, 22, 220))
+    im.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(4)))
+    ImageDraw.Draw(im).text((pad - l, pad - t), s, font=font, fill=color + (255,))
+    return im
 
 
-def lines(s: str, scale: int, color, width: int) -> list[Image.Image]:
+def lines(s: str, size: int, color, width: int, face=None) -> list[Image.Image]:
     """One line if it fits, else split into two at the most even word break."""
-    if text(s, scale, color).width <= width:
-        return [text(s, scale, color)]
+    if text(s, size, color, face).width <= width:
+        return [text(s, size, color, face)]
     words = s.split()
     splits = [(" ".join(words[:i]), " ".join(words[i:])) for i in range(1, len(words))]
-    a, b = min(splits, key=lambda ab: max(text(ab[0], scale, color).width, text(ab[1], scale, color).width))
-    return [text(a, scale, color), text(b, scale, color)]
+    a, b = min(splits, key=lambda ab: max(text(ab[0], size, color, face).width, text(ab[1], size, color, face).width))
+    return [text(a, size, color, face), text(b, size, color, face)]
 
 
 def sky(W: int, H: int) -> Image.Image:
@@ -80,8 +84,8 @@ def put(g: Image.Image, im: Image.Image, xy: tuple[int, int]) -> None:
     """Text over a soft dark haze, so the stars behind it don't break up the letters."""
     x, y = xy
     haze = Image.new("RGBA", (im.width + 60, im.height + 60), (0, 0, 0, 0))
-    ImageDraw.Draw(haze).rounded_rectangle((24, 24, im.width + 36, im.height + 36), 18, fill=(11, 9, 32, 200))
-    g.alpha_composite(haze.filter(ImageFilter.GaussianBlur(12)), (x - 30, y - 30))
+    ImageDraw.Draw(haze).rounded_rectangle((34, 34, im.width + 26, im.height + 26), 30, fill=(11, 9, 32, 150))
+    g.alpha_composite(haze.filter(ImageFilter.GaussianBlur(16)), (x - 30, y - 30))
     g.alpha_composite(im, (x, y))
 
 
@@ -100,15 +104,15 @@ def card(src: Path, width: int) -> Image.Image:
 def screenshot(src: Path, head: str, sub: str) -> Image.Image:
     W, H, CARD_TOP = 1080, 1920, 350
     g = sky(W, H)
-    block = lines(head, 4, GOLD, W - 100) + [None] + lines(sub, 3, CREAM, W - 100)
-    height = sum(10 if im is None else im.height + 4 for im in block)
+    block = lines(head, 76, GOLD, W - 100) + [None] + lines(sub, 46, CREAM, W - 100)
+    height = sum(10 if im is None else im.height - 10 for im in block)
     y = (CARD_TOP - 20 - height) // 2
     for im in block:
         if im is None:
             y += 10
             continue
         put(g, im, ((W - im.width) // 2, y))
-        y += im.height + 4
+        y += im.height - 10
     c = card(src, 770)
     x, y = (W - c.width) // 2, CARD_TOP
     shadow = Image.new("RGBA", (c.width + 80, c.height + 80), (0, 0, 0, 0))
@@ -140,24 +144,38 @@ def app_icon() -> Image.Image:
 
 
 def tower_art() -> Image.Image:
-    """The tower from the launcher icon, without its square of sky."""
-    import icon
-    return canvas_image(icon.foreground())
+    """The tower as the app paints it: the roof, two floors and the base, without the helpers."""
+    res = ROOT / "app/src/main/res/drawable-nodpi"
+    roof = Image.open(res / "hs_roof.webp").convert("RGBA")
+    floors = [Image.open(res / f"hs_scene_{k}.webp").convert("RGBA") for k in ("bedroom", "kitchen")]
+    base = Image.open(res / "hs_base.webp").convert("RGBA")
+    h = roof.height + sum(f.height for f in floors) + base.height
+    out = Image.new("RGBA", (roof.width, h))
+    out.alpha_composite(roof, (0, 0))
+    y = roof.height
+    for f in floors:
+        out.alpha_composite(f, ((roof.width - f.width) // 2, y))
+        y += f.height
+    out.alpha_composite(base, ((roof.width - base.width) // 2, y))
+    return out
 
 
 def feature(lang: str, tower: Image.Image) -> Image.Image:
     W, H = 1024, 500
     g = sky(W, H)
-    t = tower.resize((tower.width * 8, tower.height * 8), Image.NEAREST)
-    g.alpha_composite(t, (W - t.width - 50, H - t.height + 4))
-    title = text("Hearthspell", 6, GOLD)
+    # Standing on the meadow, the lantern clear of the top edge.
+    foot = H - 46
+    k = (foot - 14) / tower.height
+    t = tower.resize((round(tower.width * k), round(tower.height * k)), Image.LANCZOS)
+    g.alpha_composite(t, (W - t.width - 90, foot - t.height))
+    title = text("Hearthspell", 96, GOLD, ImageFont.truetype(str(FONTS / "kurale.ttf"), 96))
     y = 120
-    put(g, title, (60, y))
-    y += title.height + 30
+    put(g, title, (48, y))
+    y += title.height - 6
     for line in TAGLINE[lang]:
-        s = text(line, 3, CREAM)
-        put(g, s, (66, y))
-        y += s.height + 6
+        s = text(line, 42, CREAM)
+        put(g, s, (56, y))
+        y += s.height - 18
     return g.convert("RGB")
 
 

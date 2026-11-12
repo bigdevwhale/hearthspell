@@ -13,6 +13,7 @@
     </plurals>
     <string name="grimoire_helpers">Helpers</string>
     <string name="grimoire_helpers_awake">%1$d of %2$d awake</string>
+    <string name="grimoire_all">All</string>
     <string name="grimoire_spells">Spells</string>
     <string name="grimoire_decor">Decor shop</string>
     <string name="grimoire_decor_sub">Spend mana on furniture for the tower</string>

@@ -21,9 +21,18 @@ import kotlin.random.Random
 
 /** A lived-in tower for screenshots (`-Pdemo`), in the language active on first launch. */
 object DemoSeed {
-    suspend fun seedIfEmpty(context: Context, dao: HearthDao, settings: SettingsStore) {
+    /** The tower wiped and seeded again as of now, in [lang] ("en" or "ru"): fresh screenshots in either language. */
+    suspend fun reseed(context: Context, dao: HearthDao, settings: SettingsStore, lang: String) {
+        dao.wipeCasts(); dao.wipeSpells(); dao.wipeFloors(); dao.wipeReagents(); dao.wipeDecor()
+        dao.wipeFinds(); dao.wipeBrews(); dao.wipeWardrobe()
+        // The master's requests were pinned to the old spells.
+        settings.update { it.copy(requestsWeek = -1, requestIds = emptyList()) }
+        seedIfEmpty(context, dao, settings, lang)
+    }
+
+    suspend fun seedIfEmpty(context: Context, dao: HearthDao, settings: SettingsStore, lang: String? = null) {
         if (dao.floors().isNotEmpty()) return
-        val ru = context.resources.configuration.locales[0].language == "ru"
+        val ru = (lang?.takeIf { it.isNotEmpty() } ?: context.resources.configuration.locales[0].language) == "ru"
         fun t(en: String, r: String) = if (ru) r else en
         val rnd = Random(7)
         val zone = ZoneId.systemDefault()

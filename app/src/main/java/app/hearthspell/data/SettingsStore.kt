@@ -41,7 +41,17 @@ data class Settings(
     /** What the apprentice wears: [app.hearthspell.content.Garment] names. */
     val robe: String = "CRIMSON",
     val hat: String = "POINTED",
-)
+    /** Epoch day of the Monday whose requests are pinned in [requestIds]; -1 before any. */
+    val requestsWeek: Long = -1,
+    val requestIds: List<Long> = emptyList(),
+    /** When the holiday began (0 when at home): every spell is paused till the apprentice is back. */
+    val vacationSince: Long = 0,
+    /** Spells the holiday paused, the ones to wake on return. */
+    val vacationIds: Set<String> = emptySet(),
+) {
+    val onVacation: Boolean get() = vacationSince > 0
+    val pinnedRequests: Pair<Long, List<Long>>? get() = if (requestsWeek >= 0) requestsWeek to requestIds else null
+}
 
 class SettingsStore(context: Context) {
     private val store = context.applicationContext.dataStore
@@ -63,6 +73,10 @@ class SettingsStore(context: Context) {
         catName = this[CAT_NAME] ?: "",
         robe = this[ROBE] ?: "CRIMSON",
         hat = this[HAT] ?: "POINTED",
+        requestsWeek = this[REQUESTS_WEEK] ?: -1,
+        requestIds = this[REQUEST_IDS].orEmpty().split(',').mapNotNull { it.toLongOrNull() },
+        vacationSince = this[VACATION_SINCE] ?: 0,
+        vacationIds = this[VACATION_IDS] ?: emptySet(),
     )
 
     suspend fun now(): Settings = settings.first()
@@ -84,6 +98,10 @@ class SettingsStore(context: Context) {
             it[CAT_NAME] = s.catName
             it[ROBE] = s.robe
             it[HAT] = s.hat
+            it[REQUESTS_WEEK] = s.requestsWeek
+            it[REQUEST_IDS] = s.requestIds.joinToString(",")
+            it[VACATION_SINCE] = s.vacationSince
+            it[VACATION_IDS] = s.vacationIds
         }
     }
 
@@ -102,5 +120,9 @@ class SettingsStore(context: Context) {
         val CAT_NAME = stringPreferencesKey("cat_name")
         val ROBE = stringPreferencesKey("robe")
         val HAT = stringPreferencesKey("hat")
+        val REQUESTS_WEEK = longPreferencesKey("requests_week")
+        val REQUEST_IDS = stringPreferencesKey("request_ids")
+        val VACATION_SINCE = longPreferencesKey("vacation_since")
+        val VACATION_IDS = stringSetPreferencesKey("vacation_ids")
     }
 }

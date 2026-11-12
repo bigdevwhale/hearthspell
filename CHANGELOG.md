@@ -8,6 +8,32 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.4.0] - 2026-11-12
+
+### Look
+- The whole tower is painted anew: every room, the roof, the base and the meadow, the helpers, the eighteen imps (no longer round balls, each one its own creature), the decor, the apprentice and the master, the letters and the menu icons. Movement is smooth instead of stepped.
+- Storybook type: Kurale for titles, Alegreya SC for small capitals, Philosopher for text, in English and Russian.
+- Soft rounded cards, buttons and bars instead of the pixel frames.
+
+### Added
+- **Chronicle**, a new tab: this week against the last, a chart of the last fourteen days, how tidy each floor is, your favourite spells and the totals since the tower became yours. Letters moved to an envelope in the tower's header, with a dot when one is unread, and to the grimoire's collections.
+- **Postcards** to share: your week, the tower, the apprentice, every room, the helpers, the bestiary and every imp shown the door, the treasures and your best spells. Each card carries a QR code to the app on Google Play; share it or save it to the gallery. Share buttons on floors, helpers, spells, the bestiary and the treasures.
+- **Holiday**: Settings → Holiday pauses every spell at once. When you're back, each picks up where it was. ([#8](https://github.com/bigdevwhale/hearthspell/issues/8))
+- The grimoire opens under a banner, with three pages: spells (filtered by floor), helpers and collections. The market has a banner too, and each aisle its own picture.
+
+### Fixed
+- The master's three requests are picked once a week and stay the same until Sunday, so casting a spell no longer swaps the list under your finger. ([#6](https://github.com/bigdevwhale/hearthspell/issues/6))
+- A request cast earlier in the week counts as done, even if it was cast before the list appeared. ([#7](https://github.com/bigdevwhale/hearthspell/issues/7))
+- Pending requests are never folded into "Resting" on their floor.
+- Hats sit on the apprentice's head, and the master's teacup is cup-sized on the floor.
+
+<!-- tg
+Большое обновление: башня перерисована целиком, движения стали плавными, шрифты сказочными.
+Новая вкладка «Летопись»: твоя неделя, график заклинаний, чистота этажей и любимые дела.
+Открытки, чтобы делиться башней, комнатами, помощниками и пакостниками, с QR-кодом на приложение.
+Режим отпуска, а просьбы мастера теперь держатся всю неделю и засчитываются сразу. Спасибо за сообщения и идеи!
+-->
+
 ## [1.3.1] - 2026-11-07
 
 ### Changed

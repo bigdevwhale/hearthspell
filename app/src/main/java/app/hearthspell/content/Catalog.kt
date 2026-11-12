@@ -206,7 +206,7 @@ enum class DecorKind(val title: L, val cost: Int, val season: Season? = null, va
     CHEST(L("Old chest", "Старый сундук"), 75),
     CAULDRON(L("Cauldron", "Котёл"), 80),
     CRYSTAL(L("Crystal ball", "Хрустальный шар"), 90),
-    CAT(L("Cat", "Кот"), 120),
+    CAT(L("Black cat", "Чёрная кошка"), 120),
     TELESCOPE(L("Telescope", "Телескоп"), 140),
     OWL(L("Owl", "Сова"), 150),
     FIREPLACE(L("Fireplace", "Камин"), 160),

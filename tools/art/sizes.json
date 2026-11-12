@@ -1,0 +1,386 @@
+{
+"helper/BROOM": [
+26,
+32
+],
+"helper/SPONGE": [
+26,
+28
+],
+"helper/CLOTH": [
+26,
+28
+],
+"helper/BUCKET": [
+26,
+28
+],
+"helper/DUSTER": [
+26,
+32
+],
+"helper/SACK": [
+26,
+30
+],
+"helper/LADLE": [
+26,
+30
+],
+"helper/TEAPOT": [
+30,
+28
+],
+"helper/PILLOW": [
+30,
+24
+],
+"helper/BASKET": [
+28,
+28
+],
+"helper/IRON": [
+30,
+26
+],
+"helper/CAN": [
+30,
+26
+],
+"helper/CANDLE": [
+24,
+32
+],
+"helper/BOOK": [
+24,
+30
+],
+"helper/KEY": [
+22,
+32
+],
+"helper/BOWL": [
+28,
+22
+],
+"helper/SATCHEL": [
+28,
+28
+],
+"imp": [
+30,
+30
+],
+"decor/CANDLES": [
+26,
+26
+],
+"decor/HERBS": [
+30,
+24
+],
+"decor/LANTERN": [
+18,
+28
+],
+"decor/FERN": [
+28,
+30
+],
+"decor/BOOKS": [
+30,
+24
+],
+"decor/MUSHROOMS": [
+28,
+24
+],
+"decor/RUG": [
+36,
+12
+],
+"decor/POTIONS": [
+32,
+28
+],
+"decor/BANNER": [
+22,
+30
+],
+"decor/PAINTING": [
+26,
+30
+],
+"decor/GLOBE": [
+24,
+30
+],
+"decor/HOURGLASS": [
+20,
+28
+],
+"decor/CLOCK": [
+24,
+36
+],
+"decor/CHEST": [
+32,
+24
+],
+"decor/CAULDRON": [
+32,
+30
+],
+"decor/CRYSTAL": [
+26,
+30
+],
+"decor/CAT": [
+32,
+26
+],
+"decor/TELESCOPE": [
+34,
+30
+],
+"decor/OWL": [
+24,
+30
+],
+"decor/FIREPLACE": [
+36,
+30
+],
+"decor/PUMPKIN": [
+26,
+22
+],
+"decor/FIR": [
+28,
+36
+],
+"decor/CUSHION": [
+30,
+12
+],
+"decor/TEACUP": [
+24,
+22
+],
+"decor/FROG": [
+22,
+18
+],
+"decor/SNOWGLOBE": [
+22,
+26
+],
+"decor/DRAGON_SCALE": [
+22,
+26
+],
+"decor/IMP_JAR": [
+22,
+28
+],
+"decor/BELL": [
+22,
+26
+],
+"decor/LIGHTHOUSE": [
+18,
+30
+],
+"decor/SHIP": [
+30,
+18
+],
+"decor/PAPER_LANTERN": [
+20,
+28
+],
+"decor/OLD_MAP": [
+28,
+22
+],
+"decor/AURORA": [
+20,
+28
+],
+"decor/COMPASS": [
+22,
+22
+],
+"master": [
+44,
+52
+],
+"apprentice": [
+26,
+34
+],
+"flame": [
+[
+7,
+11
+],
+[
+7,
+11
+],
+[
+7,
+11
+]
+],
+"steam": [
+[
+12,
+16
+],
+[
+12,
+16
+],
+[
+12,
+16
+],
+[
+12,
+16
+]
+],
+"extra/moon": [
+18,
+18
+],
+"extra/cloud": [
+36,
+14
+],
+"extra/cobweb": [
+12,
+12
+],
+"extra/tea": [
+80,
+30
+],
+"extra/heart": [
+7,
+6
+],
+"trinket/BUTTON": [
+14,
+14
+],
+"trinket/FEATHER": [
+14,
+14
+],
+"trinket/ACORN": [
+14,
+14
+],
+"trinket/PEBBLE": [
+14,
+14
+],
+"trinket/THIMBLE": [
+14,
+14
+],
+"trinket/BEAD": [
+14,
+14
+],
+"trinket/MARBLE": [
+14,
+14
+],
+"trinket/SHELL": [
+14,
+14
+],
+"trinket/RIBBON": [
+14,
+14
+],
+"trinket/CORK": [
+14,
+14
+],
+"trinket/SPOOL": [
+14,
+14
+],
+"trinket/SOCK": [
+14,
+14
+],
+"trinket/KEY": [
+14,
+14
+],
+"trinket/LEAF": [
+14,
+14
+],
+"trinket/CLOVER": [
+14,
+14
+],
+"trinket/STAR": [
+14,
+14
+],
+"trinket/GOLD_BUTTON": [
+14,
+14
+],
+"cat/sleep": [
+30,
+16
+],
+"cat/sit": [
+24,
+28
+],
+"body": [
+26,
+38
+],
+"hat/POINTED": [
+26,
+38
+],
+"hat/WIDE": [
+26,
+38
+],
+"hat/FLOWERS": [
+26,
+38
+],
+"hat/STAR": [
+26,
+38
+],
+"hat/CAT": [
+26,
+38
+],
+"hat/FROG": [
+26,
+38
+],
+"hat/CROWN": [
+26,
+38
+],
+"bat": [
+13,
+7
+]
+}

@@ -168,6 +168,34 @@ class WorldTest {
     }
 
     @Test
+    fun pinnedRequestsHoldThroughTheWeek() {
+        val spells = listOf(spell(1, days = 7, ago = 20.0), spell(2, days = 7, ago = 15.0), spell(3, days = 7, ago = 10.0))
+        val week = LocalDate.of(2026, 10, 12).toEpochDay()
+        val pinned = week to listOf(1L, 2L, 3L)
+        // A new, very stale spell added mid-week would win a fresh pick, but the pinned three stay.
+        val more = spells + spell(4, days = 7, ago = 60.0)
+        val w = World(listOf(Floor(1, "KITCHEN")), more, emptyList(), emptyList(), emptyList(), now, zone, week, pinnedRequests = pinned)
+        assertEquals(listOf(1L, 2L, 3L), w.requests.map { it.id })
+        assertTrue(4L in w.freshRequests.map { it.id })
+        // A paused request drops out (holiday); a pin from last week is ignored.
+        val paused = World(listOf(Floor(1, "KITCHEN")), more.map { if (it.id == 2L) it.copy(paused = true) else it }, emptyList(), emptyList(), emptyList(), now, zone, week, pinnedRequests = pinned)
+        assertEquals(listOf(1L, 3L), paused.requests.map { it.id })
+        val stale = World(listOf(Floor(1, "KITCHEN")), more, emptyList(), emptyList(), emptyList(), now, zone, week, pinnedRequests = (week - 7) to listOf(1L, 2L, 3L))
+        assertEquals(stale.freshRequests.map { it.id }, stale.requests.map { it.id })
+    }
+
+    @Test
+    fun requestCastBeforeItWasPinnedStillCounts() {
+        val spells = listOf(spell(1, days = 7, ago = 1.0), spell(2, days = 7, ago = 15.0), spell(3, days = 7, ago = 10.0))
+        val week = LocalDate.of(2026, 10, 12).toEpochDay()
+        // Spell 1 was cast on Tuesday without the request flag, then became a request.
+        val cast = Cast(1, 1, now - DAY_MS, 10, requested = false, prevLastCastAt = now - 20 * DAY_MS)
+        val w = World(listOf(Floor(1, "KITCHEN")), spells, listOf(cast), emptyList(), emptyList(), now, zone, week, pinnedRequests = week to listOf(1L, 2L, 3L))
+        assertTrue(w.requestDone(1))
+        assertFalse(w.isPendingRequest(1))
+    }
+
+    @Test
     fun fewSpellsFallBackToDailyOnes() {
         val w = world(listOf(spell(1, days = 1, ago = 2.0), spell(2, days = 1, ago = 1.0), spell(3, days = 7, ago = 3.0)))
         assertEquals(3, w.requests.size)

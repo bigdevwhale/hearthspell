@@ -180,11 +180,12 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
         return
     }
     val (caster, cast) = rememberCaster(data)
-    val tick = rememberTicker()
+    val tick = rememberClock()
     val sky = Sky(day = !U.c.dark)
     val spells = w.spellsOf(id).sortedWith(compareBy<Spell> { it.paused }.thenBy { w.freshness(it) })
     // Spells with over a week to go wait folded away, so the list shows only what matters this week.
-    val (active, resting) = spells.partition { !w.resting(it) }
+    // The master's pending requests always stay in sight, so a tap on one in the tower finds it here (#6).
+    val (active, resting) = spells.partition { !w.resting(it) || w.isPendingRequest(it.id) }
     var showResting by rememberSaveable(id) { mutableStateOf(false) }
     val kind = FloorKind.of(floor.kind)
     Box(Modifier.fillMaxSize().background(U.c.bg)) {
@@ -199,6 +200,8 @@ fun FloorScreen(id: Long, data: WData, go: Go) {
                         IconTile(Glyphs.star, go::stars, size = 42.dp, tint = U.c.accent)
                         Spacer(Modifier.width(8.dp))
                     }
+                    app.hearthspell.ui.share.ShareTile { app.hearthspell.ui.share.roomCard(data, floor) }
+                    Spacer(Modifier.width(8.dp))
                     IconTile(Glyphs.chest, { go.decor(id) }, size = 42.dp)
                     Spacer(Modifier.width(8.dp))
                     IconTile(Glyphs.pencil, { go.floorForm(id) }, size = 42.dp)

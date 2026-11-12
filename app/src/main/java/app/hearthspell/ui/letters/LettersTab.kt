@@ -79,11 +79,11 @@ private val InkMuted = Color(0xFF6E5640)
 private val Wax = Color(0xFFC83A3A)
 
 @Composable
-fun LettersTab(data: WData, go: Go) {
+fun LettersTab(data: WData, go: Go, onBack: (() -> Unit)? = null) {
     val w = data.world
     val arrived = w.lettersArrived(Letters.COUNT)
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.letters_title), null, Tip.LETTERS)
+        TopBar(stringResource(R.string.letters_title), onBack, Tip.LETTERS)
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MasterSprite(56.dp)
@@ -140,6 +140,10 @@ fun LettersTab(data: WData, go: Go) {
 /** An 8-bit envelope; sealed ones carry a red wax seal. */
 @Composable
 private fun Envelope(sealed: Boolean, dim: Boolean = false) {
+    Art.envelope(if (dim) "waiting" else if (sealed) "sealed" else "open")?.let {
+        SpriteImage(it, 52.dp)
+        return
+    }
     val c = U.c
     Box(
         Modifier.size(width = 44.dp, height = 32.dp).pixelBox(if (dim) c.surface else Paper, c.outline, if (dim) null else Color.White.copy(alpha = 0.5f), PaperEdge.takeIf { !dim }),

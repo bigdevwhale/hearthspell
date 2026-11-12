@@ -19,8 +19,8 @@ import app.hearthspell.R
 import app.hearthspell.data.ThemeMode
 
 /**
- * The UI colours. The tower at night: deep indigo stone lit by candles. By day: parchment and ink.
- * Pixel art itself uses the fixed [Nes] palette in both themes.
+ * The UI colours: a storybook. The tower at night: deep indigo lit by candles and gold. By day: warm parchment and
+ * ink. Cards are soft rounded panes, [outline] their shadow and [bevel] their light edge.
  */
 @Immutable
 data class Palette(
@@ -49,18 +49,18 @@ data class Palette(
 )
 
 val NightPalette = Palette(
-    bg = Color(0xFF14112B),
-    bgTop = Color(0xFF1E1846),
-    surface = Color(0xFF221C45),
-    surface2 = Color(0xFF2E2660),
-    outline = Color(0xFF07060F),
-    bevel = Color(0xFF4A3F8C),
-    ink = Color(0xFFFCEFD2),
-    muted = Color(0xFFBCAEDB),
-    faint = Color(0xFF7A6BA8),
-    accent = Color(0xFFFFB938),
-    accentDeep = Color(0xFFD9701E),
-    onAccent = Color(0xFF2B1600),
+    bg = Color(0xFF120F26),
+    bgTop = Color(0xFF1C1640),
+    surface = Color(0xFF1F1A40),
+    surface2 = Color(0xFF2A2354),
+    outline = Color(0xFF05040C),
+    bevel = Color(0xFF51468F),
+    ink = Color(0xFFFBF1DC),
+    muted = Color(0xFFC2B6DE),
+    faint = Color(0xFF857AAF),
+    accent = Color(0xFFF6C25B),
+    accentDeep = Color(0xFFD98A2B),
+    onAccent = Color(0xFF2B1800),
     mana = Color(0xFF5FD6FF),
     good = Color(0xFF7DDB5A),
     danger = Color(0xFFFF6B5D),
@@ -69,12 +69,12 @@ val NightPalette = Palette(
 )
 
 val ParchmentPalette = Palette(
-    bg = Color(0xFFF1E3C2),
-    bgTop = Color(0xFFE6D2A6),
-    surface = Color(0xFFFBF2DC),
-    surface2 = Color(0xFFEBD9B0),
-    outline = Color(0xFF3A2A1A),
-    bevel = Color(0xFFFFFBEF),
+    bg = Color(0xFFF3E7CB),
+    bgTop = Color(0xFFE9D7AE),
+    surface = Color(0xFFFCF5E3),
+    surface2 = Color(0xFFEFDFBC),
+    outline = Color(0xFF5A4128),
+    bevel = Color(0xFFD9C29A),
     ink = Color(0xFF2B1D12),
     muted = Color(0xFF6E5640),
     faint = Color(0xFFA08868),
@@ -127,27 +127,33 @@ object Nes {
 val LocalPalette = staticCompositionLocalOf { NightPalette }
 
 /**
- * Every text in the app: m6x11 by Daniel Linssen with Cyrillic by Natto Games (free with attribution),
- * plus a few punctuation marks drawn in by tools/font/add_glyphs.py. One family, sizes set the hierarchy.
+ * A spellbook's lettering, all SIL OFL with Cyrillic: Kurale for titles (a fairy-tale hand), Alegreya SC for the small
+ * capital labels (an old grimoire's rubrics), Philosopher for everything else (soft, a little magical, easy to read).
  */
-val Pixel = FontFamily(Font(R.font.m6x11, FontWeight.Normal))
+val Storybook = FontFamily(Font(R.font.kurale, FontWeight.Normal), Font(R.font.kurale, FontWeight.Bold))
+val Rubric = FontFamily(Font(R.font.alegreya_sc_extrabold, FontWeight.Bold))
+val Round = FontFamily(
+    Font(R.font.philosopher, FontWeight.Normal),
+    Font(R.font.philosopher, FontWeight.SemiBold),
+    Font(R.font.philosopher_bold, FontWeight.Bold),
+)
 
 object U {
     val c: Palette @Composable get() = LocalPalette.current
 }
 
 object UType {
-    val Display: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 32.sp, lineHeight = 34.sp, color = U.c.ink)
-    val Title: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 27.sp, lineHeight = 29.sp, color = U.c.ink)
-    val Heading: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 23.sp, lineHeight = 25.sp, color = U.c.ink)
-    val Eyebrow: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 16.sp, lineHeight = 18.sp, letterSpacing = 0.04.em, color = U.c.faint)
-    val Number: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 22.sp, color = U.c.ink)
-    val Button: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 21.sp, lineHeight = 23.sp)
-    val Body: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 20.sp, lineHeight = 24.sp, color = U.c.ink)
-    val Strong: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 22.sp, lineHeight = 25.sp, color = U.c.ink)
-    val Sub: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 19.sp, lineHeight = 23.sp, color = U.c.muted)
-    val Muted: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 17.sp, lineHeight = 21.sp, color = U.c.muted)
-    val Small: TextStyle @Composable get() = TextStyle(fontFamily = Pixel, fontSize = 16.sp, lineHeight = 18.sp, color = U.c.faint)
+    val Display: TextStyle @Composable get() = TextStyle(fontFamily = Storybook, fontSize = 36.sp, lineHeight = 40.sp, color = U.c.ink)
+    val Title: TextStyle @Composable get() = TextStyle(fontFamily = Storybook, fontSize = 30.sp, lineHeight = 34.sp, color = U.c.ink)
+    val Heading: TextStyle @Composable get() = TextStyle(fontFamily = Storybook, fontSize = 24.sp, lineHeight = 28.sp, color = U.c.ink)
+    val Eyebrow: TextStyle @Composable get() = TextStyle(fontFamily = Rubric, fontWeight = FontWeight.Bold, fontSize = 13.sp, lineHeight = 16.sp, letterSpacing = 0.06.em, color = U.c.faint)
+    val Number: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = U.c.ink)
+    val Button: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontWeight = FontWeight.Bold, fontSize = 16.sp, lineHeight = 20.sp)
+    val Body: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontSize = 16.sp, lineHeight = 22.sp, color = U.c.ink)
+    val Strong: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontWeight = FontWeight.Bold, fontSize = 17.sp, lineHeight = 22.sp, color = U.c.ink)
+    val Sub: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontSize = 15.sp, lineHeight = 21.sp, color = U.c.muted)
+    val Muted: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontSize = 14.sp, lineHeight = 19.sp, color = U.c.muted)
+    val Small: TextStyle @Composable get() = TextStyle(fontFamily = Round, fontSize = 12.sp, lineHeight = 16.sp, color = U.c.faint)
 }
 
 @Composable

@@ -88,6 +88,8 @@ class World(
     val finds: List<Find> = emptyList(),
     val brews: List<Brew> = emptyList(),
     val wardrobe: List<Wear> = emptyList(),
+    /** The requests as they were first shown: the epoch day of their week's Monday and the spell ids. */
+    val pinnedRequests: Pair<Long, List<Long>>? = null,
 ) {
     val today: LocalDate = java.time.Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
     val day: Long = today.toEpochDay()
@@ -346,6 +348,13 @@ class World(
      * when the week began. Daily chores are left out unless there aren't enough others. Stable through the week.
      */
     val requests: List<Spell> by lazy {
+        // Once shown, the week's requests stay put: adding, editing or pausing spells mid-week doesn't swap them (#7).
+        val pinned = pinnedRequests?.takeIf { it.first == weekStart.toEpochDay() }?.second
+        if (pinned != null) pinned.mapNotNull { spell(it) }.filter { !it.paused } else freshRequests
+    }
+
+    /** The requests worked out from scratch, to be pinned for the rest of the week. */
+    val freshRequests: List<Spell> by lazy {
         val candidates = spells.filter { !it.paused && it.createdAt < weekStartMs + 7 * DAY_MS }
         fun staleness(s: Spell): Double {
             val own = castsOf(s.id)
@@ -361,8 +370,8 @@ class World(
         pool.sortedWith(compareByDescending<Spell> { staleness(it) }.thenBy { (it.id * 31 + salt) % 97 }).take(3)
     }
 
-    /** True once a request has been cast this week. */
-    fun requestDone(spellId: Long): Boolean = castsOf(spellId).any { it.at >= weekStartMs && it.requested }
+    /** True once a request has been cast this week (even if the cast came before it was a request). */
+    fun requestDone(spellId: Long): Boolean = castsOf(spellId).any { it.at >= weekStartMs }
 
     fun isPendingRequest(spellId: Long): Boolean = requests.any { it.id == spellId } && !requestDone(spellId)
 

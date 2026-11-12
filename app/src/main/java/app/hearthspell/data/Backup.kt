@@ -20,6 +20,8 @@ object Backup {
             .put("catName", settings.catName)
             .put("robe", settings.robe)
             .put("hat", settings.hat)
+            .put("vacationSince", settings.vacationSince)
+            .put("vacationIds", JSONArray(settings.vacationIds.toList()))
             .put("floors", JSONArray(d.floors().map { JSONObject().put("id", it.id).put("kind", it.kind).put("name", it.name).put("sort", it.sort) }))
             .put("spells", JSONArray(d.spells().map {
                 JSONObject().put("id", it.id).put("floorId", it.floorId).put("presetKey", it.presetKey ?: JSONObject.NULL).put("name", it.name)
@@ -102,6 +104,11 @@ object Backup {
                 catName = root.optString("catName", it.catName),
                 robe = root.optString("robe", "CRIMSON"),
                 hat = root.optString("hat", "POINTED"),
+                vacationSince = root.optLong("vacationSince", 0),
+                vacationIds = root.optJSONArray("vacationIds")?.let { a -> (0 until a.length()).map { i -> a.getString(i) }.toSet() } ?: emptySet(),
+                // The restored tower picks its own requests.
+                requestsWeek = -1,
+                requestIds = emptyList(),
             )
         }
     }

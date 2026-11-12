@@ -41,6 +41,7 @@ class HearthApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        app.hearthspell.ui.art.Art.init(this)
         Alarms.ensureChannels(this)
         // Re-arm on every start: OEM task killers (HyperOS & co.) silently drop alarms.
         container.scope.launch {

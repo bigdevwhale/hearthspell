@@ -13,6 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -47,7 +49,9 @@ fun BestiaryScreen(data: WData, go: Go) {
     val met = w.impsMet
     val tick = rememberTicker(400)
     Column(Modifier.fillMaxSize()) {
-        TopBar(gs(R.string.bestiary_title), go::back, Tip.BESTIARY)
+        var imp by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<ImpKind?>(null) }
+        imp?.let { k -> app.hearthspell.ui.share.PostcardDialog(app.hearthspell.ui.share.impCard(data, k)) { imp = null } }
+        TopBar(gs(R.string.bestiary_title), go::back, Tip.BESTIARY) { app.hearthspell.ui.share.ShareTile { app.hearthspell.ui.share.bestiaryCard(data) } }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).navigationBarsPadding()) {
             Text(gs(R.string.bestiary_sub), style = UType.Muted)
             Gap(10.dp)
@@ -57,7 +61,7 @@ fun BestiaryScreen(data: WData, go: Go) {
             Gap(12.dp)
             ImpKind.entries.forEach { k ->
                 val n = met[k] ?: 0
-                Panel(Modifier.fillMaxWidth().padding(bottom = 8.dp), fill = if (n > 0) U.c.surface else U.c.bg) {
+                Panel(Modifier.fillMaxWidth().padding(bottom = 8.dp), fill = if (n > 0) U.c.surface else U.c.bg, onClick = if (n > 0) ({ imp = k }) else null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         val s = Looks.imp(k, if (n > 0) (tick.value % 2).toInt() else 0)
                         SpriteImage(if (n > 0) s else s.silhouette(), 52.dp, alpha = if (n > 0) 1f else 0.6f)
@@ -67,7 +71,10 @@ fun BestiaryScreen(data: WData, go: Go) {
                                 Text(t(k.title), style = UType.Strong)
                                 Text(t(k.habit), style = UType.Muted)
                                 Gap(4.dp)
-                                Text(gp(R.plurals.bestiary_seen, n, n), style = UType.Small.copy(color = U.c.imp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(gp(R.plurals.bestiary_seen, n, n), style = UType.Small.copy(color = U.c.imp), modifier = Modifier.weight(1f))
+                                    app.hearthspell.ui.art.PixelIcon(app.hearthspell.ui.art.Glyphs.share, U.c.faint, size = 16.dp)
+                                }
                             } else {
                                 Text("???", style = UType.Strong.copy(color = U.c.faint))
                                 Text(hint(k), style = UType.Small)
@@ -97,7 +104,7 @@ fun TreasuresScreen(data: WData, go: Go) {
     val w = data.world
     val found = w.trinketsFound
     Column(Modifier.fillMaxSize()) {
-        TopBar(gs(R.string.treasures_title), go::back, Tip.TREASURES)
+        TopBar(gs(R.string.treasures_title), go::back, Tip.TREASURES) { app.hearthspell.ui.share.ShareTile { app.hearthspell.ui.share.treasuresCard(data) } }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).navigationBarsPadding()) {
             Text(gs(R.string.treasures_sub), style = UType.Muted)
             Gap(10.dp)

@@ -13,3 +13,7 @@
 *.jks
 /.claude/
 /tools/art/icon_preview.png
+__pycache__/
+# Source sheets from the image model (tools/art/gen.py); cut.py turns them into res/drawable-nodpi.
+/art/
+/tools/art/preview_*.png

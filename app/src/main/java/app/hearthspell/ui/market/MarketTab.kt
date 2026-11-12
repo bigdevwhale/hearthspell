@@ -1,5 +1,12 @@
 package app.hearthspell.ui.market
 
+import androidx.compose.foundation.layout.height
+import app.hearthspell.ui.tips.HelpTile
+import app.hearthspell.ui.art.bitmap
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -96,11 +103,10 @@ fun MarketTab(data: WData, go: Go) {
     }
 
     val list = w.shoppingList
-    Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.market_title), null, Tip.MARKET)
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-            Text(stringResource(R.string.market_sub), style = UType.Sub)
-            Gap(12.dp)
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        app.hearthspell.ui.tips.TipHost(Tip.MARKET)
+        MarketBanner()
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 PixelField(
                     text, { text = it }, Modifier.weight(1f),
@@ -132,11 +138,13 @@ fun MarketTab(data: WData, go: Go) {
             } else {
                 SectionTitle(stringResource(R.string.market_list) + " · " + pluralStringResource(R.plurals.market_count, list.size, list.size))
                 byAisle(list).forEach { (a, items) ->
-                    AisleHeader(a)
-                    items.forEach { r ->
-                        ListRow(r, onEdit = { editing = r }) { c.write { upsertReagent(r.copy(needed = false, inBasket = false)) } }
-                        Gap(6.dp)
+                    AisleCard(a) {
+                        items.forEachIndexed { i, r ->
+                            if (i > 0) Box(Modifier.fillMaxWidth().padding(start = 52.dp).height(1.dp).background(U.c.bevel.copy(alpha = 0.35f)))
+                            ListRow(r, onEdit = { editing = r }) { c.write { upsertReagent(r.copy(needed = false, inBasket = false)) } }
+                        }
                     }
+                    Gap(10.dp)
                 }
                 Gap(12.dp)
                 PixelButton(stringResource(R.string.market_go), go::trip, Modifier.fillMaxWidth(), icon = Glyphs.basket)
@@ -188,6 +196,45 @@ fun MarketTab(data: WData, go: Go) {
 private fun byAisle(items: List<Reagent>): List<Pair<Aisle, List<Reagent>>> =
     items.groupBy { Aisle.of(it.aisle) }.toSortedMap(compareBy { it.ordinal }).map { (a, rs) -> a to rs.sortedBy { it.name.lowercase() } }
 
+/** The market's picture: a stall at dusk, fading into the page, with the title on it. */
+@Composable
+private fun MarketBanner() {
+    val c = U.c
+    val pic = Art.marketBanner
+    Box(Modifier.fillMaxWidth().height(if (pic != null) 230.dp else 120.dp)) {
+        if (pic != null) {
+            androidx.compose.foundation.Image(
+                pic.bitmap(), null, Modifier.matchParentSize(),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                filterQuality = androidx.compose.ui.graphics.FilterQuality.Low,
+            )
+            Box(Modifier.matchParentSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(0.4f to Color.Transparent, 1f to c.bg)))
+        }
+        Box(Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(12.dp)) { HelpTile(Tip.MARKET) }
+        Column(Modifier.align(Alignment.BottomStart).padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+            Text(stringResource(R.string.market_title), style = UType.Display)
+            Text(stringResource(R.string.market_sub), style = UType.Sub.copy(color = c.ink))
+        }
+    }
+    Gap(12.dp)
+}
+
+/** One aisle of the list: its picture and name, then its reagents in one card. */
+@Composable
+private fun AisleCard(a: Aisle, content: @Composable () -> Unit) {
+    Panel(Modifier.fillMaxWidth(), padding = PaddingValues(start = 12.dp, end = 6.dp, top = 10.dp, bottom = 6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Art.aisle(a.name)?.let { SpriteImage(it, 36.dp); Spacer(Modifier.width(10.dp)) }
+            Column(Modifier.weight(1f)) {
+                Text(t(a.title), style = UType.Heading.copy(fontSize = UType.Heading.fontSize * 0.85f, color = U.c.accent))
+                Text(t(a.shop), style = UType.Small)
+            }
+        }
+        Gap(4.dp)
+        content()
+    }
+}
+
 @Composable
 private fun AisleHeader(a: Aisle) {
     Row(Modifier.padding(top = 8.dp, bottom = 6.dp), verticalAlignment = Alignment.Bottom) {
@@ -198,11 +245,9 @@ private fun AisleHeader(a: Aisle) {
 
 @Composable
 private fun ListRow(r: Reagent, onEdit: () -> Unit, onRemove: () -> Unit) {
-    Panel(Modifier.fillMaxWidth(), padding = PaddingValues(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(r.name, style = UType.Body, modifier = Modifier.weight(1f).clickable(onClick = onEdit).padding(vertical = 6.dp), maxLines = 2, overflow = TextOverflow.Ellipsis)
-            IconTile(Glyphs.close, onRemove, size = 38.dp, tint = U.c.muted)
-        }
+    Row(Modifier.fillMaxWidth().padding(start = 46.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(r.name, style = UType.Body, modifier = Modifier.weight(1f).clickable(onClick = onEdit).padding(vertical = 10.dp), maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Box(Modifier.size(40.dp).clickable(onClick = onRemove), contentAlignment = Alignment.Center) { PixelIcon(Glyphs.close, U.c.faint, size = 20.dp) }
     }
 }
 

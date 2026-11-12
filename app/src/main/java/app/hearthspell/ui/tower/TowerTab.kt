@@ -30,13 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.hearthspell.R
 import app.hearthspell.content.FloorKind
+import app.hearthspell.container
 import app.hearthspell.data.Floor
+import app.hearthspell.data.endVacation
 import app.hearthspell.domain.World
 import app.hearthspell.ui.Go
 import app.hearthspell.ui.WData
@@ -98,7 +101,7 @@ internal fun World.towerSky(): TowerSky = TowerSky(
 @Composable
 fun TowerTab(data: WData, go: Go) {
     val w = data.world
-    val tick = rememberTicker()
+    val tick = rememberClock()
     val sky = Sky(day = !U.c.dark)
     val ts = w.towerSky()
     // The tour of the tower, right after onboarding.
@@ -165,6 +168,13 @@ private fun TowerHeader(data: WData, go: Go) {
                 Text("${w.totalImps}", style = UType.Number.copy(fontSize = 20.sp, color = if (w.totalImps > 0) U.c.imp else U.c.faint))
             }
         }
+        Box {
+            IconTile(Glyphs.letter, go::letters, size = 42.dp)
+            if (app.hearthspell.ui.letters.Letters.unread(data) > 0) {
+                Box(Modifier.align(Alignment.TopEnd).padding(2.dp).size(10.dp).background(U.c.danger, androidx.compose.foundation.shape.CircleShape))
+            }
+        }
+        Spacer(Modifier.width(8.dp))
         HelpTile(Tip.TOWER)
         Spacer(Modifier.width(8.dp))
         IconTile(Glyphs.gear, go::settings, size = 42.dp)
@@ -179,11 +189,20 @@ private fun Requests(data: WData, go: Go) {
             PixelSprite(Art.master(0), 0.75.dp)
             Spacer(Modifier.width(10.dp))
             Text(gs(R.string.tower_requests).uppercase(), style = UType.Eyebrow.copy(color = U.c.accent), modifier = Modifier.weight(1f))
-            Text(gs(R.string.tower_double), style = UType.Eyebrow.copy(color = U.c.mana))
+            if (!data.settings.onVacation) Text(gs(R.string.tower_double), style = UType.Eyebrow.copy(color = U.c.mana))
         }
         Spacer(Modifier.size(6.dp))
         val reqs = w.requests
-        if (reqs.isEmpty()) {
+        if (data.settings.onVacation) {
+            // On holiday the master asks nothing; one tap brings every spell back (#8).
+            val container = LocalContext.current.container
+            Text(gs(R.string.tower_vacation), style = UType.Muted)
+            Spacer(Modifier.size(8.dp))
+            PixelButton(
+                gs(R.string.tower_vacation_end), { container.write { endVacation(container.settings) } },
+                Modifier.fillMaxWidth(), kind = ButtonKind.SECONDARY,
+            )
+        } else if (reqs.isEmpty()) {
             Text(gs(R.string.tower_requests_none), style = UType.Muted)
         } else {
             reqs.forEach { s ->
@@ -219,7 +238,7 @@ private fun Requests(data: WData, go: Go) {
 
 /** One floor of the tower with its name on a plaque. */
 @Composable
-private fun FloorCard(f: Floor, data: WData, tick: State<Long>, sky: Sky, onClick: () -> Unit) {
+private fun FloorCard(f: Floor, data: WData, tick: State<Float>, sky: Sky, onClick: () -> Unit) {
     val look = data.look(f)
     BoxWithConstraints(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         val density = LocalDensity.current
@@ -254,13 +273,16 @@ private fun FloorCard(f: Floor, data: WData, tick: State<Long>, sky: Sky, onClic
 }
 
 @Composable
-private fun AddFloor(tick: State<Long>, sky: Sky, onClick: () -> Unit) {
+private fun AddFloor(tick: State<Float>, sky: Sky, onClick: () -> Unit) {
     Box(Modifier.fillMaxWidth().clickable(onClick = onClick), contentAlignment = Alignment.Center) {
         SceneCanvas(SCENE_H / 2) { drawScaffold(tick.value, sky) }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            PixelIcon(Glyphs.plus, Nes.amber, size = 14.dp)
+        Row(
+            Modifier.pixelBox(Color(0xCC120F26), Nes.black, Nes.amber.copy(alpha = 0.6f)).padding(horizontal = 18.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            PixelIcon(Glyphs.plus, Nes.amber, size = 18.dp)
             Spacer(Modifier.width(8.dp))
-            Text(gs(R.string.tower_add_floor).uppercase(), style = UType.Button.copy(color = Nes.amber))
+            Text(gs(R.string.tower_add_floor), style = UType.Button.copy(color = Nes.amber))
         }
     }
 }

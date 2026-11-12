@@ -43,6 +43,8 @@ import app.hearthspell.container
 import app.hearthspell.data.Backup
 import app.hearthspell.data.Settings
 import app.hearthspell.data.ThemeMode
+import app.hearthspell.data.endVacation
+import app.hearthspell.data.startVacation
 import app.hearthspell.domain.Gender
 import app.hearthspell.ui.Go
 import app.hearthspell.ui.WData
@@ -132,6 +134,18 @@ fun SettingsScreen(data: WData, go: Go) {
                         Text(stringResource(R.string.settings_floors_sub), style = UType.Muted)
                     }
                 }
+            }
+
+            SectionTitle(stringResource(R.string.settings_vacation))
+            Panel(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 14.dp, vertical = 4.dp)) {
+                ToggleRow(
+                    gs(R.string.settings_vacation_toggle), s.onVacation,
+                    { on -> container.write { if (on) startVacation(container.settings) else endVacation(container.settings) } },
+                    sub = if (s.onVacation) {
+                        val since = java.time.Instant.ofEpochMilli(s.vacationSince).atZone(data.world.zone)
+                        gs(R.string.settings_vacation_since, since.format(java.time.format.DateTimeFormatter.ofPattern("d MMM", locale())))
+                    } else gs(R.string.settings_vacation_sub),
+                )
             }
 
             SectionTitle(stringResource(R.string.settings_reminder))

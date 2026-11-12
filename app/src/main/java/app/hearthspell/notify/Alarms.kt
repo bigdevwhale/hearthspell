@@ -80,9 +80,10 @@ object Alarms {
     internal suspend fun world(context: Context): World {
         val c = context.container
         val d = c.dao
+        val s = c.settings.now()
         return World(
-            d.floors(), d.spells(), d.casts(), d.reagents(), d.decor(), System.currentTimeMillis(), ZoneId.systemDefault(), c.settings.now().startDay,
-            d.finds(), d.brews(), d.wardrobe(),
+            d.floors(), d.spells(), d.casts(), d.reagents(), d.decor(), System.currentTimeMillis(), ZoneId.systemDefault(), s.startDay,
+            d.finds(), d.brews(), d.wardrobe(), s.pinnedRequests,
         )
     }
 

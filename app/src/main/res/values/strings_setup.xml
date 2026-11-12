@@ -88,6 +88,10 @@
     <string name="settings_floors">Floors of the tower</string>
     <string name="settings_floors_sub">Order, names, new rooms</string>
     <string name="settings_reminder">Reminder</string>
+    <string name="settings_vacation">Holiday</string>
+    <string name="settings_vacation_toggle">Away from home</string>
+    <string name="settings_vacation_sub">Pauses every spell at once. When you\'re back, each picks up where it was.</string>
+    <string name="settings_vacation_since">Away since %1$s. Every spell is paused.</string>
     <string name="settings_reminder_sub">Once a day, only when imps have moved in or a letter came.</string>
     <string name="settings_look">Look and sound</string>
     <string name="settings_theme">Theme</string>
@@ -109,5 +113,5 @@
     <string name="settings_import_ok">The tower is restored</string>
     <string name="settings_import_fail">That isn\'t a Hearthspell backup</string>
     <string name="settings_about">Version %1$s · offline, no accounts, no ads</string>
-    <string name="settings_font_credit">Font: m6x11 by Daniel Linssen, Cyrillic by Natto Games</string>
+    <string name="settings_font_credit">Fonts: Kurale, Alegreya SC and Philosopher (SIL Open Font License). Art drawn with OpenAI image generation.</string>
 </resources>

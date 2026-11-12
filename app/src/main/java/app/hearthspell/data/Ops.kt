@@ -46,6 +46,25 @@ suspend fun HearthDao.undoCast(castId: Long) {
     upsertSpell(s.copy(lastCastAt = restored))
 }
 
+/** Goes on holiday: every spell that isn't paused yet is paused, and remembered so the return wakes just those (#8). */
+suspend fun HearthDao.startVacation(store: SettingsStore, now: Long = System.currentTimeMillis()) {
+    if (store.now().onVacation) return
+    val woken = spells().filter { !it.paused }
+    woken.forEach { upsertSpell(it.copy(paused = true)) }
+    store.update { it.copy(vacationSince = now, vacationIds = woken.map { s -> s.id.toString() }.toSet()) }
+}
+
+/** Back from holiday: the spells it paused pick up exactly where they were, as if no time had passed. */
+suspend fun HearthDao.endVacation(store: SettingsStore, now: Long = System.currentTimeMillis()) {
+    val s = store.now()
+    if (!s.onVacation) return
+    val away = (now - s.vacationSince).coerceAtLeast(0)
+    spells().filter { it.paused && it.id.toString() in s.vacationIds }.forEach {
+        upsertSpell(it.copy(paused = false, lastCastAt = minOf(now, it.lastCastAt + away)))
+    }
+    store.update { it.copy(vacationSince = 0, vacationIds = emptySet()) }
+}
+
 /** A new spell from the catalog (or the user's own when [preset] is null), with a made-up last cast so it starts part-faded. */
 suspend fun HearthDao.addSpell(
     floorId: Long,

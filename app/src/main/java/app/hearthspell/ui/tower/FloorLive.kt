@@ -51,7 +51,7 @@ private val catLine = L("Prrrr...", "Мррр...")
 
 /** A floor scene you can touch: pat the helpers, the cat and the apprentice, pick up gifts. */
 @Composable
-internal fun LiveFloor(data: WData, room: Floor, tick: State<Long>, sky: Sky) {
+internal fun LiveFloor(data: WData, room: Floor, tick: State<Float>, sky: Sky) {
     val look = data.look(room, withApprentice = true)
     val current by rememberUpdatedState(look)
     val world by rememberUpdatedState(data.world)
@@ -79,7 +79,7 @@ internal fun LiveFloor(data: WData, room: Floor, tick: State<Long>, sky: Sky) {
                     val lk = current
                     val gx = ((o.x - ox) / px).toInt() - TX
                     val gy = (o.y / px).toInt()
-                    val t = tick.value
+                    val t = tick.value.toLong()
                     if (gy < SCENE_FLOOR - 40) return@detectTapGestures
                     val gift = world.giftOn(room.id)
                     if (gift != null && gx in GIFT_X - 4..GIFT_X + 18) {

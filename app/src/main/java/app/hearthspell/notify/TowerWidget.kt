@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -17,6 +18,7 @@ import app.hearthspell.MainActivity
 import app.hearthspell.R
 import app.hearthspell.container
 import app.hearthspell.domain.World
+import app.hearthspell.ui.art.ART_D
 import app.hearthspell.ui.art.Art
 import app.hearthspell.ui.art.bitmap
 import app.hearthspell.ui.tower.WALL_GLASS
@@ -53,7 +55,6 @@ class TowerWidget : AppWidgetProvider() {
         private const val MAX_FLOORS = 9
         private const val W = 128
         private const val SKY = 14
-        private const val SCALE = 4
 
         suspend fun update(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
@@ -84,26 +85,32 @@ class TowerWidget : AppWidgetProvider() {
             val wall = res(context, R.drawable.hs_wall)
             val base = res(context, R.drawable.hs_base)
             val floors = w.floors.take(MAX_FLOORS)
-            val h = SKY + roof.height + floors.size * WALL_H + base.height
-            val small = Bitmap.createBitmap(W, h, Bitmap.Config.ARGB_8888)
-            val c = Canvas(small)
+            val roofH = roof.height / ART_D
+            val baseH = base.height / ART_D
+            val h = SKY + roofH + floors.size * WALL_H + baseH
+            // Drawn in scene cells on a canvas ART_D times finer, so the art keeps its own pixels.
+            val big = Bitmap.createBitmap(W * ART_D, h * ART_D, Bitmap.Config.ARGB_8888)
+            val c = Canvas(big)
+            c.scale(ART_D.toFloat(), ART_D.toFloat())
             val p = Paint()
+            val art = Paint(Paint.FILTER_BITMAP_FLAG)
+            fun put(b: Bitmap, x: Float, y: Float) = c.drawBitmap(b, null, RectF(x, y, x + b.width / ART_D.toFloat(), y + b.height / ART_D.toFloat()), art)
             fun rect(x: Int, y: Int, ww: Int, hh: Int, color: Int) {
                 p.color = color
                 c.drawRect(x.toFloat(), y.toFloat(), (x + ww).toFloat(), (y + hh).toFloat(), p)
             }
             // Night sky with a few stars and the moon.
-            val top = SKY + roof.height + floors.size * WALL_H
+            val top = SKY + roofH + floors.size * WALL_H
             for (y in 0 until top) rect(0, y, W, 1, if (y < top / 3) 0xFF0B0920.toInt() else if (y < top * 2 / 3) 0xFF151135.toInt() else 0xFF211A4A.toInt())
             for (k in 0 until 40) {
                 val hh = app.hearthspell.ui.tower.hash(5, k.toLong())
                 rect(hh % W, hh / 7 % top, 1, 1, if (k % 3 == 0) 0xFFFFF4D6.toInt() else 0xFFA996E6.toInt())
             }
-            c.drawBitmap(Art.moon.bitmap().asAndroidBitmap(), 6f, 4f, null)
-            c.drawBitmap(roof, 0f, SKY.toFloat(), null)
-            val wx = (W - wall.width) / 2
+            put(Art.moon.bitmap().asAndroidBitmap(), 6f, 4f)
+            put(roof, 0f, SKY.toFloat())
+            val wx = (W - wall.width / ART_D) / 2
             floors.forEachIndexed { i, f ->
-                val y = SKY + roof.height + i * WALL_H
+                val y = SKY + roofH + i * WALL_H
                 val (gx, gy, gw, gh) = WALL_GLASS.toList()
                 val imps = w.imps(f.id) > 0
                 val dust = w.dust(f.id)
@@ -127,15 +134,15 @@ class TowerWidget : AppWidgetProvider() {
                         rect(ox, oy + gh / 2, gw, gh - gh / 2, 0xFF3A2420.toInt())
                     }
                 }
-                c.drawBitmap(wall, wx.toFloat(), y.toFloat(), null)
+                put(wall, wx.toFloat(), y.toFloat())
                 // A warm halo around a lit window.
                 if (!imps && dust < 0.35f) {
                     p.color = 0x22FFDA62
                     c.drawRect((ox - 4).toFloat(), (oy - 3).toFloat(), (ox + gw + 4).toFloat(), (oy + gh + 4).toFloat(), p)
                 }
             }
-            c.drawBitmap(base, wx.toFloat(), (SKY + roof.height + floors.size * WALL_H).toFloat(), null)
-            return Bitmap.createScaledBitmap(small, W * SCALE, h * SCALE, false)
+            put(base, wx.toFloat(), (SKY + roofH + floors.size * WALL_H).toFloat())
+            return big
         }
     }
 }

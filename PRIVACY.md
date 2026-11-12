@@ -1,9 +1,9 @@
 # Hearthspell — Privacy Policy
 
-*Last updated: 31 October 2026*
+*Last updated: 12 November 2026*
 
-Hearthspell is an app for Android that turns household chores into spells in a cozy pixel tower: every room
-is a floor, every chore a spell with its own rhythm. It is published as open source at
+Hearthspell is an app for Android that turns household chores into spells in a cozy wizard's tower: every room
+is a floor, every chore a spell that comes round in its own time. It is published as open source at
 <https://github.com/bigdevwhale/hearthspell>.
 
 ## What we collect
@@ -27,6 +27,10 @@ The app keeps the following only in its private storage on your phone:
 
 ## Sharing
 
+- **Postcards.** When you share a postcard, the app draws it as a picture and hands it to the app you
+  pick in Android's share sheet; **Save** puts it in your photo gallery (Pictures/Hearthspell). A postcard
+  shows only what is on it: a room, a helper, an imp, your week's numbers, and your apprentice's name on
+  the apprentice's card. Nothing is shared unless you tap Share.
 - **Community links** in settings open Telegram or your browser, only when you tap them; what you do
   there is governed by those services' own policies.
 - **Backups.** Settings → Backup saves everything to one file at a place you choose, and reads it back.
@@ -55,10 +59,10 @@ Questions: open an issue at <https://github.com/bigdevwhale/hearthspell/issues>.
 
 # Hearthspell — Политика конфиденциальности
 
-*Обновлено: 31 октября 2026*
+*Обновлено: 12 ноября 2026*
 
-Hearthspell — приложение под Android, которое превращает домашние дела в заклинания в уютной пиксельной
-башне: каждая комната — этаж, каждое дело — заклинание со своим ритмом. Код открыт:
+Hearthspell — приложение под Android, которое превращает домашние дела в заклинания в уютной башне
+волшебника: каждая комната — этаж, каждое дело — заклинание, которое повторяется в свой срок. Код открыт:
 <https://github.com/bigdevwhale/hearthspell>.
 
 ## Что мы собираем
@@ -82,6 +86,10 @@ Hearthspell — приложение под Android, которое превра
 
 ## Ссылки и резервные копии
 
+- **Открытки.** Когда вы делитесь открыткой, приложение рисует её картинкой и передаёт в приложение,
+  которое вы выберете в меню «Поделиться»; «Сохранить» кладёт её в галерею (Pictures/Hearthspell).
+  На открытке только то, что на ней нарисовано: комната, помощник, пакостник, цифры вашей недели и имя
+  ученика на открытке ученика. Без нажатия «Поделиться» ничего никуда не уходит.
 - **Ссылки на сообщество** в настройках открывают Telegram или браузер, только когда вы на них нажимаете;
   там действуют правила этих сервисов.
 - **Резервная копия.** «Настройки → Резервная копия» сохраняет всё в один файл в выбранное вами место

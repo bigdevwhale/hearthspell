@@ -4,7 +4,7 @@ python tools/shots.py <raw_dir> <out_dir>
 
 <raw_dir> holds full-screen captures (1080x2400) named <name>.png and <name>.ru.png.
 Each one is cropped below the status bar and scaled to 540 px wide with rounded corners, and
-four of them are laid out on a pixel night sky as overview.png / overview.ru.png.
+four of them are laid out on the tower's night sky as overview.png / overview.ru.png.
 """
 import random
 import sys
@@ -13,9 +13,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 STATUS = 110  # status bar height at 1080 px wide
-OVERVIEW = ["tower", "cat", "stars", "letter"]
-SINGLE = ["tower", "floors", "floor", "spell", "grimoire", "helper", "decor", "market", "trip", "letters", "letter", "note",
-          "cat", "bestiary", "stars", "tea", "wardrobe", "brew", "treasures"]
+OVERVIEW = ["tower", "floor", "grimoire", "postcards"]
+SINGLE = ["tower", "floors", "floor", "spell", "grimoire", "helpers", "collections", "helper", "decor", "market", "trip",
+          "stats", "postcards", "letters", "letter", "note", "cat", "bestiary", "stars", "tea", "wardrobe", "brew", "treasures"]
 
 # The tower's night: deep indigo at the top, a little lighter at the horizon.
 NIGHT = [(11, 9, 32), (21, 17, 53), (33, 26, 74)]
@@ -38,40 +38,44 @@ def card(src: Path) -> Image.Image:
     return out
 
 
+RES = Path(__file__).resolve().parent.parent / "app/src/main/res/drawable-nodpi"
+
+
 def ground(w: int, h: int, px: int = 8) -> Image.Image:
-    """A pixel-art night sky: a dithered gradient, twinkling stars, a moon and dark hills, in big pixels."""
-    gw, gh = w // px, h // px
-    g = Image.new("RGB", (gw, gh))
-    for y in range(gh):
-        t = y / gh * (len(NIGHT) - 1)
-        for x in range(gw):
-            i = int(t)
-            frac = t - i
-            j = min(i + 1, len(NIGHT) - 1)
-            g.putpixel((x, y), NIGHT[j] if frac * 16 > BAYER[y % 4][x % 4] else NIGHT[i])
-    rnd = random.Random(7)
-    for _ in range(gw * gh // 60):
-        x, y = rnd.randrange(gw), rnd.randrange(int(gh * 0.8))
-        bright = rnd.random() < 0.3
-        g.putpixel((x, y), STAR if bright else STAR_DIM)
-        if bright and rnd.random() < 0.4:
-            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                if 0 <= x + dx < gw and 0 <= y + dy < gh:
-                    g.putpixel((x + dx, y + dy), STAR_DIM)
-    # The moon, top right.
+    """The tower's night as the app paints it: a deep gradient, the starry sky texture, a warm glow, the meadow."""
+    g = Image.new("RGB", (w, h))
     d = ImageDraw.Draw(g)
-    mx, my, r = gw - 22, 14, 7
-    d.ellipse((mx - r, my - r, mx + r, my + r), fill=(244, 232, 200))
-    for cx, cy in ((mx - 2, my - 1), (mx + 2, my + 3), (mx + 3, my - 3)):
-        g.putpixel((cx, cy), (205, 190, 160))
-        g.putpixel((cx + 1, cy), (205, 190, 160))
-    # Rolling hills along the bottom.
-    import math
-    for x in range(gw):
-        top = gh - 10 + int(2.5 * math.sin(x / 9) + 1.5 * math.sin(x / 4.1))
-        for y in range(top, gh):
-            g.putpixel((x, y), HILLS[1] if y == top else HILLS[0])
-    return g.resize((gw * px, gh * px), Image.NEAREST).crop((0, 0, w, h))
+    for y in range(h):
+        t = y / max(1, h - 1) * (len(NIGHT) - 1)
+        i = min(int(t), len(NIGHT) - 2)
+        f = t - i
+        d.line([(0, y), (w, y)], fill=tuple(round(a + (b - a) * f) for a, b in zip(NIGHT[i], NIGHT[i + 1])))
+    g = g.convert("RGBA")
+    sky = RES / "hs_sky_night.webp"
+    if sky.exists():
+        tile = Image.open(sky).convert("RGBA")
+        tile = tile.resize((tile.width * 2, tile.height * 2), Image.LANCZOS)
+        layer = Image.new("RGBA", (w, h))
+        for y in range(0, h, tile.height):
+            for x in range(0, w, tile.width):
+                layer.alpha_composite(tile, (x, y))
+        layer.putalpha(layer.getchannel("A").point(lambda a: a * 150 // 255))
+        g.alpha_composite(layer)
+    # A warm glow up high, as if from the tower's lantern.
+    glow = Image.new("RGBA", (w, h))
+    ImageDraw.Draw(glow).ellipse((w * 0.15, -h * 0.35, w * 0.85, h * 0.45), fill=(244, 198, 110, 46))
+    g.alpha_composite(glow.filter(ImageFilter.GaussianBlur(max(w, h) // 10)))
+    # The meadow along the bottom.
+    strip = RES / "hs_ground.webp"
+    if strip.exists():
+        m = Image.open(strip).convert("RGBA")
+        k = max(1.0, h / 900)
+        m = m.resize((round(m.width * k), round(m.height * k)), Image.LANCZOS)
+        for x in range(0, w, m.width):
+            g.alpha_composite(m, (x, h - m.height))
+        shade = Image.new("RGBA", (w, m.height), (11, 9, 32, 90))
+        g.alpha_composite(shade, (0, h - m.height))
+    return g
 
 
 def overview(cards: list[Image.Image]) -> Image.Image:

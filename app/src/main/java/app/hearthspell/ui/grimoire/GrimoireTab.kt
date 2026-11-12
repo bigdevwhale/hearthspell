@@ -1,6 +1,20 @@
 package app.hearthspell.ui.grimoire
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.sp
+import app.hearthspell.ui.components.Chip
+import app.hearthspell.ui.tips.HelpTile
+import app.hearthspell.ui.tips.TipHost
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +31,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -64,6 +79,7 @@ import app.hearthspell.ui.art.Glyphs
 import app.hearthspell.ui.art.PixelIcon
 import app.hearthspell.ui.art.Sprite
 import app.hearthspell.ui.art.SpriteImage
+import app.hearthspell.ui.art.bitmap
 import app.hearthspell.ui.components.ButtonKind
 import app.hearthspell.ui.components.ConfirmDialog
 import app.hearthspell.ui.components.Gap
@@ -91,76 +107,196 @@ import java.time.format.DateTimeFormatter
 
 // The book of everything learned: the apprentice's circle, the helpers, and a page for every spell.
 
+/** The grimoire's three pages, picked from the switch under the banner. */
+private enum class Page { SPELLS, HELPERS, COLLECTIONS }
+
 @Composable
 fun GrimoireTab(data: WData, go: Go) {
     val w = data.world
-    Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.grimoire_title), null, Tip.GRIMOIRE) { ManaTag(w.mana, Modifier.padding(end = 4.dp)) }
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-            CirclePanel(w, data.settings, go::wardrobe)
-            Gap(10.dp)
-            Panel(Modifier.fillMaxWidth(), onClick = { go.decor(0) }) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SpriteImage(Art.decor(DecorKind.CHEST), 40.dp)
-                    Spacer(Modifier.width(14.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(stringResource(R.string.grimoire_decor), style = UType.Heading)
-                        Text(stringResource(R.string.grimoire_decor_sub), style = UType.Muted)
-                    }
-                    PixelIcon(Glyphs.back, U.c.faint, Modifier.graphicsLayer { scaleX = -1f }, size = 16.dp)
-                }
-            }
-
-            Gap(10.dp)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Tile(Modifier.weight(1f), { SpriteImage(Art.decor(DecorKind.TELESCOPE), 36.dp) }, stringResource(R.string.stars_title), "${w.starsLit}/${Stars.total}", go::stars)
-                Tile(Modifier.weight(1f), { SpriteImage(Art.decor(DecorKind.CAULDRON), 36.dp) }, stringResource(R.string.brew_title), if (w.potions.isEmpty()) "·" else "${w.potions.size}", go::brew)
-            }
-            Gap(8.dp)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Tile(Modifier.weight(1f), { SpriteImage(Looks.imp(ImpKind.PIP, 0), 36.dp) }, stringResource(R.string.bestiary_title), "${w.impsMet.size}/${ImpKind.entries.size}", go::bestiary)
-                Tile(Modifier.weight(1f), { SpriteImage(Art.trinket(Trinket.BUTTON.name), 30.dp) }, stringResource(R.string.treasures_title), "${w.trinketsFound.size}/${Trinket.entries.size}", go::treasures)
-            }
-
+    var page by rememberSaveable { mutableStateOf(Page.SPELLS) }
+    TipHost(Tip.GRIMOIRE)
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        GrimoireBanner(w)
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             val awake = w.helpers.count { it.awake }
-            SectionTitle(stringResource(R.string.grimoire_helpers) + " · " + stringResource(R.string.grimoire_helpers_awake, awake, w.helpers.size))
-            HelperGrid(w.helpers) { go.helper(it.name) }
-
-            SectionTitle(stringResource(R.string.grimoire_spells))
-            if (w.spells.isEmpty()) {
-                Text(gs(R.string.grimoire_empty), style = UType.Sub)
-            }
-            w.floors.forEach { f ->
-                // What's due today and overdue first, the freshly cast lower, the paused last (#5).
-                val spells = w.spellsOf(f.id).sortedBy { w.freshness(it) }
-                if (spells.isEmpty()) return@forEach
-                Text(floorName(f), style = UType.Eyebrow.copy(color = U.c.accent), modifier = Modifier.padding(top = 10.dp, bottom = 8.dp))
-                spells.forEach { s ->
-                    SpellRow(s, w) { go.spell(s.id) }
-                    Gap(8.dp)
-                }
+            PageSwitch(
+                listOf(
+                    stringResource(R.string.grimoire_spells) to "${w.spells.size}",
+                    stringResource(R.string.grimoire_helpers) to "$awake/${w.helpers.size}",
+                    stringResource(R.string.grimoire_collections) to "",
+                ),
+                page.ordinal,
+            ) { page = Page.entries[it] }
+            Gap(14.dp)
+            when (page) {
+                Page.SPELLS -> SpellsPage(w, go)
+                Page.HELPERS -> HelpersPage(w, go)
+                Page.COLLECTIONS -> CollectionsPage(w, go)
             }
             Gap(24.dp)
         }
     }
 }
 
+/** The picture over the grimoire: an open book on a lectern, with the title, the circle and the mana on it. */
 @Composable
-private fun Tile(modifier: Modifier, icon: @Composable () -> Unit, title: String, sub: String, onClick: () -> Unit) {
-    Panel(modifier, onClick = onClick, padding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            icon()
-            Spacer(Modifier.width(10.dp))
-            Column(Modifier.weight(1f)) {
-                Text(title, style = UType.Strong, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Text(sub, style = UType.Small.copy(color = U.c.accent))
+private fun GrimoireBanner(w: World) {
+    val c = U.c
+    val pic = Art.grimoireBanner
+    Box(Modifier.fillMaxWidth().height(if (pic != null) 210.dp else 120.dp)) {
+        if (pic != null) {
+            Image(
+                pic.bitmap(), null, Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop, filterQuality = FilterQuality.Low,
+            )
+            Box(Modifier.matchParentSize().background(Brush.verticalGradient(0.35f to Color.Transparent, 1f to c.bg)))
+        }
+        Row(Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.pixelBox(c.surface.copy(alpha = 0.85f), c.outline, c.bevel).padding(horizontal = 10.dp, vertical = 6.dp)) { ManaTag(w.mana) }
+            Spacer(Modifier.width(8.dp))
+            HelpTile(Tip.GRIMOIRE)
+        }
+        Column(Modifier.align(Alignment.BottomStart).padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+            Text(stringResource(R.string.grimoire_title), style = UType.Display)
+            Text(
+                stringResource(R.string.grimoire_circle, w.circle) + "  ·  " + gp(R.plurals.grimoire_total, w.totalCasts, w.totalCasts),
+                style = UType.Sub.copy(color = c.ink),
+            )
+        }
+    }
+    Gap(10.dp)
+}
+
+/** A row of tabs in one rounded track; the picked one is filled. Each may carry a small count. */
+@Composable
+private fun PageSwitch(items: List<Pair<String, String>>, picked: Int, onPick: (Int) -> Unit) {
+    val c = U.c
+    Row(Modifier.fillMaxWidth().pixelBox(c.surface, c.outline, c.bevel).padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        items.forEachIndexed { i, (label, count) ->
+            val on = i == picked
+            val fill by animateColorAsState(if (on) c.accent else Color.Transparent, label = "page")
+            Column(
+                Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).background(fill)
+                    .clickable { onPick(i) }.padding(vertical = 8.dp, horizontal = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    label, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    style = UType.Strong.copy(fontSize = 14.sp, color = if (on) c.onAccent else c.ink),
+                )
+                Text(count.ifEmpty { " " }, style = UType.Small.copy(color = if (on) c.onAccent.copy(alpha = 0.8f) else c.faint))
             }
         }
     }
 }
 
+/** Spells, a card per floor; chips on top narrow it to one floor. Due and overdue spells come first (#5). */
 @Composable
-private fun CirclePanel(w: World, s: app.hearthspell.data.Settings, onWardrobe: () -> Unit) {
+private fun SpellsPage(w: World, go: Go) {
+    if (w.spells.isEmpty()) {
+        Text(gs(R.string.grimoire_empty), style = UType.Sub)
+        return
+    }
+    val floors = w.floors.filter { w.spellsOf(it.id).isNotEmpty() }
+    var only by rememberSaveable { mutableLongStateOf(-1L) }
+    val shown = floors.filter { only == -1L || it.id == only }.ifEmpty { floors }
+    if (floors.size > 1) {
+        Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Chip(stringResource(R.string.grimoire_all), shown.size == floors.size, { only = -1L })
+            floors.forEach { f -> Chip(floorName(f), shown.size == 1 && only == f.id, { only = f.id }) }
+        }
+        Gap(12.dp)
+    }
+    shown.forEach { f ->
+        val spells = w.spellsOf(f.id).sortedBy { w.freshness(it) }
+        Panel(Modifier.fillMaxWidth(), padding = PaddingValues(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 4.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(floorName(f), style = UType.Heading.copy(fontSize = UType.Heading.fontSize * 0.85f, color = U.c.accent), modifier = Modifier.weight(1f))
+                Text("${spells.size}", style = UType.Small)
+            }
+            Gap(4.dp)
+            spells.forEachIndexed { i, s ->
+                if (i > 0) Box(Modifier.fillMaxWidth().padding(start = 44.dp).height(1.dp).background(U.c.bevel.copy(alpha = 0.35f)))
+                SpellLine(s, w) { go.spell(s.id) }
+            }
+        }
+        Gap(10.dp)
+    }
+}
+
+/** One spell inside a floor's card: its helper, name, rank and a thin bar to the next rank. */
+@Composable
+private fun SpellLine(s: Spell, w: World, onClick: () -> Unit) {
+    val count = w.castCount(s.id)
+    val rank = Rank.of(count)
+    val awake = w.helper(HelperKind.of(s.helper)).awake
+    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+        SpriteImage(Art.helper(HelperKind.of(s.helper)).let { if (awake) it else it.muted() }, 32.dp)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(spellName(s), style = UType.Body, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(t(rank.title) + "  ·  " + gp(R.plurals.grimoire_casts, count, count), style = UType.Small)
+            Gap(5.dp)
+            RankBar(count, Modifier.fillMaxWidth(), height = 6.dp)
+        }
+        Spacer(Modifier.width(8.dp))
+        PixelIcon(Glyphs.back, U.c.faint, Modifier.graphicsLayer { scaleX = -1f }, size = 14.dp)
+    }
+}
+
+/** Every helper, awake ones and the most grown first, three to a row. */
+@Composable
+private fun HelpersPage(w: World, go: Go) {
+    Text(gs(R.string.tip_grimoire_2), style = UType.Muted)
+    Gap(12.dp)
+    HelperGrid(w.helpers.sortedWith(compareByDescending<HelperState> { it.awake }.thenByDescending { it.casts })) { go.helper(it.name) }
+}
+
+/** The places the grimoire opens onto: the decor shop first, then the collections two to a row. */
+@Composable
+private fun CollectionsPage(w: World, go: Go) {
+    Panel(Modifier.fillMaxWidth(), onClick = { go.decor(0) }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SpriteImage(Art.decor(DecorKind.CHEST), 52.dp)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.grimoire_decor), style = UType.Heading)
+                Text(stringResource(R.string.grimoire_decor_sub), style = UType.Muted)
+            }
+        }
+    }
+    Gap(10.dp)
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Tile(Modifier.weight(1f), { SpriteImage(Art.decor(DecorKind.TELESCOPE), 56.dp) }, stringResource(R.string.stars_title), "${w.starsLit}/${Stars.total}", go::stars)
+        Tile(Modifier.weight(1f), { SpriteImage(Art.decor(DecorKind.CAULDRON), 56.dp) }, stringResource(R.string.brew_title), if (w.potions.isEmpty()) "" else "${w.potions.size}", go::brew)
+    }
+    Gap(10.dp)
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Tile(Modifier.weight(1f), { SpriteImage(Looks.imp(ImpKind.PIP, 0), 56.dp) }, stringResource(R.string.bestiary_title), "${w.impsMet.size}/${ImpKind.entries.size}", go::bestiary)
+        Tile(Modifier.weight(1f), { SpriteImage(Art.trinket(Trinket.BUTTON.name), 46.dp) }, stringResource(R.string.treasures_title), "${w.trinketsFound.size}/${Trinket.entries.size}", go::treasures)
+    }
+    Gap(10.dp)
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Tile(Modifier.weight(1f), { SpriteImage(Art.envelope("sealed") ?: Art.master(), 56.dp) }, stringResource(R.string.letters_open), "", go::letters)
+        Tile(Modifier.weight(1f), { PixelIcon(Glyphs.share, U.c.accent, size = 40.dp) }, stringResource(R.string.cards_open), "", go::postcards)
+    }
+}
+
+/** A collection's card: a big picture, its name and how much of it is found. */
+@Composable
+private fun Tile(modifier: Modifier, icon: @Composable () -> Unit, title: String, sub: String, onClick: () -> Unit) {
+    Panel(modifier, onClick = onClick, padding = PaddingValues(horizontal = 10.dp, vertical = 14.dp)) {
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(Modifier.height(58.dp), contentAlignment = Alignment.Center) { icon() }
+            Gap(8.dp)
+            Text(title, style = UType.Strong, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+            Text(sub.ifEmpty { " " }, style = UType.Small.copy(color = U.c.accent))
+        }
+    }
+}
+
+@Composable
+internal fun CirclePanel(w: World, s: app.hearthspell.data.Settings, onWardrobe: () -> Unit) {
     val circle = w.circle
     val from = Mana.circles.getOrElse(circle - 1) { 0 }
     val to = Mana.circles.getOrNull(circle)
@@ -190,10 +326,10 @@ private fun CirclePanel(w: World, s: app.hearthspell.data.Settings, onWardrobe: 
 @Composable
 private fun HelperGrid(helpers: List<HelperState>, onClick: (HelperKind) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        helpers.chunked(4).forEach { row ->
+        helpers.chunked(3).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 row.forEach { h -> HelperCell(h, Modifier.weight(1f)) { onClick(h.kind) } }
-                repeat(4 - row.size) { Spacer(Modifier.weight(1f)) }
+                repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }
@@ -209,8 +345,8 @@ private fun HelperCell(h: HelperState, modifier: Modifier, onClick: () -> Unit) 
             .padding(vertical = 10.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (h.awake) AnimatedSprite({ Art.helper(h.kind, it) }, 44.dp)
-        else SpriteImage(Art.helper(h.kind).muted(), 44.dp, alpha = 0.7f)
+        if (h.awake) AnimatedSprite({ Art.helper(h.kind, it) }, 56.dp)
+        else SpriteImage(Art.helper(h.kind).muted(), 56.dp, alpha = 0.7f)
         Gap(6.dp)
         Text(t(h.kind.title), style = UType.Small.copy(color = if (h.awake) c.ink else c.faint), maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
         Gap(4.dp)
@@ -218,13 +354,13 @@ private fun HelperCell(h: HelperState, modifier: Modifier, onClick: () -> Unit) 
     }
 }
 
-/** Four little squares, lit up to the helper's level. */
+/** Four little dots, lit up to the helper's level. */
 @Composable
 internal fun LevelPips(level: Int, size: Dp = 6.dp) {
     val c = U.c
     Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
         repeat(HelperState.HELPER_LEVELS.size) { i ->
-            Box(Modifier.size(size).background(if (i < level) c.accent else c.outline.copy(alpha = 0.45f)))
+            Box(Modifier.size(size).background(if (i < level) c.accent else c.outline.copy(alpha = 0.45f), androidx.compose.foundation.shape.CircleShape))
         }
     }
 }
@@ -251,11 +387,11 @@ private fun SpellRow(s: Spell, w: World, onClick: () -> Unit) {
 }
 
 @Composable
-internal fun RankBar(count: Int, modifier: Modifier = Modifier) {
+internal fun RankBar(count: Int, modifier: Modifier = Modifier, height: Dp = 10.dp) {
     val rank = Rank.of(count)
     val next = rank.next
     val f = if (next == null) 1f else (count - rank.casts).toFloat() / (next.casts - rank.casts)
-    PixelBar(f, modifier, color = U.c.accent, segments = 8, height = 10.dp)
+    PixelBar(f, modifier, color = U.c.accent, segments = 8, height = height)
 }
 
 /** Flips between a sprite's two frames, for idle animation. */
@@ -278,7 +414,9 @@ fun SpellScreen(id: Long, data: WData, go: Go) {
     val w = data.world
     val s = w.spell(id)
     Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.grimoire_title), go::back, Tip.SPELL)
+        TopBar(stringResource(R.string.grimoire_title), go::back, Tip.SPELL) {
+            if (s != null) app.hearthspell.ui.share.ShareTile { app.hearthspell.ui.share.spellCard(data, s) }
+        }
         if (s == null) {
             Text(stringResource(R.string.spell_missing), style = UType.Sub, modifier = Modifier.padding(16.dp))
             return@Column
@@ -473,7 +611,7 @@ fun HelperScreen(kind: String, data: WData, go: Go) {
     val k = HelperKind.of(kind)
     val h = w.helper(k)
     Column(Modifier.fillMaxSize()) {
-        TopBar(t(k.title), go::back, Tip.HELPER)
+        TopBar(t(k.title), go::back, Tip.HELPER) { app.hearthspell.ui.share.ShareTile { app.hearthspell.ui.share.helperCard(data, k) } }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).navigationBarsPadding()) {
             Panel(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {

@@ -52,6 +52,17 @@
                 android:resource="@xml/widget_tower_info" />
         </receiver>
 
+        <!-- Hands drawn postcards to the app they are shared to. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.cards"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/cards" />
+        </provider>
+
         <!-- Persists the in-app language choice on Android 12 and older. -->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
