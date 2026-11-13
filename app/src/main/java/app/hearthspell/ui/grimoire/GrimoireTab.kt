@@ -67,6 +67,7 @@ import app.hearthspell.ui.art.Looks
 import app.hearthspell.container
 import app.hearthspell.data.Cast
 import app.hearthspell.data.Spell
+import app.hearthspell.data.addSpell
 import app.hearthspell.data.undoCast
 import app.hearthspell.domain.HelperState
 import app.hearthspell.domain.Mana
@@ -413,6 +414,7 @@ internal fun AnimatedSprite(frame: (Int) -> Sprite, size: Dp, periodMs: Long = 5
 fun SpellScreen(id: Long, data: WData, go: Go) {
     val w = data.world
     val s = w.spell(id)
+    var copying by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize()) {
         TopBar(stringResource(R.string.grimoire_title), go::back, Tip.SPELL) {
             if (s != null) app.hearthspell.ui.share.ShareTile { app.hearthspell.ui.share.spellCard(data, s) }
@@ -482,9 +484,56 @@ fun SpellScreen(id: Long, data: WData, go: Go) {
             RecentCasts(w, s)
             Gap(16.dp)
             PixelButton(stringResource(R.string.spell_edit), { go.spellForm(s.id) }, Modifier.fillMaxWidth(), kind = ButtonKind.SECONDARY, icon = Glyphs.pencil)
+            if (w.floors.size > 1) {
+                Gap(10.dp)
+                PixelButton(stringResource(R.string.spell_copy), { copying = true }, Modifier.fillMaxWidth(), kind = ButtonKind.SECONDARY, icon = Glyphs.plus)
+            }
             Gap(24.dp)
         }
+        if (copying) CopySpellDialog(s, w) { copying = false }
     }
+}
+
+/** Copies a spell to other floors: same name, rhythm, effort and helper; each copy keeps its own casts and due day (#9). */
+@Composable
+private fun CopySpellDialog(s: Spell, w: World, onDismiss: () -> Unit) {
+    val container = LocalContext.current.container
+    var picked by remember { mutableStateOf(emptySet<Long>()) }
+    val others = w.floors.filter { it.id != s.floorId }
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = U.c.surface,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+        title = { Text(stringResource(R.string.spell_copy_title), style = UType.Heading) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                Text(stringResource(R.string.spell_copy_text), style = UType.Muted)
+                Gap(8.dp)
+                others.forEach { f ->
+                    Row(
+                        Modifier.fillMaxWidth().clickable { picked = if (f.id in picked) picked - f.id else picked + f.id }.padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        app.hearthspell.ui.setup.CheckBox(f.id in picked)
+                        Spacer(Modifier.width(12.dp))
+                        Text(floorName(f), style = UType.Body)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            PixelButton(stringResource(R.string.spell_copy_go), {
+                val now = System.currentTimeMillis()
+                val preset = Spells.of(s.presetKey)
+                val targets = picked.toList()
+                container.write {
+                    for (f in targets) addSpell(f, preset, now, name = s.name, intervalDays = s.intervalDays, effort = s.effort, helper = s.helper)
+                }
+                onDismiss()
+            }, enabled = picked.isNotEmpty())
+        },
+        dismissButton = { PixelButton(stringResource(R.string.cancel), onDismiss, kind = ButtonKind.SECONDARY) },
+    )
 }
 
 /** Grimoire pages are always parchment, whatever the theme. */

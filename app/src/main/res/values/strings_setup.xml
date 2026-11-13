@@ -114,4 +114,9 @@
     <string name="settings_import_fail">That isn\'t a Hearthspell backup</string>
     <string name="settings_about">Version %1$s · offline, no accounts, no ads</string>
     <string name="settings_font_credit">Fonts: Kurale, Alegreya SC and Philosopher (SIL Open Font License). Art drawn with OpenAI image generation.</string>
+    <string name="spell_floors_note">Pick several floors to cast the same spell in each – every one gets its own spell and its own day.</string>
+    <string name="spell_copy">Copy to other floors</string>
+    <string name="spell_copy_title">Copy the spell</string>
+    <string name="spell_copy_text">The same name, rhythm and helper on the floors you tick. Each copy keeps its own casts and its own day.</string>
+    <string name="spell_copy_go">Copy</string>
 </resources>

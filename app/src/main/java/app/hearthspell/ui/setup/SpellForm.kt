@@ -95,6 +95,8 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
 
     var name by rememberSaveable { mutableStateOf(existing?.name.orEmpty()) }
     var floor by rememberSaveable { mutableLongStateOf(existing?.floorId ?: floorId.takeIf { world.floor(it) != null } ?: world.floors.firstOrNull()?.id ?: 0L) }
+    // A new spell can go to several floors at once: one spell each, with its own rhythm (#9).
+    var floors by rememberSaveable { mutableStateOf(listOf(floor).filter { it != 0L }) }
     var days by rememberSaveable { mutableIntStateOf(existing?.intervalDays ?: 7) }
     var effort by rememberSaveable { mutableIntStateOf(existing?.effort ?: 2) }
     var helper by rememberSaveable { mutableStateOf(existing?.helper ?: HelperKind.BROOM.name) }
@@ -113,7 +115,7 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
         dueTouched = true
     }
 
-    val canSave = floor != 0L && (name.isNotBlank() || preset != null)
+    val canSave = (if (existing != null) floor != 0L else floors.isNotEmpty()) && (name.isNotBlank() || preset != null)
 
     fun save() {
         if (!canSave) return
@@ -134,7 +136,7 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
                     )
                 )
             } else {
-                addSpell(floor, null, now, name = name.trim(), intervalDays = days, effort = effort, helper = helper, lastCastAt = dueLastCast)
+                for (f in floors) addSpell(f, null, now, name = name.trim(), intervalDays = days, effort = effort, helper = helper, lastCastAt = dueLastCast)
             }
         }
         go.back()
@@ -152,7 +154,17 @@ fun SpellFormScreen(id: Long, floorId: Long, data: WData, go: Go) {
 
             SectionTitle(stringResource(R.string.spell_floor))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                world.floors.forEach { f -> Chip(floorName(f), f.id == floor, { floor = f.id }) }
+                if (existing != null) world.floors.forEach { f -> Chip(floorName(f), f.id == floor, { floor = f.id }) }
+                else world.floors.forEach { f ->
+                    Chip(floorName(f), f.id in floors, {
+                        floors = if (f.id in floors) floors - f.id else floors + f.id
+                        floors.firstOrNull()?.let { floor = it }
+                    })
+                }
+            }
+            if (existing == null && world.floors.size > 1) {
+                Gap(6.dp)
+                Text(stringResource(R.string.spell_floors_note), style = UType.Muted)
             }
 
             SectionTitle(stringResource(R.string.form_interval))

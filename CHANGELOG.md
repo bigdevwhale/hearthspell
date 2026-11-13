@@ -8,6 +8,15 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.5.0] - 2026-11-13
+
+### Added
+- A spell can live on several floors (#9). A new spell's floor chips now take several floors at once, one spell each; and a spell's page has "Copy to other floors": tick the floors, and each gets the same name, rhythm, effort and helper, with its own casts and its own day. Washing the windows in three rooms on three different days no longer means typing it three times or casting it in the Heart of the tower.
+
+<!-- tg
+Новое: заклинание можно скопировать на другие этажи – кнопка на его странице. А при создании нового можно сразу отметить несколько этажей: у каждой копии свой день и свои взмахи.
+-->
+
 ## [1.4.0] - 2026-11-12
 
 ### Look
