@@ -8,6 +8,13 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.5.1] - 2026-11-13
+
+### Changed
+- "Copy to other floors" lets you change the name of the copies first: "Wash the windows" can become "Wash the windows in the bedroom" (#9).
+
+<!-- tg skip -->
+
 ## [1.5.0] - 2026-11-13
 
 ### Added

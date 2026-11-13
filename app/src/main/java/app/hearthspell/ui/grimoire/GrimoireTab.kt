@@ -499,6 +499,9 @@ fun SpellScreen(id: Long, data: WData, go: Go) {
 private fun CopySpellDialog(s: Spell, w: World, onDismiss: () -> Unit) {
     val container = LocalContext.current.container
     var picked by remember { mutableStateOf(emptySet<Long>()) }
+    // The copies' name, editable: "Wash the windows" can become "Wash the windows in the bedroom".
+    val original = spellName(s)
+    var name by remember { mutableStateOf(original) }
     val others = w.floors.filter { it.id != s.floorId }
     androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
@@ -508,6 +511,11 @@ private fun CopySpellDialog(s: Spell, w: World, onDismiss: () -> Unit) {
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 Text(stringResource(R.string.spell_copy_text), style = UType.Muted)
+                Gap(10.dp)
+                app.hearthspell.ui.components.PixelField(
+                    name, { name = it.take(60) }, Modifier.fillMaxWidth(), placeholder = original,
+                    keyboard = androidx.compose.foundation.text.KeyboardOptions(capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences),
+                )
                 Gap(8.dp)
                 others.forEach { f ->
                     Row(
@@ -526,8 +534,10 @@ private fun CopySpellDialog(s: Spell, w: World, onDismiss: () -> Unit) {
                 val now = System.currentTimeMillis()
                 val preset = Spells.of(s.presetKey)
                 val targets = picked.toList()
+                // Unchanged (or emptied): keep the original's own name, so a catalog spell stays translated.
+                val newName = name.trim().takeIf { it.isNotEmpty() && it != original } ?: s.name
                 container.write {
-                    for (f in targets) addSpell(f, preset, now, name = s.name, intervalDays = s.intervalDays, effort = s.effort, helper = s.helper)
+                    for (f in targets) addSpell(f, preset, now, name = newName, intervalDays = s.intervalDays, effort = s.effort, helper = s.helper)
                 }
                 onDismiss()
             }, enabled = picked.isNotEmpty())

@@ -121,6 +121,6 @@
     <string name="spell_floors_note">Можно выбрать несколько этажей – на каждом появится своё заклинание со своим днём.</string>
     <string name="spell_copy">Скопировать на другие этажи</string>
     <string name="spell_copy_title">Копия заклинания</string>
-    <string name="spell_copy_text">То же название, ритм и помощник на отмеченных этажах. У каждой копии свои взмахи и свой день.</string>
+    <string name="spell_copy_text">Тот же ритм и помощник на отмеченных этажах, название можно поменять. У каждой копии свои взмахи и свой день.</string>
     <string name="spell_copy_go">Скопировать</string>
 </resources>
