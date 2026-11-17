@@ -8,6 +8,15 @@ then close it like any HTML comment. The release notes carry it, and the chat bo
 
 All notable changes to Hearthspell. Versions follow [semantic versioning](https://semver.org/).
 
+## [1.5.2] - 2026-11-17
+
+### Fixed
+- **Hats sit on the head:** the pointed hat, the witch's brim, the cat-ear cap and the frog cap are redrawn straight from the front, so the inside of the hat no longer covers the apprentice's head; the brims sit level and no hair sticks out over them (#10).
+
+<!-- tg
+Шляпы ученицы теперь сидят на голове: остроконечная, широкая, кошачья и лягушачья перерисованы, изнанка шляпы больше не закрывает голову, а волосы не торчат над полями.
+-->
+
 ## [1.5.1] - 2026-11-13
 
 ### Changed
