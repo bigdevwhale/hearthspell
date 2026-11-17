@@ -258,6 +258,15 @@ def build_sprites():
             s = k_w / im.width
             im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
             sp[f"hat_{k}"] = [im]
+        # Hats redrawn straight from the front, with no inside showing (#10), replace the first drawing.
+        front = sheet("hats_front", 2, 2)
+        if front:
+            for i, (k, _) in enumerate(gen.HATS_FRONT):
+                im = front[i]
+                if im is None:
+                    continue
+                s = HAT_WIDTH.get(k, 1.3) * head / im.width
+                sp[f"hat_{k}"] = [im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)]
         hat_at = (hx, hy)
     else:
         # The old hats share the body's grid: drawn over it as they are.

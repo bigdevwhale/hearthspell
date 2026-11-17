@@ -211,6 +211,22 @@ HATS = [
     ("STAR", "a dark blue starry nightcap with a pom-pom"), ("CROWN", "a little golden crown with gems"),
 ]
 
+# Hats that showed their inside (the underside of a brim, a cap's lining), redrawn straight from the front so the
+# head they sit on is never covered by a back wall (#10). Cut in place of the same keys from "hats".
+HATS_FRONT = [
+    ("POINTED", "a classic tall pointed wizard hat with a wide brim, deep crimson red, a gold star and a gold cord"),
+    ("WIDE", "a dark plum-black witch's hat with a very wide brim, a purple band and a gold buckle"),
+    ("CAT", "a cream knitted cap with cat ears (pink inside the ears) and a ribbed cuff"),
+    ("FROG", "a green knitted frog-face cap with big round eyes on top, rosy cheeks and a smile"),
+]
+HATS_FRONT_LOOK = (
+    "Each hat seen exactly from the front at eye level, as it looks when worn, but with no head: we see only its "
+    "outside. The bottom edge is the front edge of the brim or the cuff, a clean gently curved line. Do NOT show the "
+    "inside of the hat, the underside of the brim, a lining, an opening or a back wall: nothing dark under the brim or "
+    "the cuff. Match the attached reference sheet's pixel-art style, palette and outline exactly; all four hats at "
+    "the same scale as in the reference."
+)
+
 
 ICONS = [
     ("tower", "a little wizard's tower with a purple conical roof and a glowing window"),
@@ -275,6 +291,8 @@ def jobs():
         ], 3, 2, "character")
     out["hats"] = sheet_prompt("a sprite sheet of hats, each shown alone (no head, no person), from the front.",
                                HATS, 4, 2, "hat", "All hats at the same scale, sized for the same small head.")
+    out["hats_front"] = sheet_prompt("a sprite sheet of four hats, each shown alone (no head, no person).",
+                                     HATS_FRONT, 2, 2, "hat", HATS_FRONT_LOOK)
     out["icons"] = sheet_prompt("a set of app menu icons for a cozy wizard-tower game.", ICONS, 4, 3, "icon",
                                 "Bold, simple, instantly readable at small size: chunky shapes, thick dark outline, "
                                 "few details, each icon filling most of its cell, front view.")
@@ -355,11 +373,17 @@ def image_of(output):
     return pngs[-1] if pngs else None
 
 
+# Sheets drawn to match another sheet, which goes with the prompt as a picture.
+REFERENCE = {"hats_front": "hats"}
+
+
 def run(name, prompt):
     dst = OUT / f"{name}.png"
     if dst.exists():
         return f"skip {name}"
-    r = subprocess.run([shutil.which("codex.cmd") or "codex", "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-"],
+    ref = REFERENCE.get(name)
+    images = ["-i", str(OUT / f"{ref}.png")] if ref and (OUT / f"{ref}.png").exists() else []
+    r = subprocess.run([shutil.which("codex.cmd") or "codex", "exec", "--skip-git-repo-check", "--sandbox", "read-only", *images, "-"],
                        input=prompt, text=True, encoding="utf-8", errors="replace", capture_output=True, cwd=str(ROOT))
     p = image_of((r.stdout or "") + (r.stderr or ""))
     if p is None:
