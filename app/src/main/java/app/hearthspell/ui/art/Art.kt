@@ -260,8 +260,8 @@ object Art {
     fun hat(name: String): Sprite = load(hats.getValue(name))
     fun hatSink(name: String): Int = hatSinks[name] ?: 30
 
-    /** Hats worn over the head, which hides inside them; a wreath and a crown sit on the hair instead (#10). */
-    private val hatsOver = setOf("POINTED", "WIDE", "CAT", "FROG", "STAR")
+    /** Brimmed hats, which hide the hair inside them; caps, a wreath and a crown sit on the hair as drawn (#10). */
+    private val hatsOver = setOf("POINTED", "WIDE")
     fun hatCovers(name: String): Boolean = name in hatsOver
     val HAT_AT: Pair<Int, Int> = 37 to 0
 
