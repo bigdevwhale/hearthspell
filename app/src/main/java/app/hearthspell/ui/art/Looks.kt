@@ -21,7 +21,7 @@ object Looks {
             val body = dress(Art.apprenticeBody(frame))
             val top = Art.hat(hat.name).let { if (hat == Garment.POINTED) dress(it) else it }
             val (hx, hy) = Art.HAT_AT
-            body.under(top, hx, hy + top.rh * Art.hatSink(hat.name) / 100)
+            body.under(top, hx, hy + top.rh * Art.hatSink(hat.name) / 100, hides = Art.hatCovers(hat.name))
         }
     }
 

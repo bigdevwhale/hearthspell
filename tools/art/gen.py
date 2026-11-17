@@ -227,6 +227,16 @@ HATS_FRONT_LOOK = (
     "the same scale as in the reference."
 )
 
+# The two brimmed hats once more, the brim seen edge-on so no underside shows at all (#10).
+HATS_BRIMS = HATS_FRONT[:2]
+HATS_BRIMS_LOOK = (
+    "Each hat seen exactly from the front at eye level. The brim is seen perfectly edge-on: a thin, flat horizontal "
+    "band of the hat's own colour, a little thicker in the middle and slightly upturned at the tips. We see only the "
+    "top and the front edge of the brim: NOTHING below it, no underside, no dark shadow band under the brim, no "
+    "inside of the hat, no opening. The bottom outline of the hat is the brim's edge. Match the attached reference "
+    "sheet's pixel-art style, palette and outline exactly; both hats at the same scale as in the reference."
+)
+
 
 ICONS = [
     ("tower", "a little wizard's tower with a purple conical roof and a glowing window"),
@@ -293,6 +303,8 @@ def jobs():
                                HATS, 4, 2, "hat", "All hats at the same scale, sized for the same small head.")
     out["hats_front"] = sheet_prompt("a sprite sheet of four hats, each shown alone (no head, no person).",
                                      HATS_FRONT, 2, 2, "hat", HATS_FRONT_LOOK)
+    out["hats_brims"] = sheet_prompt("a sprite sheet of two hats, each shown alone (no head, no person).",
+                                     HATS_BRIMS, 2, 1, "hat", HATS_BRIMS_LOOK)
     out["icons"] = sheet_prompt("a set of app menu icons for a cozy wizard-tower game.", ICONS, 4, 3, "icon",
                                 "Bold, simple, instantly readable at small size: chunky shapes, thick dark outline, "
                                 "few details, each icon filling most of its cell, front view.")
@@ -374,7 +386,7 @@ def image_of(output):
 
 
 # Sheets drawn to match another sheet, which goes with the prompt as a picture.
-REFERENCE = {"hats_front": "hats"}
+REFERENCE = {"hats_front": "hats", "hats_brims": "hats_front"}
 
 
 def run(name, prompt):

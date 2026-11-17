@@ -267,6 +267,17 @@ def build_sprites():
                     continue
                 s = HAT_WIDTH.get(k, 1.3) * head / im.width
                 sp[f"hat_{k}"] = [im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)]
+        # The brimmed ones again, the brim edge-on with no underside at all, centred on the brim (a curled tip
+        # would pull a plain crop to one side).
+        brims = sheet("hats_brims", 2, 1)
+        if brims:
+            for i, (k, _) in enumerate(gen.HATS_BRIMS):
+                im = brims[i]
+                if im is None:
+                    continue
+                s = HAT_WIDTH.get(k, 1.3) * head / im.width
+                im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
+                sp[f"hat_{k}"] = [centred_on_brim(im)]
         hat_at = (hx, hy)
     else:
         # The old hats share the body's grid: drawn over it as they are.
@@ -310,9 +321,28 @@ def build_sprites():
     return sp, hat_at
 
 
+def centred_on_brim(im):
+    """Pads [im] on one side so the middle of its bottom rows (the brim) is the middle of the picture."""
+    a = im.getchannel("A")
+    w, h = im.size
+    mids = []
+    for y in range(max(0, h - 6), h):
+        xs = [x for x in range(w) if a.getpixel((x, y)) > 60]
+        if xs:
+            mids.append((xs[0] + xs[-1]) / 2)
+    if not mids:
+        return im
+    shift = round(2 * (sum(mids) / len(mids) - (w - 1) / 2))
+    if shift == 0:
+        return im
+    out = Image.new("RGBA", (w + abs(shift), h), (0, 0, 0, 0))
+    out.paste(im, (0 if shift > 0 else -shift, 0))
+    return out
+
+
 HAT_WIDTH = {"POINTED": 1.45, "WIDE": 1.7, "FLOWERS": 1.15, "CAT": 1.15, "FROG": 1.2, "STAR": 1.2, "CROWN": 0.8}
 # How much of each hat's height comes down over the head, in percent.
-HAT_SINK = {"POINTED": 34, "WIDE": 33, "FLOWERS": 58, "CAT": 50, "FROG": 47, "STAR": 42, "CROWN": 62}
+HAT_SINK = {"POINTED": 43, "WIDE": 40, "FLOWERS": 58, "CAT": 50, "FROG": 47, "STAR": 42, "CROWN": 62}
 
 
 def demagenta(im):
@@ -620,6 +650,10 @@ object Art {{
     /** A hat, drawn over the body with its bottom centre at [HAT_AT] lowered by [hatSink] percent of its height. */
     fun hat(name: String): Sprite = load(hats.getValue(name))
     fun hatSink(name: String): Int = hatSinks[name] ?: 30
+
+    /** Hats worn over the head, which hides inside them; a wreath and a crown sit on the hair instead (#10). */
+    private val hatsOver = setOf("POINTED", "WIDE", "CAT", "FROG", "STAR")
+    fun hatCovers(name: String): Boolean = name in hatsOver
     val HAT_AT: Pair<Int, Int> = {at}
 
     fun bat(frame: Int): Sprite = frame(bats, frame)

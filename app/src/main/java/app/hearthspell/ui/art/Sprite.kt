@@ -26,7 +26,12 @@ class Sprite(val rw: Int, val rh: Int, internal val argb: IntArray) {
     }
 
     /** [top] drawn over this sprite, its bottom centre at ([x], [y]) in this sprite's pixels. */
-    fun under(top: Sprite, x: Int, y: Int): Sprite {
+    /**
+     * [top] drawn over this one with its bottom centre at ([x], [y]), the canvas growing to fit. With [hides], what of
+     * this sprite lies above [top]'s lowest pixel in each of its columns is cleared first: a head inside a hat, its
+     * hair no longer sticking out over the brim.
+     */
+    fun under(top: Sprite, x: Int, y: Int, hides: Boolean = false): Sprite {
         val left = minOf(0, x - top.rw / 2)
         val upper = minOf(0, y - top.rh)
         val nw = maxOf(rw, x + (top.rw + 1) / 2) - left
@@ -35,6 +40,13 @@ class Sprite(val rw: Int, val rh: Int, internal val argb: IntArray) {
         for (j in 0 until rh) for (i in 0 until rw) out[(j - upper) * nw + (i - left)] = argb[j * rw + i]
         val tx = x - top.rw / 2 - left
         val ty = y - top.rh - upper
+        if (hides) for (i in 0 until top.rw) {
+            val c = tx + i
+            if (c !in 0 until nw) continue
+            var low = -1
+            for (j in top.rh - 1 downTo 0) if (top.argb[j * top.rw + i] ushr 24 != 0) { low = j; break }
+            for (r in 0..minOf(nh - 1, ty + low)) out[r * nw + c] = 0
+        }
         for (j in 0 until top.rh) for (i in 0 until top.rw) {
             val c = top.argb[j * top.rw + i]
             val a = c ushr 24

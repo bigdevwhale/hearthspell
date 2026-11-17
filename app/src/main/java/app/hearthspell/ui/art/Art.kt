@@ -151,7 +151,7 @@ object Art {
         "STAR" to R.drawable.hs_s_hat_star_0,
         "CROWN" to R.drawable.hs_s_hat_crown_0,
     )
-    private val hatSinks = mapOf("POINTED" to 34, "FLOWERS" to 58, "WIDE" to 33, "CAT" to 50, "FROG" to 47, "STAR" to 42, "CROWN" to 62)
+    private val hatSinks = mapOf("POINTED" to 43, "FLOWERS" to 58, "WIDE" to 40, "CAT" to 50, "FROG" to 47, "STAR" to 42, "CROWN" to 62)
     private val envelopes = mapOf<String, Int>(
         "sealed" to R.drawable.hs_s_envelope_sealed_0,
         "open" to R.drawable.hs_s_envelope_open_0,
@@ -259,6 +259,10 @@ object Art {
     /** A hat, drawn over the body with its bottom centre at [HAT_AT] lowered by [hatSink] percent of its height. */
     fun hat(name: String): Sprite = load(hats.getValue(name))
     fun hatSink(name: String): Int = hatSinks[name] ?: 30
+
+    /** Hats worn over the head, which hides inside them; a wreath and a crown sit on the hair instead (#10). */
+    private val hatsOver = setOf("POINTED", "WIDE", "CAT", "FROG", "STAR")
+    fun hatCovers(name: String): Boolean = name in hatsOver
     val HAT_AT: Pair<Int, Int> = 37 to 0
 
     fun bat(frame: Int): Sprite = frame(bats, frame)
